@@ -6,6 +6,7 @@ const ADMIN_SUBDOMAIN = 'admin'
 
 /**
  * Middleware de routing multi-tenant pour DentaFlow
+ * Version corrigée : Gestion unifiée des logins et prévention de récursion
  */
 export default async function middleware(request: NextRequest) {
   // 0. Mise à jour de la session Supabase (essentiel pour l'Auth)
@@ -17,8 +18,29 @@ export default async function middleware(request: NextRequest) {
   // Gestion localhost pour le développement
   const isLocalhost = hostname.includes('localhost') || hostname.includes('127.0.0.1')
   const pureHostname = hostname.split(':')[0]
-  
-  // 1. Résolution du slug / sous-domaine
+  const pathname = url.pathname
+
+  // 1. GARDE CONTRE LA RÉCURSION & FICHIERS STATIQUES
+  // Si on est déjà sur un chemin interne ou un fichier, on ne touche à rien
+  if (
+    pathname.startsWith('/marketing-site') || 
+    pathname.startsWith('/public-site') || 
+    pathname.startsWith('/admin-area') ||
+    pathname.startsWith('/api') ||
+    pathname.includes('.') ||
+    pathname.startsWith('/_next')
+  ) {
+    return NextResponse.next()
+  }
+
+  // 2. PRIORITÉ ABSOLUE : LES PAGES DE LOGIN
+  // On centralise tous les logins sur le dossier marketing-site/login
+  if (pathname.startsWith('/login')) {
+    url.pathname = `/marketing-site${pathname}`
+    return NextResponse.rewrite(url)
+  }
+
+  // 3. RÉSOLUTION DU DOMAINE (Admin, Tenant ou Marketing)
   let slug: string | null = null
   let isAdmin = false
   let isMarketing = false
@@ -48,35 +70,7 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  const pathname = url.pathname
-
-  // 0. Garde contre la récursion (Empêche de réécrire une URL déjà transformée)
-  if (
-    pathname.startsWith('/marketing-site') || 
-    pathname.startsWith('/public-site') || 
-    pathname.startsWith('/admin-area') ||
-    pathname.startsWith('/api') ||
-    pathname.startsWith('/login')
-  ) {
-    return NextResponse.next()
-  }
-
-  // 2. Redirections prioritaires (Authentification)
-  
-  // Login partagé
-  if (pathname.startsWith('/login')) {
-    url.pathname = `/marketing-site${pathname}`
-    return NextResponse.rewrite(url)
-  }
-
-  // Dossier Admin (Accessible via admin.dentaflow.ca ou dentaflow.ca/admin)
-  if (pathname.startsWith('/admin')) {
-    const adminPath = pathname.startsWith('/admin') ? pathname : `/admin${pathname}`
-    url.pathname = `/admin-area${adminPath}`
-    return NextResponse.rewrite(url)
-  }
-
-  // 3. Réécriture finale basée sur le sous-domaine
+  // 4. RÉÉCRITURE FINALE BASÉE SUR LA RÉSOLUTION
   
   // Sous-domaine Admin (admin.dentaflow.ca/* -> /admin-area/admin/*)
   if (isAdmin) {
