@@ -50,6 +50,17 @@ export default async function middleware(request: NextRequest) {
 
   const pathname = url.pathname
 
+  // 0. Garde contre la récursion (Empêche de réécrire une URL déjà transformée)
+  if (
+    pathname.startsWith('/marketing-site') || 
+    pathname.startsWith('/public-site') || 
+    pathname.startsWith('/admin-area') ||
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/login')
+  ) {
+    return NextResponse.next()
+  }
+
   // 2. Redirections prioritaires (Authentification)
   
   // Login partagé
