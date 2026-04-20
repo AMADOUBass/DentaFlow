@@ -6,61 +6,51 @@ const ADMIN_SUBDOMAIN = 'admin'
 
 /**
  * Middleware de routing multi-tenant pour DentaFlow
- * Version corrigée : Gestion unifiée des logins et prévention de récursion
+ * Version DEBUG : Normalisation des chemins et headers de diagnostic
  */
 export default async function middleware(request: NextRequest) {
-  // 0. Mise à jour de la session Supabase (essentiel pour l'Auth)
+  // 0. Mise à jour de la session Supabase
   await updateSession(request)
 
   const url = request.nextUrl
   const hostname = request.headers.get('host') ?? ''
   
-  // Gestion localhost pour le développement
-  const isLocalhost = hostname.includes('localhost') || hostname.includes('127.0.0.1')
+  // Normalisation du hostname
   const pureHostname = hostname.split(':')[0]
+  const isLocalhost = pureHostname.includes('localhost') || pureHostname.includes('127.0.0.1')
+  const isVercel = pureHostname.endsWith('.vercel.app')
   const pathname = url.pathname
 
-  // 1. GARDE CONTRE LA RÉCURSION & FICHIERS STATIQUES
-  // Si on est déjà sur un chemin interne ou un fichier, on ne touche à rien
+  // 1. GARDE CONTRE LA RÉCURSION & FICHIERS & API
   if (
     pathname.startsWith('/marketing-site') || 
     pathname.startsWith('/public-site') || 
     pathname.startsWith('/admin-area') ||
     pathname.startsWith('/api') ||
-    pathname.includes('.') ||
-    pathname.startsWith('/_next')
+    pathname.startsWith('/_next') ||
+    pathname.includes('.')
   ) {
     return NextResponse.next()
   }
 
-  // 2. PRIORITÉ ABSOLUE : LES PAGES DE LOGIN
-  // On centralise tous les logins sur le dossier marketing-site/login
-  if (pathname.startsWith('/login')) {
-    url.pathname = `/marketing-site${pathname}`
-    return NextResponse.rewrite(url)
-  }
-
-  // 3. RÉSOLUTION DU DOMAINE (Admin, Tenant ou Marketing)
+  // 2. LOGIQUE DE DÉCISION
   let slug: string | null = null
   let isAdmin = false
   let isMarketing = false
 
-  if (isLocalhost) {
-    // En dev : demo.localhost:3000 -> slug = demo
+  // Cas spécial Login (Partagé)
+  if (pathname.startsWith('/login')) {
+     isMarketing = true // On le traite via le dossier marketing
+  } else if (isLocalhost) {
     const parts = pureHostname.split('.')
     if (parts.length > 1) {
-      if (parts[0] === ADMIN_SUBDOMAIN) {
-        isAdmin = true
-      } else {
-        slug = parts[0]
-      }
+      if (parts[0] === ADMIN_SUBDOMAIN) isAdmin = true
+      else slug = parts[0]
     } else {
       isMarketing = true
     }
   } else {
-    // En production
-    const isVercel = pureHostname.endsWith('.vercel.app')
-    
+    // Production
     if (pureHostname === ROOT_DOMAIN || pureHostname === `www.${ROOT_DOMAIN}` || isVercel) {
       isMarketing = true
     } else if (pureHostname === `${ADMIN_SUBDOMAIN}.${ROOT_DOMAIN}`) {
@@ -70,41 +60,40 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  // 4. RÉÉCRITURE FINALE BASÉE SUR LA RÉSOLUTION
+  // 3. CONSTRUCTION DU CHEMIN DE RÉÉCRITURE (SANS DOUBLE SLASH)
+  let targetPath = ''
   
-  // Sous-domaine Admin (admin.dentaflow.ca/* -> /admin-area/admin/*)
   if (isAdmin) {
-    url.pathname = `/admin-area/admin${pathname}`
-    return NextResponse.rewrite(url)
+    targetPath = `/admin-area/admin${pathname === '/' ? '' : pathname}`
+  } else if (slug) {
+    targetPath = `/public-site/${slug}${pathname === '/' ? '' : pathname}`
+  } else if (isMarketing) {
+    targetPath = `/marketing-site${pathname === '/' ? '' : pathname}`
+  } else {
+    // Fallback ultime vers le site marketing
+    targetPath = `/marketing-site${pathname === '/' ? '' : pathname}`
   }
 
-  // Site Clinique (slug.dentaflow.ca/* -> /public-site/[slug]/*)
-  if (slug) {
-    const requestHeaders = new Headers(request.headers)
-    requestHeaders.set('x-tenant-slug', slug)
-    
-    url.pathname = `/public-site/${slug}${pathname}`
-    return NextResponse.rewrite(url, {
-      request: {
-        headers: requestHeaders,
-      }
-    })
-  }
+  // 4. RÉÉCRITURE AVEC HEADERS DE DEBUG
+  const requestHeaders = new Headers(request.headers)
+  if (slug) requestHeaders.set('x-tenant-slug', slug)
+  
+  url.pathname = targetPath
+  const response = NextResponse.rewrite(url, {
+    request: {
+      headers: requestHeaders,
+    }
+  })
 
-  // Site Marketing (Par défaut)
-  url.pathname = `/marketing-site${pathname}`
-  return NextResponse.rewrite(url)
+  // On ajoute le header pour debug visible dans les outils de dev (Network)
+  response.headers.set('x-dentaflow-rewrite', targetPath)
+  response.headers.set('x-dentaflow-hostname', pureHostname)
+  
+  return response
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public (public folder)
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
