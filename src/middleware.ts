@@ -36,8 +36,10 @@ export default async function middleware(request: NextRequest) {
       isMarketing = true
     }
   } else {
-    // En production : slug.dentaflow.ca
-    if (pureHostname === ROOT_DOMAIN || pureHostname === `www.${ROOT_DOMAIN}`) {
+    // En production
+    const isVercel = pureHostname.endsWith('.vercel.app')
+    
+    if (pureHostname === ROOT_DOMAIN || pureHostname === `www.${ROOT_DOMAIN}` || isVercel) {
       isMarketing = true
     } else if (pureHostname === `${ADMIN_SUBDOMAIN}.${ROOT_DOMAIN}`) {
       isAdmin = true
