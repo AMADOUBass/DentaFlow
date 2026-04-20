@@ -1,0 +1,225 @@
+'use server'
+
+import { prisma } from '@/lib/prisma'
+import { createClient } from '@/lib/supabase/server'
+import { getAvailableSlots } from '@/lib/availability'
+import { appointmentSchema, type AppointmentInput } from '@/schemas/appointment'
+import { AppointmentStatus } from '@prisma/client'
+import { revalidatePath } from 'next/cache'
+import { parse, format, isBefore, addDays } from 'date-fns'
+import { fr } from 'date-fns/locale'
+import { sendEmail } from '@/lib/email'
+import { sendSMS } from '@/lib/sms'
+
+/**
+ * Action to fetch available slots for a given date/practitioner/service
+ */
+export async function getAvailableSlotsAction(
+  tenantId: string, 
+  practitionerId: string, 
+  serviceId: string, 
+  date: string
+) {
+  try {
+    const slots = await getAvailableSlots({
+      tenantId,
+      practitionerId,
+      serviceId,
+      date
+    })
+    return { success: true, slots }
+  } catch (error) {
+    return { success: false, error: "Erreur lors du calcul des disponibilités" }
+  }
+}
+
+/**
+ * Creates a new appointment and potentially a new patient
+ */
+export async function createAppointment(tenantId: string, data: AppointmentInput) {
+  const result = appointmentSchema.safeParse(data)
+  if (!result.success) {
+    return { success: false, error: "Données invalides" }
+  }
+
+  const { 
+    serviceId, 
+    practitionerId, 
+    date, 
+    slot, 
+    email, 
+    firstName, 
+    lastName, 
+    phone,
+    notes,
+    insuranceId,
+    insurancePolicy
+  } = result.data
+
+  // 1. Find or create patient
+  let patient = await prisma.patient.findUnique({
+    where: { 
+      tenantId_email: { tenantId, email } 
+    }
+  })
+
+  if (patient) {
+    // Check for active appointment (PENDING or CONFIRMED)
+    const activeAppointment = await prisma.appointment.findFirst({
+      where: {
+        patientId: patient.id,
+        status: { in: [AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED] }
+      }
+    })
+
+    if (activeAppointment) {
+      return { 
+        success: false, 
+        error: "Vous avez déjà un rendez-vous actif dans cette clinique. Veuillez annuler le précédent avant d'en choisir un nouveau." 
+      }
+    }
+  } else {
+    patient = await prisma.patient.create({
+      data: {
+        tenantId,
+        email,
+        firstName,
+        lastName,
+        phone
+      }
+    })
+  }
+
+  // 2. Determine practitioner if 'any' was chosen
+  let finalPractitionerId = practitionerId
+  if (practitionerId === 'any') {
+    const availableSlotsWithPrac = await getAvailableSlotsAction(tenantId, 'any', serviceId, date)
+    // In a real 'any' scenario, we'd need to know WHICH practitioner has this slot.
+    // Simplifying: Fetch practitioners offering service and pick the first one available at this slot.
+    const eligiblePractitioners = await prisma.practitioner.findMany({
+      where: {
+        tenantId,
+        services: { some: { serviceId } }
+      }
+    })
+    
+    for (const prac of eligiblePractitioners) {
+      const pracSlots = await getAvailableSlots({
+        tenantId,
+        practitionerId: prac.id,
+        serviceId,
+        date
+      })
+      if (pracSlots.includes(slot)) {
+        finalPractitionerId = prac.id
+        break
+      }
+    }
+  }
+
+  // 3. Create appointment
+  const service = await prisma.service.findUnique({ where: { id: serviceId } })
+  if (!service) return { success: false, error: "Service non trouvé" }
+
+  const startTime = parse(`${date} ${slot}`, 'yyyy-MM-dd HH:mm', new Date())
+  const endTime = new Date(startTime.getTime() + service.durationMin * 60000)
+
+  const appointment = await prisma.appointment.create({
+    data: {
+      tenantId,
+      patientId: patient.id,
+      practitionerId: finalPractitionerId,
+      serviceId,
+      startsAt: startTime,
+      endsAt: endTime,
+      status: AppointmentStatus.PENDING,
+      notes,
+    }
+  })
+
+  // 4. Notifications (Real Email with Resend)
+  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } })
+  const practitioner = await prisma.practitioner.findUnique({ where: { id: finalPractitionerId } })
+  
+  if (tenant && practitioner) {
+    const formattedDate = format(startTime, 'eeee d MMMM yyyy', { locale: fr })
+    const formattedTime = format(startTime, 'HH:mm')
+    
+    await sendEmail({
+      to: email,
+      subject: `Confirmation de votre rendez-vous - ${tenant.name}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #334155;">
+          <h1 style="color: #0f172a; font-size: 24px; font-weight: 800;">Rendez-vous confirmé !</h1>
+          <p>Bonjour ${firstName},</p>
+          <p>Votre rendez-vous chez ${tenant.name} a été enregistré avec succès.</p>
+          
+          <div style="background-color: #f8fafc; padding: 20px; border-radius: 12px; margin: 20px 0;">
+            <p style="margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Soin</p>
+            <p style="margin: 0 0 10px 0; font-weight: bold; font-size: 18px;">${service.name}</p>
+            
+            <p style="margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Praticien</p>
+            <p style="margin: 0 0 10px 0; font-weight: bold;">${practitioner.title} ${practitioner.lastName}</p>
+            
+            <p style="margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Date & Heure</p>
+            <p style="margin: 0; font-weight: bold;">${formattedDate} à ${formattedTime}</p>
+          </div>
+          
+          <p>Adresse: ${tenant.address || 'Voir site web'}</p>
+          <p>Téléphone: ${tenant.phone || ''}</p>
+          
+          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;" />
+          <p style="font-size: 12px; color: #94a3b8;">
+            Ce courriel a été envoyé automatiquement par DentaFlow pour ${tenant.name}.
+          </p>
+        </div>
+      `
+    })
+
+    // 4.1 SMS Confirmation
+    const smsMessage = `Bonjour ${firstName}, votre RDV chez ${tenant.name} est confirme pour le ${formattedDate} a ${formattedTime}.`
+    await sendSMS({ to: phone, message: smsMessage })
+  }
+
+  console.log(`[RDV] Nouveau rendez-vous créé: ${appointment.id} pour ${firstName} ${lastName}`)
+
+  revalidatePath('/admin/dashboard')
+  
+  return { success: true, id: appointment.id }
+}
+
+export async function cancelAppointmentAction(appointmentId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user || !user.email) {
+    throw new Error('Non authentifié')
+  }
+
+  const appointment = await prisma.appointment.findUnique({
+    where: { id: appointmentId },
+    include: { patient: true }
+  })
+
+  if (!appointment || appointment.patient.email !== user.email) {
+    throw new Error('Rendez-vous non trouvé ou non autorisé')
+  }
+
+  // Security: Check 24h delay
+  const limit = addDays(new Date(), 1)
+  if (isBefore(appointment.startsAt, limit)) {
+    throw new Error('Délai d\'annulation dépassé (moins de 24h)')
+  }
+
+  await prisma.appointment.update({
+    where: { id: appointmentId },
+    data: {
+      status: AppointmentStatus.CANCELLED,
+      cancelledAt: new Date(),
+      cancelReason: 'Annulé par le patient via le portail'
+    }
+  })
+
+  revalidatePath('/[tenant]/portail', 'layout')
+  return { success: true }
+}

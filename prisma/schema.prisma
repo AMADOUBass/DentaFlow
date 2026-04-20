@@ -1,0 +1,286 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ==================== TENANT ====================
+model Tenant {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  name           String
+  customDomain   String?  @unique
+  phone          String
+  email          String
+  address        String
+  city           String
+  postalCode     String
+  province       String   @default("QC")
+  timezone       String   @default("America/Toronto")
+  primaryColor   String   @default("#0F766E")
+  logoUrl        String?
+  locale         String   @default("fr-CA")
+  bilingual      Boolean  @default(true)
+  planTier       PlanTier @default(ESSENTIEL)
+  stripeCustomer String?  @unique
+  stripeSubId    String?  @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  users          User[]
+  practitioners  Practitioner[]
+  patients       Patient[]
+  services       Service[]
+  appointments   Appointment[]
+  businessHours  BusinessHours[]
+  auditLogs      AuditLog[]
+  emergencies    EmergencyRequest[]
+  insurances     InsuranceProvider[]
+}
+
+enum PlanTier {
+  ESSENTIEL
+  COMPLET
+  PREMIUM
+}
+
+// ==================== USERS ====================
+model User {
+  id        String   @id @default(cuid())
+  authId    String   @unique    // Supabase auth.users.id
+  email     String   @unique
+  name      String
+  role      UserRole
+  tenantId  String?
+  tenant    Tenant?  @relation(fields: [tenantId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+enum UserRole {
+  SUPERADMIN      // Abba (plateforme)
+  CLINIC_OWNER    // Propriétaire clinique
+  CLINIC_STAFF    // Réceptionniste
+  PRACTITIONER    // Dentiste/hygiéniste
+  PATIENT         // Patient
+}
+
+// ==================== PRACTITIONERS ====================
+model Practitioner {
+  id           String   @id @default(cuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  firstName    String
+  lastName     String
+  title        String   // "Dre", "Dr", "Hygiéniste"
+  specialty    String?  // "Dentiste généraliste", "Orthodontiste"
+  bio          String?  @db.Text
+  photoUrl     String?
+  active       Boolean  @default(true)
+  color        String   @default("#0EA5E9")  // Couleur agenda
+  schedules    PractitionerSchedule[]
+  appointments Appointment[]
+  services     ServicePractitioner[]
+  createdAt    DateTime @default(now())
+}
+
+// ==================== SERVICES ====================
+model Service {
+  id             String   @id @default(cuid())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name           String   // "Examen + nettoyage"
+  nameEn         String?  // Version anglaise
+  description    String?  @db.Text
+  durationMin    Int      // Durée en minutes
+  priceCents     Int?     // Prix en cents
+  category       ServiceCategory
+  active         Boolean  @default(true)
+  practitioners  ServicePractitioner[]
+  appointments   Appointment[]
+  order          Int      @default(0)
+  createdAt      DateTime @default(now())
+}
+
+enum ServiceCategory {
+  PREVENTION       // Nettoyage, examen
+  RESTORATION      // Plombage, couronne
+  SURGERY          // Extraction, implant
+  ESTHETIC         // Blanchiment, facette
+  ENDODONTICS      // Traitement canal
+  ORTHODONTICS     // Broches
+  EMERGENCY        // Urgence
+  OTHER
+}
+
+model ServicePractitioner {
+  serviceId      String
+  practitionerId String
+  service        Service      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  practitioner   Practitioner @relation(fields: [practitionerId], references: [id], onDelete: Cascade)
+  @@id([serviceId, practitionerId])
+}
+
+// ==================== HORAIRES ====================
+model BusinessHours {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  weekday   Int      // 0=Dim, 1=Lun ... 6=Sam
+  openTime  String   // "08:00"
+  closeTime String   // "17:00"
+  closed    Boolean  @default(false)
+  @@unique([tenantId, weekday])
+}
+
+model PractitionerSchedule {
+  id             String   @id @default(cuid())
+  practitionerId String
+  practitioner   Practitioner @relation(fields: [practitionerId], references: [id], onDelete: Cascade)
+  weekday        Int
+  startTime      String   // "09:00"
+  endTime        String   // "17:00"
+  lunchStart     String?  // "12:00"
+  lunchEnd       String?  // "13:00"
+}
+
+model TimeOff {
+  id             String   @id @default(cuid())
+  practitionerId String
+  startDate      DateTime
+  endDate        DateTime
+  reason         String?
+}
+
+// ==================== PATIENTS ====================
+model Patient {
+  id           String   @id @default(cuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  authId       String?  @unique // Si compte patient créé
+  firstName    String
+  lastName     String
+  email        String
+  phone        String
+  dateOfBirth  DateTime?
+  ramqNumber   String?  // Numéro RAMQ (chiffré)
+  address      String?
+  insuranceProviderId String?
+  insurancePolicy     String?
+  insuranceProvider   InsuranceProvider? @relation(fields: [insuranceProviderId], references: [id])
+  medicalNotes String?  @db.Text // Allergies, médicaments
+  consentLoi25 Boolean  @default(false)
+  consentDate  DateTime?
+  smsOptIn     Boolean  @default(true)
+  appointments Appointment[]
+  createdAt    DateTime @default(now())
+  @@unique([tenantId, email])
+}
+
+model InsuranceProvider {
+  id              String @id @default(cuid())
+  tenantId        String
+  tenant          Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name            String // "SSQ", "Desjardins", "Sun Life"
+  coveragePercent Int    @default(80) // Couverture typique %
+  patients        Patient[]
+}
+
+// ==================== APPOINTMENTS ====================
+model Appointment {
+  id             String   @id @default(cuid())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  patientId      String
+  patient        Patient  @relation(fields: [patientId], references: [id])
+  practitionerId String
+  practitioner   Practitioner @relation(fields: [practitionerId], references: [id])
+  serviceId      String
+  service        Service  @relation(fields: [serviceId], references: [id])
+  startsAt       DateTime
+  endsAt         DateTime
+  status         AppointmentStatus @default(PENDING)
+  notes          String?  @db.Text
+  reminderSent   Boolean  @default(false)
+  reminder2hSent Boolean  @default(false)
+  confirmedAt    DateTime?
+  cancelledAt    DateTime?
+  cancelReason   String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  @@index([tenantId, startsAt])
+  @@index([practitionerId, startsAt])
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+// ==================== URGENCES ====================
+model EmergencyRequest {
+  id          String   @id @default(cuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  firstName   String
+  lastName    String
+  phone       String
+  email       String?
+  painLevel   Int      // 1-10
+  category    EmergencyCategory
+  description String   @db.Text
+  handled     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+enum EmergencyCategory {
+  PAIN
+  TRAUMA
+  INFECTION
+  BROKEN_TOOTH
+  LOST_FILLING
+  OTHER
+}
+
+// ==================== LOI 25 & AUDIT ====================
+model AuditLog {
+  id          String   @id @default(cuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId      String?  // L'utilisateur qui a fait l'action
+  patientId   String?  // Le patient impacté (si applicable)
+  action      AuditAction
+  category    AuditCategory
+  description String   @db.Text
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+  @@index([patientId])
+}
+
+enum AuditAction {
+  LOGIN
+  LOGOUT
+  VIEW
+  CREATE
+  UPDATE
+  DELETE
+  EXPORT
+  DOWNLOAD
+}
+
+enum AuditCategory {
+  AUTH
+  PATIENT_DATA
+  MEDICAL_RECORDS
+  SECURITY
+  BILLING
+  SYSTEM
+}
