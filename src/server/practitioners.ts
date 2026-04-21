@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { getAdminUser } from '@/lib/auth-utils'
 import { practitionerSchema, type PractitionerInput } from '@/schemas/practitioner'
 import { revalidatePath } from 'next/cache'
+import { logAudit } from '@/lib/audit'
 
 import { checkPractitionerLimit } from '@/lib/plan-limits'
 
@@ -27,6 +28,14 @@ export async function createPractitioner(data: PractitionerInput) {
     }
   })
 
+  await logAudit({
+    tenantId,
+    userId: user.authId,
+    action: 'CREATE',
+    category: 'SYSTEM',
+    description: `Ajout d'un nouveau praticien : ${validatedData.firstName} ${validatedData.lastName} (${validatedData.title}).`
+  })
+
   revalidatePath('/admin/practitioners')
   return { success: true, id: practitioner.id }
 }
@@ -42,6 +51,14 @@ export async function updatePractitioner(id: string, data: PractitionerInput) {
     data: validatedData
   })
 
+  await logAudit({
+    tenantId,
+    userId: user.authId,
+    action: 'UPDATE',
+    category: 'SYSTEM',
+    description: `Modification des informations du praticien ${validatedData.firstName} ${validatedData.lastName} (ID: ${id}).`
+  })
+
   revalidatePath('/admin/practitioners')
   return { success: true }
 }
@@ -52,6 +69,14 @@ export async function deletePractitioner(id: string) {
 
   await prisma.practitioner.delete({
     where: { id, tenantId }
+  })
+
+  await logAudit({
+    tenantId,
+    userId: user.authId,
+    action: 'DELETE',
+    category: 'SYSTEM',
+    description: `Suppression du profil d'un praticien (ID: ${id}).`
   })
 
   revalidatePath('/admin/practitioners')

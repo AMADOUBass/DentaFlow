@@ -18,11 +18,13 @@ const translations = {
       demo: "Essai Gratuit",
       start: "Démarrer maintenant",
       see_demo: "Voir la démo",
+      soon: "Bientôt disponible",
     },
     nav: {
       features: "Fonctionnalités",
       solutions: "Solutions",
       pricing: "Tarifs",
+      contact: "Contact",
     },
     home: {
       badge: "Plateforme n°1 au Québec",
@@ -38,7 +40,7 @@ const translations = {
       subtitle: "Une suite d'outils puissants intégrés pour propulser votre clinique.",
       items: {
         booking: {
-          title: "Réservation Intelligente",
+          title: "Réservation IA",
           desc: "Calcul automatique des créneaux selon vos spécialités et praticiens."
         },
         law25: {
@@ -60,6 +62,81 @@ const translations = {
         practitioner: {
           title: "Suivi Praticien",
           desc: "Outils dédiés pour optimiser le temps des dentistes."
+        }
+      }
+    },
+    testimonials: {
+      title: "Ils font confiance à Oros.",
+      subtitle: "Découvrez pourquoi les professionnels du Québec ont choisi notre solution.",
+      items: [
+        {
+          name: "Dr. Marc-Antoine Roy",
+          role: "Chirurgien-dentiste",
+          clinic: "Clinique Dentaire de la Gatineau",
+          content: "Oros a simplifié toute notre gestion Loi 25. C'est un poids énorme en moins sur nos épaules."
+        },
+        {
+          name: "Julie Tremblay",
+          role: "Gestionnaire de centre",
+          clinic: "Centre Dentaire Orizon",
+          content: "L'interface est d'une fluidité incroyable. Nos secrétaires ont gagné 1h par jour sur la prise de RDV."
+        },
+        {
+          name: "Dr. Sophie Lefebvre",
+          role: "Orthodontiste",
+          clinic: "Smile Design Montréal",
+          content: "La prise de rendez-vous en ligne est la plus intelligente du marché. Mes patients l'adorent."
+        }
+      ]
+    },
+    contact_page: {
+      title: "Contactez-nous",
+      subtitle: "Notre équipe est là pour propulser votre clinique au prochain niveau.",
+      form_name: "Nom complet",
+      form_email: "Courriel professionnel",
+      form_clinic: "Nom de la clinique",
+      form_message: "Comment pouvons-nous vous aider ?",
+      form_submit: "Envoyer le message",
+      success_title: "Message reçu !",
+      success_desc: "Nous vous recontacterons dans les prochaines 24 heures.",
+      info_title: "Nos bureaux",
+      info_address: "1230 Rue de la Montagne, Montréal, QC H3G 1Z1",
+      info_phone: "+1 (514) 555-0199",
+      info_support: "support@oros.ca"
+    },
+    solutions_page: {
+      hero_title: "Une technologie au service de votre ",
+      hero_accent: "vision clinique",
+      hero_subtitle: "Découvrez comment Oros transforme chaque aspect de votre gestion quotidienne avec des outils conçus pour le futur de la dentisterie.",
+      section_law25_title: "Conformité Loi 25 Sans Effort",
+      section_law25_desc: "Oros intègre nativement toutes les exigences de la Loi 25. Chiffrement AES-256, logs d'audit exhaustifs et hébergement sécurisé au Canada. Vous n'avez plus à vous soucier des risques légaux.",
+      section_booking_title: "Moteur de Réservation IA",
+      section_booking_desc: "Notre futur moteur de prise de rendez-vous ne se contente pas de remplir des cases. Il optimisera l'agenda de chaque praticien en fonction de leurs spécialités et du temps réel requis par chaque type de soin (en cours de développement).",
+      section_patient_title: "L'Expérience Patient Réinventée",
+      section_patient_desc: "Offrez à vos patients un portail moderne et intuitif. Prise de RDV, demandes d'urgence et gestion de profil, le tout accessible sur mobile sans installation.",
+    },
+    pricing_page: {
+      hero_title: "Un investissement dans votre ",
+      hero_accent: "croissance",
+      hero_subtitle: "Choisissez le plan qui correspond à la taille et aux ambitions de votre centre dentaire.",
+      plans: {
+        essentiel: {
+          name: "Essentiel",
+          price: "199",
+          desc: "Idéal pour les nouvelles cliniques.",
+          features: ["1 Praticien", "Agenda intelligent", "Loi 25 de base", "Portail Patient"]
+        },
+        complet: {
+          name: "Complet",
+          price: "349",
+          desc: "Le choix préféré des cabinets établis.",
+          features: ["Jusqu'à 5 Praticiens", "Module d'Urgences 24/7", "Loi 25 avancée (Audit)", "Support prioritaire"]
+        },
+        premium: {
+          name: "Premium",
+          price: "599",
+          desc: "Pour les centres multi-spécialités.",
+          features: ["Praticiens illimités", "Analytics avancés", "Domaine personnalisé", "Intégration API"]
         }
       }
     },
@@ -116,6 +193,17 @@ const translations = {
       cta_title_accent: "votre santé dentaire",
       cta_title_part2: " ?",
       manage_emergency: "Gérer une urgence",
+    },
+    footer_ext: {
+      product: "Produit",
+      solutions: "Solutions",
+      pricing: "Tarifs",
+      demo: "Voir la démo",
+      legal: "Légal",
+      privacy: "Confidentialité (Loi 25)",
+      terms: "Conditions d'utilisation",
+      contact: "Contact",
+      support: "Support technique",
     },
     footer: {
       copy: "© 2026 Oros. La technologie au service du sourire."
@@ -209,13 +297,15 @@ const translations = {
       cancel: "Cancel",
       login: "Login",
       demo: "Free Trial",
-      start: "Start Now",
-      see_demo: "See Demo",
+      start: "Get Started",
+      see_demo: "See Live Demo",
+      soon: "Coming Soon",
     },
     nav: {
       features: "Features",
       solutions: "Solutions",
       pricing: "Pricing",
+      contact: "Contact",
     },
     home: {
       badge: "#1 Platform in Quebec",
@@ -231,8 +321,8 @@ const translations = {
       subtitle: "A suite of powerful integrated tools to propel your clinic.",
       items: {
         booking: {
-          title: "Smart Booking",
-          desc: "Automatic calculation of slots according to your specialties and practitioners."
+          title: "AI Booking Engine",
+          desc: "Automatic time slot calculation based on specialties and practitioners."
         },
         law25: {
           title: "Law 25 Compliance",
@@ -253,6 +343,81 @@ const translations = {
         practitioner: {
           title: "Practitioner Tracking",
           desc: "Dedicated tools to optimize dentists' time."
+        }
+      }
+    },
+    testimonials: {
+      title: "They trust Oros.",
+      subtitle: "Discover why professionals in Quebec have chosen our solution.",
+      items: [
+        {
+          name: "Dr. Marc-Antoine Roy",
+          role: "Surgeon-dentist",
+          clinic: "Gatineau Dental Clinic",
+          content: "Oros has simplified all our Law 25 management. It's a huge weight off our shoulders."
+        },
+        {
+          name: "Julie Tremblay",
+          role: "Center Manager",
+          clinic: "Orizon Dental Center",
+          content: "The interface is incredibly fluid. Our secretaries have saved 1h per day on booking appointments."
+        },
+        {
+          name: "Dr. Sophie Lefebvre",
+          role: "Orthodontist",
+          clinic: "Smile Design Montreal",
+          content: "Online appointment booking is the smartest on the market. My patients love it."
+        }
+      ]
+    },
+    contact_page: {
+      title: "Contact Us",
+      subtitle: "Our team is here to propel your clinic to the next level.",
+      form_name: "Full Name",
+      form_email: "Professional Email",
+      form_clinic: "Clinic Name",
+      form_message: "How can we help you?",
+      form_submit: "Send Message",
+      success_title: "Message received!",
+      success_desc: "We will get back to you within the next 24 hours.",
+      info_title: "Our Offices",
+      info_address: "1230 Rue de la Montagne, Montreal, QC H3G 1Z1",
+      info_phone: "+1 (514) 555-0199",
+      info_support: "support@oros.ca"
+    },
+    solutions_page: {
+      hero_title: "Technology at the service of your ",
+      hero_accent: "clinical vision",
+      hero_subtitle: "Discover how Oros transforms every aspect of your daily management with tools designed for the future of dentistry.",
+      section_law25_title: "Effortless Law 25 Compliance",
+      section_law25_desc: "Oros natively integrates all Law 25 requirements. AES-256 encryption, exhaustive audit logs, and secure hosting in Canada. No more legal worries.",
+      section_booking_title: "AI Booking Engine",
+      section_booking_desc: "Our upcoming appointment engine does more than just fill slots. It will optimize each practitioner's schedule based on their specialties and the real-time required for each treatment (currently in development).",
+      section_patient_title: "The Patient Experience Reimagined",
+      section_patient_desc: "Offer your patients a modern and intuitive portal. Booking, emergency requests, and profile management, all accessible on mobile without installation.",
+    },
+    pricing_page: {
+      hero_title: "An investment in your ",
+      hero_accent: "growth",
+      hero_subtitle: "Choose the plan that matches the size and ambitions of your dental center.",
+      plans: {
+        essentiel: {
+          name: "Essential",
+          price: "199",
+          desc: "Ideal for new clinics.",
+          features: ["1 Practitioner", "Smart agenda", "Basic Law 25", "Patient Portal"]
+        },
+        complet: {
+          name: "Complete",
+          price: "349",
+          desc: "The preferred choice for established practices.",
+          features: ["Up to 5 Practitioners", "24/7 Emergency Module", "Advanced Law 25 (Audit)", "Priority support"]
+        },
+        premium: {
+          name: "Premium",
+          price: "599",
+          desc: "For multi-specialty centers.",
+          features: ["Unlimited Practitioners", "Advanced Analytics", "Custom Domain", "API Integration"]
         }
       }
     },
@@ -309,6 +474,17 @@ const translations = {
       cta_title_accent: "your dental health",
       cta_title_part2: " ?",
       manage_emergency: "Manage an emergency",
+    },
+    footer_ext: {
+      product: "Product",
+      solutions: "Solutions",
+      pricing: "Pricing",
+      demo: "See demo",
+      legal: "Legal",
+      privacy: "Privacy (Law 25)",
+      terms: "Terms of Use",
+      contact: "Contact",
+      support: "Technical Support",
     },
     footer: {
       copy: "© 2026 Oros. Technology at the service of your smile."

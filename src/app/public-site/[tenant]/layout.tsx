@@ -4,10 +4,21 @@ import { Button } from '@/components/ui/button'
 import { PublicMobileNav } from '@/components/public/mobile-nav'
 import { ConsentBanner } from '@/components/public/consent-banner'
 import { Toaster } from 'sonner'
+import { notFound } from 'next/navigation'
 import { getLocaleServer, useTranslations } from '@/lib/i18n'
 import { I18nLink } from '@/components/I18nLink'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { getTenant } from '@/lib/tenant'
+import { Metadata } from 'next'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const tenant = await getTenant()
+  if (!tenant) return { title: 'Oros' }
+  return {
+    title: `${tenant.name} | Portail Patient`,
+    description: `Prenez rendez-vous en ligne chez ${tenant.name}.`
+  }
+}
 
 export default async function TenantLayout({
   children,
@@ -21,7 +32,7 @@ export default async function TenantLayout({
   const t = useTranslations(locale)
   const tenant = await getTenant()
 
-  if (!tenant) return null
+  if (!tenant) notFound()
 
   const clinicName = tenant.name
 

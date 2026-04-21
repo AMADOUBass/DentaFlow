@@ -10,6 +10,7 @@ import { parse, format, isBefore, addDays } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { sendEmail } from '@/lib/email'
 import { sendSMS } from '@/lib/sms'
+import { logAudit } from '@/lib/audit'
 
 /**
  * Action to fetch available slots for a given date/practitioner/service
@@ -118,7 +119,9 @@ export async function createAppointment(tenantId: string, data: AppointmentInput
   }
 
   // 3. Create appointment
-  const service = await prisma.service.findUnique({ where: { id: serviceId } })
+  const service = await prisma.service.findUnique({ 
+    where: { id: serviceId, tenantId } 
+  })
   if (!service) return { success: false, error: "Service non trouvé" }
 
   const startTime = parse(`${date} ${slot}`, 'yyyy-MM-dd HH:mm', new Date())
@@ -139,7 +142,9 @@ export async function createAppointment(tenantId: string, data: AppointmentInput
 
   // 4. Notifications (Real Email with Resend)
   const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } })
-  const practitioner = await prisma.practitioner.findUnique({ where: { id: finalPractitionerId } })
+  const practitioner = await prisma.practitioner.findUnique({ 
+    where: { id: finalPractitionerId, tenantId } 
+  })
   
   if (tenant && practitioner) {
     const formattedDate = format(startTime, 'eeee d MMMM yyyy', { locale: fr })
@@ -183,6 +188,16 @@ export async function createAppointment(tenantId: string, data: AppointmentInput
 
   console.log(`[RDV] Nouveau rendez-vous créé: ${appointment.id} pour ${firstName} ${lastName}`)
 
+  // Log l'action pour la Loi 25
+  await logAudit({
+    tenantId,
+    userId: patient.id, // Utilisé comme référence si pas d'admin identifié
+    patientId: patient.id,
+    action: 'CREATE',
+    category: 'PATIENT_DATA',
+    description: `Nouveau rendez-vous créé via le portail public pour ${service.name}.`
+  })
+
   revalidatePath('/admin/dashboard')
   
   return { success: true, id: appointment.id }
@@ -200,6 +215,10 @@ export async function cancelAppointmentAction(appointmentId: string) {
     where: { id: appointmentId },
     include: { patient: true }
   })
+  
+  if (appointment && appointment.tenantId !== user.tenantId) {
+    throw new Error('Non autorisé')
+  }
 
   if (!appointment || appointment.patient.email !== user.email) {
     throw new Error('Rendez-vous non trouvé ou non autorisé')
@@ -218,6 +237,15 @@ export async function cancelAppointmentAction(appointmentId: string) {
       cancelledAt: new Date(),
       cancelReason: 'Annulé par le patient via le portail'
     }
+  })
+
+  await logAudit({
+    tenantId: appointment.tenantId,
+    userId: user.id,
+    patientId: appointment.patientId,
+    action: 'DELETE',
+    category: 'PATIENT_DATA',
+    description: `Annulation d'un rendez-vous par le patient via le portail.`
   })
 
   revalidatePath('/[tenant]/portail', 'layout')

@@ -23,7 +23,6 @@ export async function logAudit({
   category,
   description
 }: AuditParams) {
-  try {
     const headersList = await headers()
     const ip = headersList.get('x-forwarded-for') || 'unknown'
     const userAgent = headersList.get('user-agent') || 'unknown'
@@ -40,9 +39,4 @@ export async function logAudit({
         userAgent
       }
     })
-  } catch (error) {
-    // We don't want to break the main flow if audit logging fails, 
-    // but in a production medical app, you might want to fail hard.
-    console.error('CRITICAL: Audit logging failed:', error)
-  }
 }

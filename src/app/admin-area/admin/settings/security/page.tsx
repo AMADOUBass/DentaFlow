@@ -9,32 +9,48 @@ import {
   TableRow 
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Shield, Clock, User, Eye, Lock } from 'lucide-react'
+import { Shield, Clock, User, Eye, Lock, ChevronLeft } from 'lucide-react'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+
+export const dynamic = 'force-dynamic'
 
 export default async function SecurityAuditPage() {
   const user = await getAdminUser()
   const tenantId = user.tenantId!
 
+  // On récupère les logs sans try/catch pour diagnostiquer l'erreur si elle existe
   const logs = await prisma.auditLog.findMany({
     where: { tenantId },
     orderBy: { createdAt: 'desc' },
     take: 100,
-    // We would normally include user details here, but let's keep it simple for now
   })
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-slate-900 flex items-center gap-3">
-             <Shield className="h-8 w-8 text-primary" /> Sécurité & Audit
-          </h1>
-          <p className="text-slate-500 mt-1">Registre des accès et actions sensibles (Conformité Loi 25).</p>
-        </div>
-        <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-xl border border-emerald-100 flex items-center gap-2 text-xs font-black uppercase tracking-widest">
-           <Lock className="h-4 w-4" /> Environnement Sécurisé
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="flex flex-col gap-4">
+        <Link 
+          href="/admin-area/admin/settings" 
+          className="group flex items-center gap-2 text-slate-500 hover:text-primary transition-colors font-bold text-sm"
+        >
+          <div className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center group-hover:border-primary/20 transition-all shadow-sm">
+            <ChevronLeft className="h-5 w-5" />
+          </div>
+          Retour aux réglages
+        </Link>
+
+        <div className="flex justify-between items-end">
+          <div>
+            <h1 className="text-3xl font-black tracking-tight text-slate-900 flex items-center gap-3">
+               <Shield className="h-8 w-8 text-primary" /> Sécurité & Audit
+            </h1>
+            <p className="text-slate-500 mt-1">Registre des accès et actions sensibles (Conformité Loi 25).</p>
+          </div>
+          <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-xl border border-emerald-100 flex items-center gap-2 text-xs font-black uppercase tracking-widest">
+             <Lock className="h-4 w-4" /> Environnement Sécurisé
+          </div>
         </div>
       </div>
 
@@ -73,7 +89,15 @@ export default async function SecurityAuditPage() {
                       </div>
                    </TableCell>
                    <TableCell>
-                      <Badge variant="outline" className="font-black text-[10px] bg-slate-50">
+                      <Badge 
+                        variant="outline" 
+                        className={`font-black text-[10px] uppercase tracking-widest ${
+                          log.action === 'DELETE' ? 'bg-rose-50 text-rose-600 border-rose-100' :
+                          log.action === 'CREATE' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                          log.action === 'UPDATE' ? 'bg-amber-50 text-amber-600 border-amber-100' :
+                          'bg-slate-50 text-slate-600 border-slate-100'
+                        }`}
+                      >
                          {log.action}
                       </Badge>
                    </TableCell>

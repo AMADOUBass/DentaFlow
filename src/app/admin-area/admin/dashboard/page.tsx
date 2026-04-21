@@ -7,7 +7,10 @@ import {
   ArrowUpRight,
   AlertCircle,
   Stethoscope,
-  ChevronRight
+  ChevronRight,
+  Sparkles,
+  Plus,
+  Settings
 } from 'lucide-react'
 import { getAdminUser } from '@/lib/auth-utils'
 import { prisma } from '@/lib/prisma'
@@ -68,7 +71,7 @@ export default async function AdminDashboardPage() {
         
         <div className="flex items-center gap-4">
           {pendingEmergenciesCount > 0 && (
-            <Link href="/admin/emergencies" className="animate-pulse">
+            <Link href="/admin-area/admin/emergencies" className="animate-pulse">
                <Badge variant="destructive" className="h-10 px-4 rounded-xl gap-2 text-sm font-black shadow-lg shadow-rose-200">
                   <AlertCircle className="h-4 w-4" />
                   {pendingEmergenciesCount} Urgence{pendingEmergenciesCount > 1 ? 's' : ''} à traiter
@@ -84,61 +87,115 @@ export default async function AdminDashboardPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="border-none shadow-sm rounded-2xl overflow-hidden group hover:shadow-md transition-all">
-          <CardContent className="p-6">
+        <Card className="border-none shadow-sm rounded-3xl overflow-hidden group hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 bg-white border border-slate-100">
+          <CardContent className="p-7">
             <div className="flex justify-between items-start">
-              <div className="p-2.5 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
-                <Users className="h-5 w-5 text-primary" />
+              <div className="p-3 bg-primary/10 rounded-2xl group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                <Users className="h-6 w-6" />
+              </div>
+              <div className="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">
+                <ArrowUpRight className="h-3 w-3" /> +12%
               </div>
             </div>
-            <div className="mt-4">
-              <p className="text-sm font-medium text-slate-500">Patients</p>
-              <h3 className="text-2xl font-bold text-slate-900 mt-1">{totalPatients}</h3>
+            <div className="mt-6">
+              <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Total Patients</p>
+              <h3 className="text-3xl font-black text-slate-900 mt-1">{totalPatients}</h3>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-none shadow-sm rounded-2xl overflow-hidden group hover:shadow-md transition-all">
-          <CardContent className="p-6">
+        <Card className="border-none shadow-sm rounded-3xl overflow-hidden group hover:shadow-xl hover:shadow-sky-500/5 transition-all duration-300 bg-white border border-slate-100">
+          <CardContent className="p-7">
             <div className="flex justify-between items-start">
-              <div className="p-2.5 bg-sky-100 rounded-xl group-hover:bg-sky-200 transition-colors">
-                <CalendarCheck className="h-5 w-5 text-sky-600" />
+              <div className="p-3 bg-sky-100 rounded-2xl group-hover:bg-sky-500 group-hover:text-white transition-all duration-300">
+                <CalendarCheck className="h-6 w-6 text-sky-600 group-hover:text-white" />
+              </div>
+              <div className="flex items-center gap-1 text-sky-600 bg-sky-50 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">
+                Stable
               </div>
             </div>
-            <div className="mt-4">
-              <p className="text-sm font-medium text-slate-500">RDV ce mois</p>
-              <h3 className="text-2xl font-bold text-slate-900 mt-1">{appointmentsCount}</h3>
+            <div className="mt-6">
+              <p className="text-xs font-black text-slate-400 uppercase tracking-widest">RDV ce mois</p>
+              <h3 className="text-3xl font-black text-slate-900 mt-1">{appointmentsCount}</h3>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-none shadow-sm rounded-2xl overflow-hidden group hover:shadow-md transition-all">
-          <CardContent className="p-6">
+        <Card className="border-none shadow-sm rounded-3xl overflow-hidden group hover:shadow-xl hover:shadow-emerald-500/5 transition-all duration-300 bg-white border border-slate-100">
+          <CardContent className="p-7">
             <div className="flex justify-between items-start">
-              <div className="p-2.5 bg-emerald-100 rounded-xl group-hover:bg-emerald-200 transition-colors">
-                <TrendingUp className="h-5 w-5 text-emerald-600" />
+              <div className="p-3 bg-emerald-100 rounded-2xl group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
+                <TrendingUp className="h-6 w-6 text-emerald-600 group-hover:text-white" />
+              </div>
+              <div className="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">
+                Excellent
               </div>
             </div>
-            <div className="mt-4">
-              <p className="text-sm font-medium text-slate-500">Taux de rétention</p>
-              <h3 className="text-2xl font-bold text-slate-900 mt-1">94%</h3>
+            <div className="mt-6">
+              <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Taux Rétention</p>
+              <h3 className="text-3xl font-black text-slate-900 mt-1">94%</h3>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-none shadow-sm rounded-2xl overflow-hidden group hover:shadow-md transition-all">
-          <CardContent className="p-6">
+        <Card className="border-none shadow-sm rounded-3xl overflow-hidden group hover:shadow-xl hover:shadow-rose-500/5 transition-all duration-300 bg-white border border-slate-100">
+          <CardContent className="p-7">
             <div className="flex justify-between items-start">
-              <div className="p-2.5 bg-rose-100 rounded-xl group-hover:bg-rose-200 transition-colors">
-                <Clock className="h-5 w-5 text-rose-600" />
+              <div className="p-3 bg-rose-100 rounded-2xl group-hover:bg-rose-500 group-hover:text-white transition-all duration-300">
+                <AlertCircle className="h-6 w-6 text-rose-600 group-hover:text-white" />
               </div>
+              {pendingEmergenciesCount > 0 && (
+                <div className="flex items-center gap-1 text-rose-600 bg-rose-50 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider animate-pulse">
+                  Priorité
+                </div>
+              )}
             </div>
-            <div className="mt-4">
-              <p className="text-sm font-medium text-slate-500">Urgences en attente</p>
-              <h3 className="text-2xl font-bold text-rose-600 mt-1">{pendingEmergenciesCount}</h3>
+            <div className="mt-6">
+              <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Urgences</p>
+              <h3 className="text-3xl font-black text-rose-600 mt-1">{pendingEmergenciesCount}</h3>
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Quick Actions Panel */}
+      <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl shadow-slate-200">
+         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-[100px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
+         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="space-y-2 text-center md:text-left">
+               <h2 className="text-2xl font-black tracking-tight flex items-center justify-center md:justify-start gap-3">
+                  <Sparkles className="h-6 w-6 text-primary" /> Actions Rapides
+               </h2>
+               <p className="text-slate-400 font-medium">Simplifiez votre gestion quotidienne en un clic.</p>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full md:w-auto">
+               <Link href="/admin-area/admin/appointments">
+                  <Button className="w-full h-16 bg-white/10 hover:bg-white/20 border-white/10 rounded-2xl flex flex-col gap-1 transition-all group">
+                     <CalendarCheck className="h-5 w-5 text-primary" />
+                     <span className="text-[10px] font-black uppercase tracking-widest">Nouveau RDV</span>
+                  </Button>
+               </Link>
+               <Link href="/admin-area/admin/patients">
+                  <Button className="w-full h-16 bg-white/10 hover:bg-white/20 border-white/10 rounded-2xl flex flex-col gap-1 transition-all group">
+                     <Plus className="h-5 w-5 text-sky-400" />
+                     <span className="text-[10px] font-black uppercase tracking-widest">Patient</span>
+                  </Button>
+               </Link>
+               <Link href="/admin-area/admin/practitioners">
+                  <Button className="w-full h-16 bg-white/10 hover:bg-white/20 border-white/10 rounded-2xl flex flex-col gap-1 transition-all group">
+                     <Stethoscope className="h-5 w-5 text-emerald-400" />
+                     <span className="text-[10px] font-black uppercase tracking-widest">Équipe</span>
+                  </Button>
+               </Link>
+               <Link href="/admin-area/admin/settings">
+                  <Button className="w-full h-16 bg-white/10 hover:bg-white/20 border-white/10 rounded-2xl flex flex-col gap-1 transition-all group">
+                     <Settings className="h-5 w-5 text-amber-400" />
+                     <span className="text-[10px] font-black uppercase tracking-widest">Config</span>
+                  </Button>
+               </Link>
+            </div>
+         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
@@ -146,7 +203,7 @@ export default async function AdminDashboardPage() {
         <Card className="border-none shadow-sm rounded-2xl">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-lg font-bold">Prochains Rendez-vous</CardTitle>
-            <Link href="/admin/appointments">
+            <Link href="/admin-area/admin/appointments">
                <Button variant="ghost" size="sm" className="text-primary font-bold">Voir tout <ChevronRight className="ml-1 h-4 w-4" /></Button>
             </Link>
           </CardHeader>
@@ -181,7 +238,7 @@ export default async function AdminDashboardPage() {
         <Card className="border-none shadow-sm rounded-2xl">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-lg font-bold">Urgences à traiter</CardTitle>
-            <Link href="/admin/emergencies">
+            <Link href="/admin-area/admin/emergencies">
                <Button variant="ghost" size="sm" className="text-rose-600 font-bold">Gérer</Button>
             </Link>
           </CardHeader>

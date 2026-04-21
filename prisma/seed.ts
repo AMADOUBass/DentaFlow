@@ -141,7 +141,7 @@ async function main() {
   // 5. Create a test user (Clinic Owner)
   await prisma.user.create({
     data: {
-      authId: 'test-user-auth-id',
+      authId: '739a11d7-e0ad-41f6-a0b7-7642652fb126',
       email: 'proprio@demo.ca',
       name: 'Proprio Démo',
       role: UserRole.CLINIC_OWNER,

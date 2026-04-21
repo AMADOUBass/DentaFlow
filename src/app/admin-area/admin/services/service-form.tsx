@@ -36,6 +36,7 @@ interface ServiceFormProps {
 
 export function ServiceForm({ service, open, onOpenChange }: ServiceFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const [wasSuccessful, setWasSuccessful] = useState(false)
 
   const { register, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm<ServiceInput>({
     resolver: zodResolver(serviceSchema),
@@ -69,13 +70,19 @@ export function ServiceForm({ service, open, onOpenChange }: ServiceFormProps) {
 
       if (service) {
         await updateService(service.id, finalData)
+        setWasSuccessful(true)
         toast.success('Service mis à jour')
       } else {
         await createService(finalData)
+        setWasSuccessful(true)
         toast.success('Service créé')
         reset()
       }
-      onOpenChange(false)
+      
+      setTimeout(() => {
+        setWasSuccessful(false)
+        onOpenChange(false)
+      }, 800)
     } catch (error: unknown) {
       console.error('Service form error:', error)
       toast.error('Une erreur est survenue')
@@ -161,8 +168,20 @@ export function ServiceForm({ service, open, onOpenChange }: ServiceFormProps) {
 
           <DialogFooter className="pt-4">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="rounded-xl font-bold">Annuler</Button>
-            <Button type="submit" disabled={isLoading} className="rounded-xl font-bold bg-primary shadow-lg shadow-primary/20 min-w-[120px]">
-              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : (service ? 'Sauvegarder' : 'Créer')}
+            <Button 
+              type="submit" 
+              disabled={isLoading || wasSuccessful} 
+              className={`rounded-xl font-bold min-w-[120px] transition-all ${
+                wasSuccessful ? 'bg-emerald-500 text-white' : 'bg-primary shadow-lg shadow-primary/20'
+              }`}
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : wasSuccessful ? (
+                'Succès ✅'
+              ) : (
+                service ? 'Sauvegarder' : 'Créer'
+              )}
             </Button>
           </DialogFooter>
         </form>

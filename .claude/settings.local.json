@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const {zodResolver} = require\\('./@hookform/resolvers/zod'\\); console.log\\(typeof zodResolver\\)\")",
+      "Bash(node -e \"try { const r = require\\('./node_modules/@hookform/resolvers/zod/dist/zod.js'\\); console.log\\(Object.keys\\(r\\)\\) } catch\\(e\\) { console.log\\('ERROR:', e.message\\) }\")",
+      "Bash(node -e 'try { const z4 = require\\('\\\\''./node_modules/zod/v4/core'\\\\''\\); console.log\\('\\\\''parse:'\\\\'', typeof z4.parse, '\\\\''parseAsync:'\\\\'', typeof z4.parseAsync, '\\\\''$ZodError:'\\\\'', typeof z4.$ZodError\\) } catch\\(e\\) { console.log\\('\\\\''ERROR:'\\\\'', e.message\\) }')",
+      "Bash(node -e ' *)",
+      "Bash(node -e \"console.log\\('react:', require\\('./node_modules/react/package.json'\\).version, 'next:', require\\('./node_modules/next/package.json'\\).version\\)\")",
+      "Bash(node -e \"const p = require\\('./node_modules/react-hook-form/package.json'\\); console.log\\('peerDependencies:', JSON.stringify\\(p.peerDependencies\\)\\)\")",
+      "Bash(npx prisma *)"
+    ]
+  }
+}

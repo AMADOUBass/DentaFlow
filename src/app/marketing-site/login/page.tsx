@@ -1,16 +1,35 @@
 'use client'
 
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { login } from '@/server/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
-import { Loader2, Lock, Mail, ArrowRight, ShieldCheck, Sparkles, CheckCircle2 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { 
+  Form, 
+  FormControl, 
+  FormField, 
+  FormItem, 
+  FormLabel, 
+  FormMessage 
+} from '@/components/ui/form'
+import { 
+  Loader2, 
+  Lock, 
+  Mail, 
+  ArrowRight, 
+  ShieldCheck, 
+  Sparkles, 
+  CheckCircle2 
+} from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useTranslations, Locale } from '@/lib/i18n'
 import { I18nLink } from '@/components/I18nLink'
-import { toast } from 'sonner'
+import { loginSchema, LoginInput } from '@/schemas/auth'
 
 export default function LoginPage() {
   const pathname = usePathname()
@@ -18,27 +37,40 @@ export default function LoginPage() {
   const t = useTranslations(locale)
   
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [serverError, setServerError] = useState<string | null>(null)
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+  // Initialisation du formulaire avec RHF + Zod
+  const form = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+    mode: 'onTouched'
+  })
+
+  async function onSubmit(values: LoginInput) {
     setIsLoading(true)
-    setError(null)
+    setServerError(null)
 
-    const formData = new FormData(event.currentTarget)
+    // Préparation des données pour l'action serveur qui attend un FormData
+    const formData = new FormData()
+    formData.append('email', values.email)
+    formData.append('password', values.password)
+    
     const result = await login(formData)
 
     if (result?.error) {
-      setError(result.error)
+      setServerError(result.error)
       setIsLoading(false)
     }
+    // Note: redirect est géré par l'action serveur en cas de succès
   }
 
   return (
     <div className="min-h-screen flex items-stretch bg-slate-50 selection:bg-primary/20 overflow-hidden">
       {/* LEFT PANEL - Marketing & Visuals (Visible on MD+) */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-slate-900 overflow-hidden p-20 flex-col justify-between">
-         {/* Background Decoration */}
          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/20 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-500/10 blur-[100px] rounded-full -translate-x-1/2 translate-y-1/2"></div>
 
@@ -58,15 +90,22 @@ export default function LoginPage() {
             
             <div className="space-y-6">
                 {[
-                  t.login_page.feature_law25,
-                  t.login_page.feature_ai,
-                  t.login_page.feature_ui
-                ].map((text, i) => (
+                  { text: t.login_page.feature_law25, soon: false },
+                  { text: t.login_page.feature_ai, soon: true },
+                  { text: t.login_page.feature_ui, soon: false }
+                ].map((item, i) => (
                   <div key={i} className={`flex items-center gap-4 text-white/80 animate-in fade-in slide-in-from-left-8 stagger-${i+1}`}>
                       <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
                         <CheckCircle2 className="h-4 w-4 text-primary" />
                       </div>
-                      <span className="font-medium">{text}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="font-medium">{item.text}</span>
+                        {item.soon && (
+                          <Badge className="bg-emerald-500/20 text-emerald-400 border-none text-[8px] px-2 py-0 h-4 font-black uppercase tracking-tighter">
+                            {t.common.soon.split(' ')[0]}
+                          </Badge>
+                        )}
+                      </div>
                   </div>
                 ))}
             </div>
@@ -95,7 +134,7 @@ export default function LoginPage() {
             </I18nLink>
          </div>
 
-         <Card className="w-full max-w-md border-none shadow-none bg-transparent lg:p-4 animate-in fade-in zoom-in duration-500">
+         <Card className="w-full max-w-md border-none shadow-none bg-transparent lg:p-4">
             <div className="space-y-2 mb-10 text-center lg:text-left">
                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-wider mb-2">
                   <ShieldCheck className="h-3 w-3" /> {t.login_page.secure_space}
@@ -104,62 +143,77 @@ export default function LoginPage() {
                <p className="text-slate-500 font-medium tracking-tight">{t.login_page.portal_desc}</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-               <div className="space-y-2">
-                  <Label htmlFor="email" className="text-slate-700 font-bold ml-1">{t.login_page.email_label}</Label>
-                  <div className="relative">
-                     <Mail className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" />
-                     <Input 
-                        id="email" 
-                        name="email" 
-                        type="email" 
-                        placeholder="nom@clinique.ca" 
-                        className="pl-11 h-12 rounded-2xl border-slate-200 bg-white/50 focus:bg-white transition-all shadow-sm focus:ring-primary/20" 
-                        required 
-                     />
-                  </div>
-               </div>
-               
-               <div className="space-y-2">
-                  <div className="flex items-center justify-between ml-1">
-                     <Label htmlFor="password" className="text-slate-700 font-bold">{t.login_page.password_label}</Label>
-                     <I18nLink href="#" className="text-xs font-bold text-primary hover:underline">{t.login_page.forgot_password}</I18nLink>
-                  </div>
-                  <div className="relative">
-                     <Lock className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" />
-                     <Input 
-                        id="password" 
-                        name="password" 
-                        type="password" 
-                        className="pl-11 h-12 rounded-2xl border-slate-200 bg-white/50 focus:bg-white transition-all shadow-sm focus:ring-primary/20" 
-                        required 
-                     />
-                  </div>
-               </div>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                 <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-slate-700 font-bold ml-1">{t.login_page.email_label}</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                             <Mail className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" />
+                             <Input 
+                                placeholder="nom@clinique.ca" 
+                                className="pl-11 h-12 rounded-2xl border-slate-200 bg-white/50 focus:bg-white transition-all shadow-sm focus:ring-primary/20" 
+                                {...field}
+                             />
+                          </div>
+                        </FormControl>
+                        <FormMessage className="text-xs font-bold pl-1" />
+                      </FormItem>
+                    )}
+                 />
+                 
+                 <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem className="space-y-2">
+                        <div className="flex items-center justify-between ml-1">
+                          <FormLabel className="text-slate-700 font-bold">{t.login_page.password_label}</FormLabel>
+                          <I18nLink href="#" className="text-xs font-bold text-primary hover:underline">{t.login_page.forgot_password}</I18nLink>
+                        </div>
+                        <FormControl>
+                          <div className="relative">
+                             <Lock className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" />
+                             <Input 
+                                type="password" 
+                                className="pl-11 h-12 rounded-2xl border-slate-200 bg-white/50 focus:bg-white transition-all shadow-sm focus:ring-primary/20" 
+                                {...field}
+                             />
+                          </div>
+                        </FormControl>
+                        <FormMessage className="text-xs font-bold pl-1" />
+                      </FormItem>
+                    )}
+                 />
 
-               {error && (
-                  <div className="p-4 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 text-sm font-bold animate-in fade-in zoom-in duration-300 flex items-center gap-3">
-                    <div className="w-1 h-8 bg-rose-600 rounded-full"></div>
-                    {error}
-                  </div>
-               )}
+                 {serverError && (
+                    <div className="p-4 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 text-sm font-bold animate-in fade-in zoom-in duration-300 flex items-center gap-3">
+                      <div className="w-1 h-8 bg-rose-600 rounded-full"></div>
+                      {serverError}
+                    </div>
+                 )}
 
-               <Button 
-                  type="submit" 
-                  className="w-full h-14 rounded-2xl font-black text-lg bg-slate-900 hover:bg-slate-800 text-white shadow-xl shadow-slate-200 active:scale-[0.98] transition-all group" 
-                  disabled={isLoading}
-               >
-                  {isLoading ? (
-                     <>
-                        <Loader2 className="mr-3 h-5 w-5 animate-spin" /> {t.login_page.submitting}
-                     </>
-                  ) : (
-                     <>
-                        {t.login_page.submit} <Sparkles className="ml-3 h-5 w-5 group-hover:rotate-12 transition-transform" />
-                     </>
-                  )}
-               </Button>
-            </form>
+                 <Button 
+                    type="submit" 
+                    className="w-full h-14 rounded-2xl font-black text-lg bg-slate-900 hover:bg-slate-800 text-white shadow-xl shadow-slate-200 active:scale-[0.98] transition-all group" 
+                    disabled={isLoading}
+                 >
+                    {isLoading ? (
+                       <>
+                          <Loader2 className="mr-3 h-5 w-5 animate-spin" /> {t.login_page.submitting}
+                       </>
+                    ) : (
+                       <>
+                          {t.login_page.submit} <Sparkles className="ml-3 h-5 w-5 group-hover:rotate-12 transition-transform" />
+                       </>
+                    )}
+                 </Button>
+              </form>
+            </Form>
 
             <div className="mt-10 pt-10 border-t border-slate-100 space-y-4">
                <p className="text-xs text-slate-400 font-medium text-center italic">

@@ -30,6 +30,7 @@ interface PractitionerFormProps {
 
 export function PractitionerForm({ practitioner, open, onOpenChange }: PractitionerFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const [wasSuccessful, setWasSuccessful] = useState(false)
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<PractitionerInput>({
     resolver: zodResolver(practitionerSchema),
@@ -50,13 +51,19 @@ export function PractitionerForm({ practitioner, open, onOpenChange }: Practitio
     try {
       if (practitioner) {
         await updatePractitioner(practitioner.id, data)
+        setWasSuccessful(true)
         toast.success('Praticien mis à jour')
       } else {
         await createPractitioner(data)
+        setWasSuccessful(true)
         toast.success('Praticien créé')
         reset()
       }
-      onOpenChange(false)
+      
+      setTimeout(() => {
+        setWasSuccessful(false)
+        onOpenChange(false)
+      }, 800)
     } catch (error: unknown) {
       console.error('Practitioner form error:', error)
       toast.error('Une erreur est survenue')
@@ -99,7 +106,7 @@ export function PractitionerForm({ practitioner, open, onOpenChange }: Practitio
             </div>
             <div className="col-span-2 space-y-2">
               <Label htmlFor="specialty" className="font-bold">Spécialité</Label>
-              <Input id="specialty" {...register('specialty')} placeholder="Dentiste généraliste" className="rounded-xl" />
+              <Input id="specialty" {...register('specialty')} placeholder="Ex: Hygiéniste, Orthodontiste, Généraliste..." className="rounded-xl" />
             </div>
           </div>
 
@@ -126,8 +133,20 @@ export function PractitionerForm({ practitioner, open, onOpenChange }: Practitio
 
           <DialogFooter className="pt-4">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="rounded-xl font-bold">Annuler</Button>
-            <Button type="submit" disabled={isLoading} className="rounded-xl font-bold bg-primary shadow-lg shadow-primary/20 min-w-[120px]">
-              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : (practitioner ? 'Sauvegarder' : 'Créer')}
+            <Button 
+              type="submit" 
+              disabled={isLoading || wasSuccessful} 
+              className={`rounded-xl font-bold min-w-[120px] transition-all ${
+                wasSuccessful ? 'bg-emerald-500 text-white' : 'bg-primary shadow-lg shadow-primary/20'
+              }`}
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : wasSuccessful ? (
+                'Succès ✅'
+              ) : (
+                practitioner ? 'Sauvegarder' : 'Créer'
+              )}
             </Button>
           </DialogFooter>
         </form>

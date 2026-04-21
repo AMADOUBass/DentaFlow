@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Search, UserPlus, Mail, Phone, Calendar } from 'lucide-react'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import { AddPatientButton } from './add-patient-button'
 import { ExportPatientButton } from './export-patient-button'
 
 export default async function PatientsPage() {
@@ -37,9 +38,7 @@ export default async function PatientsPage() {
           <h1 className="text-3xl font-black tracking-tight text-slate-900">Patients</h1>
           <p className="text-slate-500 mt-1">Gérez votre base de données patients et leurs dossiers.</p>
         </div>
-        <Button className="h-12 px-6 rounded-xl font-bold bg-primary shadow-lg shadow-primary/20 gap-2">
-          <UserPlus className="h-4 w-4" /> Nouveau Patient
-        </Button>
+        <AddPatientButton />
       </div>
 
       {/* Search & Filters */}

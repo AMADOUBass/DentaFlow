@@ -3,6 +3,7 @@
 import { prisma } from '@/lib/prisma'
 import { getAdminUser } from '@/lib/auth-utils'
 import { revalidatePath } from 'next/cache'
+import { logAudit } from '@/lib/audit'
 
 export async function toggleEmergencyHandled(id: string) {
   const user = await getAdminUser()
@@ -19,6 +20,14 @@ export async function toggleEmergencyHandled(id: string) {
   await prisma.emergencyRequest.update({
     where: { id },
     data: { handled: !emergency.handled }
+  })
+
+  await logAudit({
+    tenantId,
+    userId: user.authId,
+    action: 'UPDATE',
+    category: 'PATIENT_DATA',
+    description: `Marquage d'une urgence comme ${!emergency.handled ? 'traitée' : 'non-traitée'} (Patient: ${emergency.firstName} ${emergency.lastName}).`
   })
 
   revalidatePath('/admin/dashboard')
@@ -39,6 +48,14 @@ export async function submitEmergencyRequest(tenantId: string, data: EmergencyIn
       category: data.category,
       description: data.description,
     }
+  })
+
+  await logAudit({
+    tenantId,
+    userId: 'SYSTEM',
+    action: 'CREATE',
+    category: 'PATIENT_DATA',
+    description: `Nouvelle demande d'urgence soumise par ${data.firstName} ${data.lastName} (Niveau: ${data.painLevel}).`
   })
 
   revalidatePath('/admin/dashboard')
