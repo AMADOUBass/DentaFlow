@@ -75,6 +75,25 @@ export default async function middleware(request: NextRequest) {
       isAdmin = true
     } else if (pureHostname.endsWith(`.${ROOT_DOMAIN}`)) {
       slug = pureHostname.replace(`.${ROOT_DOMAIN}`, '')
+    } else {
+      // 3.B TRUE CUSTOM DOMAIN LOOKUP
+      // If we are here, it's a domain NOT ending in .dentaflow.ca
+      try {
+        // We call our internal API to get the slug for this custom domain
+        // In production, we should handle this via Vercel Edge Config or Redis for speed
+        const lookupUrl = new URL(`/api/tenant/lookup?domain=${pureHostname}`, request.url)
+        const response = await fetch(lookupUrl)
+        if (response.ok) {
+           const data = await response.json()
+           slug = data.slug
+        } else {
+           // Fallback to marketing if domain not found
+           isMarketing = true
+        }
+      } catch (error) {
+        console.error('[MW_CUSTOM_DOMAIN_ERROR]', error)
+        isMarketing = true
+      }
     }
   }
 
