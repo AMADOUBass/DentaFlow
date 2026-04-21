@@ -7,6 +7,7 @@ import { Toaster } from 'sonner'
 import { getLocaleServer, useTranslations } from '@/lib/i18n'
 import { I18nLink } from '@/components/I18nLink'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { getTenant } from '@/lib/tenant'
 
 export default async function TenantLayout({
   children,
@@ -15,10 +16,14 @@ export default async function TenantLayout({
   children: React.ReactNode
   params: Promise<{ tenant: string }>
 }) {
-  const { tenant } = await params
+  const { tenant: slug } = await params
   const locale = await getLocaleServer()
   const t = useTranslations(locale)
-  const clinicName = tenant.charAt(0).toUpperCase() + tenant.slice(1)
+  const tenant = await getTenant()
+
+  if (!tenant) return null
+
+  const clinicName = tenant.name
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 selection:bg-primary/20">
@@ -26,8 +31,14 @@ export default async function TenantLayout({
       <header className="sticky top-0 z-50 w-full glass-morphism border-b">
           <div className="container mx-auto px-4 h-20 flex items-center justify-between gap-4">
              <I18nLink href="/" className="flex items-center gap-3 group transition-transform active:scale-95 shrink-0">
-                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border shadow-sm group-hover:scale-105 transition-all overflow-hidden p-1.5">
-                   <Image src="/icon.png" alt="DentaFlow Icon" width={40} height={40} className="object-contain" />
+                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md border overflow-hidden p-1.5 grayscale-0">
+                   {tenant.logoUrl ? (
+                      <Image src={tenant.logoUrl} alt={clinicName} width={40} height={40} className="object-contain" />
+                   ) : (
+                      <div className="w-full h-full bg-primary flex items-center justify-center text-white font-black text-sm">
+                         {clinicName.charAt(0)}
+                      </div>
+                   )}
                 </div>
                 <div className="flex flex-col">
                    <span className="font-black text-lg sm:text-xl tracking-tight text-slate-900 group-hover:text-primary transition-colors truncate max-w-[150px] sm:max-w-none">
@@ -51,7 +62,7 @@ export default async function TenantLayout({
                 <LanguageSwitcher />
                 <div className="hidden xl:flex flex-col items-end mr-4">
                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">{t.clinic.need_help}</span>
-                   <span className="text-sm font-black text-slate-900">1-800-DENTIST</span>
+                   <span className="text-sm font-black text-slate-900">{tenant.phone}</span>
                 </div>
                 <I18nLink href="/rendez-vous" className="hidden sm:block">
                    <Button className="bg-primary hover:bg-primary/90 text-white font-bold rounded-xl px-6 shadow-xl shadow-primary/20 group">
@@ -59,7 +70,7 @@ export default async function TenantLayout({
                       {t.common.book}
                    </Button>
                 </I18nLink>
-                <PublicMobileNav clinicName={clinicName} />
+                <PublicMobileNav clinicName={clinicName} logoUrl={tenant.logoUrl} />
              </div>
           </div>
       </header>
@@ -75,7 +86,13 @@ export default async function TenantLayout({
         <div className="container mx-auto px-4">
            <div className="flex flex-col md:flex-row justify-between items-center gap-8">
               <div className="flex items-center gap-2 grayscale opacity-50">
-                 <Image src="/icon.png" alt="DentaFlow" width={20} height={20} className="object-contain" />
+                 {tenant.logoUrl ? (
+                    <Image src={tenant.logoUrl} alt={clinicName} width={20} height={20} className="object-contain" />
+                 ) : (
+                    <div className="w-5 h-5 bg-primary/20 rounded flex items-center justify-center text-[10px] font-black text-primary">
+                       {clinicName.charAt(0)}
+                    </div>
+                 )}
                  <span className="text-xs font-black uppercase tracking-widest leading-none">{clinicName}</span>
               </div>
               

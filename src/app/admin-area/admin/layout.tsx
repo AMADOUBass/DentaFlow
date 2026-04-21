@@ -33,8 +33,14 @@ export default async function AdminLayout({
       <aside className="w-64 bg-white border-r hidden md:flex flex-col sticky top-0 h-screen shadow-sm">
         <div className="p-6">
           <Link href="/admin/dashboard" className="flex items-center gap-3 group transition-all">
-            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md border group-hover:scale-105 transition-all overflow-hidden p-1.5">
-              <Image src="/icon.png" alt="DentaFlow" width={40} height={40} className="object-contain" />
+            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md border overflow-hidden p-1.5 grayscale-0">
+               {tenant.logoUrl ? (
+                  <Image src={tenant.logoUrl} alt={tenant.name} width={40} height={40} className="object-contain" />
+               ) : (
+                  <div className="w-full h-full bg-primary flex items-center justify-center text-white font-black text-sm">
+                     {tenant.name.charAt(0)}
+                  </div>
+               )}
             </div>
             <div className="min-w-0">
                <span className="font-black text-sm tracking-tight text-slate-800 block truncate group-hover:text-primary transition-colors">{tenant.name}</span>
@@ -107,6 +113,7 @@ export default async function AdminLayout({
               tenantName={tenant.name}
               userName={user.name}
               userRole={user.role}
+              logoUrl={tenant.logoUrl}
             />
             <div className="hidden sm:flex items-center flex-1 max-w-sm relative">
                <Search className="absolute left-3 h-4 w-4 text-slate-400" />

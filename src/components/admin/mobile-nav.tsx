@@ -14,9 +14,10 @@ interface MobileNavProps {
   tenantName: string
   userName: string
   userRole: string
+  logoUrl?: string | null
 }
 
-export function MobileNav({ tenantName, userName, userRole }: MobileNavProps) {
+export function MobileNav({ tenantName, userName, userRole, logoUrl }: MobileNavProps) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
 
@@ -38,7 +39,13 @@ export function MobileNav({ tenantName, userName, userRole }: MobileNavProps) {
         <SheetHeader className="p-8 pb-4 text-left">
            <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md border overflow-hidden p-1.5">
-                <Image src="/icon.png" alt="DentaFlow" width={40} height={40} className="object-contain" />
+                {logoUrl ? (
+                  <Image src={logoUrl} alt={tenantName} width={40} height={40} className="object-contain" />
+                ) : (
+                  <div className="w-full h-full bg-primary flex items-center justify-center text-white font-black text-sm">
+                    {tenantName.charAt(0)}
+                  </div>
+                )}
               </div>
               <div className="min-w-0">
                  <SheetTitle className="font-black text-lg tracking-tight text-slate-800 truncate">{tenantName}</SheetTitle>

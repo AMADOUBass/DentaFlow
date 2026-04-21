@@ -10,9 +10,10 @@ import { Separator } from '@/components/ui/separator'
 
 interface PublicMobileNavProps {
   clinicName: string
+  logoUrl?: string | null
 }
 
-export function PublicMobileNav({ clinicName }: PublicMobileNavProps) {
+export function PublicMobileNav({ clinicName, logoUrl }: PublicMobileNavProps) {
   const [open, setOpen] = useState(false)
 
   const links = [
@@ -32,8 +33,14 @@ export function PublicMobileNav({ clinicName }: PublicMobileNavProps) {
       <SheetContent side="right" className="w-[300px] p-0 border-none rounded-l-[2.5rem] shadow-2xl">
         <SheetHeader className="p-8 pb-4 text-left">
            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md border overflow-hidden p-1.5">
-                <Image src="/icon.png" alt="DentaFlow" width={40} height={40} className="object-contain" />
+              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md border overflow-hidden p-1.5 grayscale-0">
+                {logoUrl ? (
+                  <Image src={logoUrl} alt={clinicName} width={40} height={40} className="object-contain" />
+                ) : (
+                  <div className="w-full h-full bg-primary flex items-center justify-center text-white font-black text-sm">
+                    {clinicName.charAt(0)}
+                  </div>
+                )}
               </div>
               <div className="min-w-0">
                  <SheetTitle className="font-black text-lg tracking-tight text-slate-800 truncate">Centre {clinicName}</SheetTitle>
