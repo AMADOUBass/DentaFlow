@@ -38,3 +38,10 @@ next-env.d.ts
 
 # Prisma
 /generated/prisma
+
+# Development files (local only)
+AGENTS.md
+ROADMAP.md
+TESTING_GUIDE.md
+MYCUSTOMPROMPT.MD
+scratch/
