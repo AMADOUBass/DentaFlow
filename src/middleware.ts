@@ -1,7 +1,7 @@
 import { updateSession } from '@/lib/supabase/middleware'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const ROOT_DOMAIN = 'dentaflow.ca'
+const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'dentaflow.ca'
 const ADMIN_SUBDOMAIN = 'admin'
 const LOCALES = ['fr', 'en']
 const DEFAULT_LOCALE = 'fr'
