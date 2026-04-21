@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Search, UserPlus, Mail, Phone, Calendar } from 'lucide-react'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import { ExportPatientButton } from './export-patient-button'
 
 export default async function PatientsPage() {
   const user = await getAdminUser()
@@ -108,9 +109,16 @@ export default async function PatientsPage() {
                            {format(patient.createdAt, 'd MMM yyyy', { locale: fr })}
                         </p>
                      </TableCell>
-                     <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" className="font-bold text-primary">Dossier</Button>
-                     </TableCell>
+                      <TableCell className="text-right">
+                         <div className="flex justify-end gap-2">
+                           <ExportPatientButton 
+                              tenantId={tenantId} 
+                              patientId={patient.id} 
+                              patientName={`${patient.firstName} ${patient.lastName}`} 
+                           />
+                           <Button variant="ghost" size="sm" className="font-bold text-primary">Dossier</Button>
+                         </div>
+                      </TableCell>
                    </TableRow>
                  )
                })

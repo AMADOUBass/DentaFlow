@@ -31,8 +31,9 @@ export function CancelAppointmentButton({ appointmentId }: CancelAppointmentButt
         toast.success('Rendez-vous annulé')
         setOpen(false)
       }
-    } catch (error: any) {
-      toast.error(error.message || "Erreur lors de l'annulation")
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Une erreur est survenue'
+      toast.error(message)
     } finally {
       setIsLoading(false)
     }

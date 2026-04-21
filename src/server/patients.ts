@@ -2,7 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { createClient } from '@/lib/supabase/server'
-import { patientProfileSchema, type PatientProfileInput } from '@/schemas/patient'
+import { patientProfileSchema, adminPatientSchema, type PatientProfileInput, type AdminPatientInput } from '@/schemas/patient'
 import { revalidatePath } from 'next/cache'
 import { encrypt, decrypt } from '@/lib/crypto'
 import { logAudit } from '@/lib/audit'
@@ -80,7 +80,7 @@ export async function getPatientDetail(tenantId: string, patientId: string) {
 /**
  * Admin action to create a new patient with encrypted data.
  */
-export async function createPatientAdmin(tenantId: string, data: any) {
+export async function createPatientAdmin(tenantId: string, data: AdminPatientInput) {
   const supabase = await createClient()
   const { data: { user: authUser } } = await supabase.auth.getUser()
 

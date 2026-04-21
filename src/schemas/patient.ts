@@ -9,7 +9,13 @@ export const patientProfileSchema = z.object({
   insuranceProviderId: z.string().optional().nullable(),
   ramqNumber: z.string().optional().nullable(),
   medicalNotes: z.string().optional().nullable(),
-  smsOptIn: z.boolean().default(true),
+  smsOptIn: z.boolean(),
 })
 
 export type PatientProfileInput = z.infer<typeof patientProfileSchema>
+
+export const adminPatientSchema = patientProfileSchema.extend({
+  email: z.string().email("Un courriel valide est requis"),
+})
+
+export type AdminPatientInput = z.infer<typeof adminPatientSchema>

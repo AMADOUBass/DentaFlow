@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { serviceSchema, type ServiceInput } from '@/schemas/service'
 import { createService, updateService } from '@/server/services'
@@ -26,10 +26,10 @@ import {
 } from '@/components/ui/dialog'
 import { Loader2, Tag, Clock, DollarSign } from 'lucide-react'
 import { toast } from 'sonner'
-import { ServiceCategory } from '@prisma/client'
+import { Service, ServiceCategory } from '@prisma/client'
 
 interface ServiceFormProps {
-  service?: any 
+  service?: Service 
   open: boolean
   onOpenChange: (open: boolean) => void
 }
@@ -38,7 +38,7 @@ export function ServiceForm({ service, open, onOpenChange }: ServiceFormProps) {
   const [isLoading, setIsLoading] = useState(false)
 
   const { register, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm<ServiceInput>({
-    resolver: zodResolver(serviceSchema) as any,
+    resolver: zodResolver(serviceSchema),
     defaultValues: service ? {
       ...service,
       priceCents: service.priceCents ? service.priceCents / 100 : null
@@ -68,15 +68,16 @@ export function ServiceForm({ service, open, onOpenChange }: ServiceFormProps) {
       }
 
       if (service) {
-        await updateService(service.id, finalData as any)
+        await updateService(service.id, finalData)
         toast.success('Service mis à jour')
       } else {
-        await createService(finalData as any)
+        await createService(finalData)
         toast.success('Service créé')
         reset()
       }
       onOpenChange(false)
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error('Service form error:', error)
       toast.error('Une erreur est survenue')
     } finally {
       setIsLoading(false)
@@ -95,7 +96,7 @@ export function ServiceForm({ service, open, onOpenChange }: ServiceFormProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6 pt-4">
+        <form onSubmit={handleSubmit((data: ServiceInput) => onSubmit(data))} className="space-y-6 pt-4">
           <div className="space-y-2">
             <Label htmlFor="name" className="font-bold">Nom du soin (FR)</Label>
             <Input id="name" {...register('name')} placeholder="Ex: Nettoyage + Examen" className="rounded-xl" />

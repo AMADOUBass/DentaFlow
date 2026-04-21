@@ -45,9 +45,10 @@ npx tsc --noEmit     → 0 erreur
 - [x] Page contact (`/[tenant]/contact/page.tsx`)
 - [x] Layout clinique (header + footer) avec identité visuelle premium
 - [x] Design responsive (mobile, tablette, desktop)
-- [ ] Support bilingue FR/EN (`src/lib/i18n.ts`)
+- [x] Support bilingue FR/EN (`src/lib/i18n.ts`)
 - [x] SEO metadata dynamique par tenant
 - [x] Formulaire urgence → création `EmergencyRequest` en DB
+- [x] Pages d'erreurs personnalisées (404/500 branded)
 
 ---
 
@@ -99,12 +100,6 @@ npx tsc --noEmit     → 0 erreur
 
 ## Phase 5 — Portail patient *(4–5 jours)*
 
-- [ ] Auth patient (Supabase Auth — magic link)
-- [ ] `(patient)/portail/page.tsx` — tableau de bord patient
-- [ ] `(patient)/portail/rendez-vous/page.tsx` — liste des RDV
-- [ ] Annulation d'un RDV depuis le portail
-- [ ] `(patient)/portail/profil/page.tsx` — mise à jour profil
-- [ ] `(patient)/portail/factures/page.tsx` — placeholder v1
 - [x] Auth patient (Supabase Auth — magic link)
 - [x] `(patient)/portail/page.tsx` — tableau de bord patient
 - [x] `(patient)/portail/rendez-vous/page.tsx` — liste des RDV
@@ -124,7 +119,7 @@ npx tsc --noEmit     → 0 erreur
   - [x] `customer.subscription.deleted`
 - [x] `(admin)/parametres/facturation/page.tsx` ([billing/page.tsx](file:///c:/Dev/DentaFlow/src/app/admin-area/admin/settings/billing/page.tsx))
 - [x] Gestion du `planTier` : `ESSENTIEL` / `COMPLET` / `PREMIUM`
-- [ ] Restriction de fonctionnalités selon le plan (À venir après déploiement)
+- [x] Restriction de fonctionnalités selon le plan (Strict enforcement)
 
 ---
 

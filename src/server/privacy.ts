@@ -6,25 +6,49 @@ import { decrypt } from '@/lib/crypto'
 import { logAudit } from '@/lib/audit'
 import { revalidatePath } from 'next/cache'
 
+import { getAdminUser } from '@/lib/auth-utils'
+
 /**
  * Exports all patient data in JSON format.
  * Compliant with Right to Portability (Loi 25).
+ * Can be called by the patient themselves OR by an admin for a specific patient.
  */
-export async function exportPatientData(tenantId: string) {
+export async function exportPatientData(tenantId: string, targetPatientId?: string) {
   const supabase = await createClient()
   const { data: { user: authUser } } = await supabase.auth.getUser()
 
   if (!authUser || !authUser.email) throw new Error('Non authentifié')
 
-  const patient = await prisma.patient.findUnique({
-    where: { tenantId_email: { tenantId, email: authUser.email } },
-    include: {
-      appointments: {
-        include: { service: true, practitioner: true }
-      },
-      insuranceProvider: true
-    }
-  })
+  let patient = null
+  let actorType = 'PATIENT'
+
+  if (targetPatientId) {
+    // Admin mode: Only admins of THIS tenant can export
+    const adminUser = await getAdminUser()
+    if (adminUser.tenantId !== tenantId) throw new Error('Accès refusé : Mauvais tenant')
+    
+    patient = await prisma.patient.findUnique({
+      where: { id: targetPatientId, tenantId },
+      include: {
+        appointments: {
+          include: { service: true, practitioner: true }
+        },
+        insuranceProvider: true
+      }
+    })
+    actorType = `ADMIN (${adminUser.role})`
+  } else {
+    // Self-serve mode
+    patient = await prisma.patient.findUnique({
+      where: { tenantId_email: { tenantId, email: authUser.email } },
+      include: {
+        appointments: {
+          include: { service: true, practitioner: true }
+        },
+        insuranceProvider: true
+      }
+    })
+  }
 
   if (!patient) throw new Error('Patient non trouvé')
 
@@ -35,7 +59,7 @@ export async function exportPatientData(tenantId: string) {
     patientId: patient.id,
     action: 'EXPORT',
     category: 'PATIENT_DATA',
-    description: `Le patient a exporté l'intégralité de son dossier au format JSON.`
+    description: `Exportation du dossier patient au format JSON. Initié par: ${actorType}.`
   })
 
   // Decrypt sensitive parts for the export

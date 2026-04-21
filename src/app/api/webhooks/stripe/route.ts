@@ -24,14 +24,14 @@ export async function POST(req: Request) {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
     )
-  } catch (error: any) {
-    return new Response(`Webhook Error: ${error.message}`, { status: 400 })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return new Response(`Webhook Error: ${message}`, { status: 400 })
   }
-
-  const session = event.data.object as any
 
   // 1. Lorsqu'une session de paiement est complétée
   if (event.type === 'checkout.session.completed') {
+    const session = event.data.object as Stripe.Checkout.Session
     const tenantId = session.metadata?.tenantId
     const customerId = session.customer as string
     const subscriptionId = session.subscription as string
@@ -56,7 +56,8 @@ export async function POST(req: Request) {
 
   // 2. Lorsqu'une souscription est supprimée (annulation)
   if (event.type === 'customer.subscription.deleted') {
-    const subscriptionId = session.id as string
+    const session = event.data.object as Stripe.Subscription
+    const subscriptionId = session.id
     
     await prisma.tenant.updateMany({
       where: { stripeSubId: subscriptionId },
@@ -70,7 +71,8 @@ export async function POST(req: Request) {
 
   // 3. Lorsqu'une souscription est mise à jour (Upgrade/Downgrade)
   if (event.type === 'customer.subscription.updated') {
-    const subscriptionId = session.id as string
+    const session = event.data.object as Stripe.Subscription
+    const subscriptionId = session.id
     const priceId = session.items.data[0].price.id
     const tier = PRICE_TO_TIER[priceId]
 

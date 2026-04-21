@@ -7,9 +7,16 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
 import { Loader2, Lock, Mail, ArrowRight, ShieldCheck, Sparkles, CheckCircle2 } from 'lucide-react'
-import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useTranslations, Locale } from '@/lib/i18n'
+import { I18nLink } from '@/components/I18nLink'
+import { toast } from 'sonner'
 
 export default function LoginPage() {
+  const pathname = usePathname()
+  const locale = pathname.startsWith('/en') ? 'en' as Locale : 'fr' as Locale
+  const t = useTranslations(locale)
+  
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -35,32 +42,33 @@ export default function LoginPage() {
          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/20 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-500/10 blur-[100px] rounded-full -translate-x-1/2 translate-y-1/2"></div>
 
-         <Link href="/" className="relative z-10 flex items-center gap-3">
+         <I18nLink href="/" className="relative z-10 flex items-center gap-3">
             <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-xl rotate-3">
               <span className="text-primary font-black text-xl">DF</span>
             </div>
             <span className="font-extrabold text-3xl tracking-tight text-white">DentaFlow</span>
-         </Link>
+         </I18nLink>
 
          <div className="relative z-10 space-y-10">
             <h2 className="text-5xl font-black text-white leading-tight animate-in fade-in slide-in-from-left-4 duration-700">
-               La plateforme de gestion <br />
-               <span className="text-primary underline decoration-white/10 underline-offset-8">la plus intelligente</span> au Québec.
+               {t.login_page.headline_part1} <br />
+               <span className="text-primary underline decoration-white/10 underline-offset-8">{t.login_page.headline_accent}</span>
+               {t.login_page.headline_part2}
             </h2>
             
             <div className="space-y-6">
-               {[
-                  "Protection des données Loi 25 intégrée",
-                  "Moteur de prise de rendez-vous IA",
-                  "Interface moderne et intuitive pour l'équipe"
-               ].map((text, i) => (
+                {[
+                  t.login_page.feature_law25,
+                  t.login_page.feature_ai,
+                  t.login_page.feature_ui
+                ].map((text, i) => (
                   <div key={i} className={`flex items-center gap-4 text-white/80 animate-in fade-in slide-in-from-left-8 stagger-${i+1}`}>
-                     <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
+                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
                         <CheckCircle2 className="h-4 w-4 text-primary" />
-                     </div>
-                     <span className="font-medium">{text}</span>
+                      </div>
+                      <span className="font-medium">{text}</span>
                   </div>
-               ))}
+                ))}
             </div>
          </div>
 
@@ -68,7 +76,7 @@ export default function LoginPage() {
             <div className="flex gap-4">
                <div className="w-12 h-12 rounded-full border-2 border-primary/40 bg-slate-800 shrink-0"></div>
                <div>
-                  <p className="text-white font-bold italic">"DentaFlow a littéralement transformé notre façon de travailler. C'est l'outil que nous attendions."</p>
+                  <p className="text-white font-bold italic">"{t.login_page.testimonial}"</p>
                   <p className="text-slate-400 text-sm mt-2">— Dr. Jean Dupont, Clinique Dentaire Vision</p>
                </div>
             </div>
@@ -80,25 +88,25 @@ export default function LoginPage() {
          <div className="absolute inset-0 mesh-gradient opacity-40 lg:hidden"></div>
          
          <div className="absolute top-8 left-8 lg:hidden">
-            <Link href="/" className="flex items-center gap-2">
+            <I18nLink href="/" className="flex items-center gap-2">
                <div className="p-2 bg-primary rounded-xl shadow-lg">
                   <span className="font-bold text-white text-sm">DF</span>
                </div>
-            </Link>
+            </I18nLink>
          </div>
 
          <Card className="w-full max-w-md border-none shadow-none bg-transparent lg:p-4 animate-in fade-in zoom-in duration-500">
             <div className="space-y-2 mb-10 text-center lg:text-left">
                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-wider mb-2">
-                  <ShieldCheck className="h-3 w-3" /> Espace Sécurisé
+                  <ShieldCheck className="h-3 w-3" /> {t.login_page.secure_space}
                </div>
-               <h1 className="text-4xl font-black text-slate-900 tracking-tight">Portail Direction</h1>
-               <p className="text-slate-500 font-medium tracking-tight">Accédez à votre tableau de bord clinique.</p>
+               <h1 className="text-4xl font-black text-slate-900 tracking-tight">{t.login_page.portal_title}</h1>
+               <p className="text-slate-500 font-medium tracking-tight">{t.login_page.portal_desc}</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-slate-700 font-bold ml-1">Courriel professionnel</Label>
+                  <Label htmlFor="email" className="text-slate-700 font-bold ml-1">{t.login_page.email_label}</Label>
                   <div className="relative">
                      <Mail className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" />
                      <Input 
@@ -114,8 +122,8 @@ export default function LoginPage() {
                
                <div className="space-y-2">
                   <div className="flex items-center justify-between ml-1">
-                     <Label htmlFor="password" className="text-slate-700 font-bold">Mot de passe</Label>
-                     <Link href="#" className="text-xs font-bold text-primary hover:underline">Oublié ?</Link>
+                     <Label htmlFor="password" className="text-slate-700 font-bold">{t.login_page.password_label}</Label>
+                     <I18nLink href="#" className="text-xs font-bold text-primary hover:underline">{t.login_page.forgot_password}</I18nLink>
                   </div>
                   <div className="relative">
                      <Lock className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" />
@@ -143,11 +151,11 @@ export default function LoginPage() {
                >
                   {isLoading ? (
                      <>
-                        <Loader2 className="mr-3 h-5 w-5 animate-spin" /> Authentification...
+                        <Loader2 className="mr-3 h-5 w-5 animate-spin" /> {t.login_page.submitting}
                      </>
                   ) : (
                      <>
-                        Se connecter <Sparkles className="ml-3 h-5 w-5 group-hover:rotate-12 transition-transform" />
+                        {t.login_page.submit} <Sparkles className="ml-3 h-5 w-5 group-hover:rotate-12 transition-transform" />
                      </>
                   )}
                </Button>
@@ -155,7 +163,7 @@ export default function LoginPage() {
 
             <div className="mt-10 pt-10 border-t border-slate-100 space-y-4">
                <p className="text-xs text-slate-400 font-medium text-center italic">
-                  Besoin d'aide pour accéder à votre plateforme ? <Link href="#" className="text-primary font-bold not-italic hover:underline">Contactez le support</Link>
+                  {t.login_page.help_text} <I18nLink href="#" className="text-primary font-bold not-italic hover:underline">{t.login_page.contact_support}</I18nLink>
                </p>
                <div className="flex justify-center gap-6">
                   <div className="flex items-center gap-1.5 grayscale opacity-50">

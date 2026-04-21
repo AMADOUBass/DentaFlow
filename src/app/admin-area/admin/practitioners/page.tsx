@@ -10,9 +10,11 @@ import {
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Plus, MoreVertical, Edit2, Trash2, User } from 'lucide-react'
+import { Plus, MoreVertical, Edit2, Trash2, User, Info } from 'lucide-react'
 import Image from 'next/image'
 import { AddPractitionerButton } from './add-practitioner-button'
+import { checkPractitionerLimit } from '@/lib/plan-limits'
+import { UpgradeBanner } from '@/components/admin/UpgradeBanner'
 
 export default async function PractitionersPage() {
   const user = await getAdminUser()
@@ -23,6 +25,8 @@ export default async function PractitionersPage() {
     orderBy: { lastName: 'asc' }
   })
 
+  const { isLimitReached, limit, count, planTier } = await checkPractitionerLimit(tenantId)
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex justify-between items-center">
@@ -30,8 +34,23 @@ export default async function PractitionersPage() {
           <h1 className="text-3xl font-black tracking-tight text-slate-900">Praticiens</h1>
           <p className="text-slate-500 mt-1">Gérez votre équipe médicale et leurs spécialités.</p>
         </div>
-        <AddPractitionerButton />
+        <div className="flex items-center gap-4">
+           {isLimitReached && (
+             <Badge variant="outline" className="h-10 px-4 rounded-xl border-rose-200 bg-rose-50 text-rose-700 font-bold gap-2">
+                <Info className="h-4 w-4" /> Limite atteinte ({count}/{limit})
+             </Badge>
+           )}
+           <AddPractitionerButton disabled={isLimitReached} />
+        </div>
       </div>
+
+      {isLimitReached && (
+        <UpgradeBanner 
+          title="Augmentez votre capacité d'équipe"
+          description={`Vous avez atteint la limite de ${limit} praticien(s) pour le forfait ${planTier}. Passez au forfait supérieur pour ajouter d'autres membres à votre clinique.`}
+          planTier={planTier}
+        />
+      )}
 
       <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
         <Table>

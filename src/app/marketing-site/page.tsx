@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { 
   ShieldCheck, 
@@ -11,8 +10,14 @@ import {
   Smartphone,
   Star
 } from 'lucide-react'
+import { getLocaleServer, useTranslations } from '@/lib/i18n'
+import { I18nLink } from '@/components/I18nLink'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
-export default function MarketingPage() {
+export default async function MarketingPage() {
+  const locale = await getLocaleServer()
+  const t = useTranslations(locale)
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 selection:bg-primary/20">
       {/* Dynamic Mesh Background Overlay */}
@@ -23,26 +28,27 @@ export default function MarketingPage() {
       {/* Modern Navigation */}
       <header className="sticky top-0 z-50 w-full glass-morphism border-b">
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group transition-transform active:scale-95">
+          <I18nLink href="/" className="flex items-center gap-2 group transition-transform active:scale-95">
             <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:rotate-6 transition-transform">
               <span className="text-white font-bold text-lg">DF</span>
             </div>
             <span className="font-extrabold text-2xl tracking-tight text-slate-900 group-hover:text-primary transition-colors">DentaFlow</span>
-          </Link>
+          </I18nLink>
           
           <nav className="hidden md:flex items-center gap-10">
-            <Link href="#features" className="text-sm font-semibold text-slate-600 hover:text-primary transition-colors">Fonctionnalités</Link>
-            <Link href="#solutions" className="text-sm font-semibold text-slate-600 hover:text-primary transition-colors">Solutions</Link>
-            <Link href="#pricing" className="text-sm font-semibold text-slate-600 hover:text-primary transition-colors">Tarifs</Link>
+            <I18nLink href="#features" className="text-sm font-semibold text-slate-600 hover:text-primary transition-colors">{t.nav.features}</I18nLink>
+            <I18nLink href="#solutions" className="text-sm font-semibold text-slate-600 hover:text-primary transition-colors">{t.nav.solutions}</I18nLink>
+            <I18nLink href="#pricing" className="text-sm font-semibold text-slate-600 hover:text-primary transition-colors">{t.nav.pricing}</I18nLink>
           </nav>
 
           <div className="flex items-center gap-4">
-            <Link href="/login">
-              <Button variant="ghost" className="font-semibold rounded-xl px-6">Connexion</Button>
-            </Link>
-            <Link href="#demo">
-              <Button className="bg-primary hover:bg-primary/90 text-white font-bold rounded-xl px-6 shadow-xl shadow-primary/20">Essai Gratuit</Button>
-            </Link>
+            <LanguageSwitcher />
+            <I18nLink href="/login">
+              <Button variant="ghost" className="font-semibold rounded-xl px-6">{t.common.login}</Button>
+            </I18nLink>
+            <I18nLink href="#demo">
+              <Button className="bg-primary hover:bg-primary/90 text-white font-bold rounded-xl px-6 shadow-xl shadow-primary/20">{t.common.demo}</Button>
+            </I18nLink>
           </div>
         </div>
       </header>
@@ -53,25 +59,29 @@ export default function MarketingPage() {
           <div className="container mx-auto px-4 relative">
             <div className="max-w-4xl mx-auto text-center space-y-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <Star className="h-3 w-3 fill-primary" /> Plateforme n°1 au Québec
+                <Star className="h-3 w-3 fill-primary" /> {t.home.badge}
               </div>
               
               <h1 className="text-6xl md:text-8xl font-black tracking-tight text-slate-900 animate-in fade-in slide-in-from-bottom-8 duration-1000 leading-[1.1]">
-                Redéfinissez la gestion <span className="text-primary italic text-glow">dentaire</span>.
+                {t.home.hero_title_part1} <span className="text-primary italic text-glow">{t.home.hero_title_accent}</span>.
               </h1>
               
               <p className="text-xl md:text-2xl text-slate-600 max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-12 duration-1200">
-                La plateforme multi-tenant nouvelle génération conçue pour l'efficacité, la conformité Loi 25 et une expérience patient d'exception.
+                {t.home.hero_subtitle}
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8 animate-in fade-in slide-in-from-bottom-16 duration-1500">
-                <Button className="h-16 px-10 text-lg font-bold rounded-2xl bg-slate-900 border-none hover:bg-slate-800 text-white shadow-2xl hover:shadow-primary/30 transition-all active:scale-95 group">
-                  Démarrer maintenant 
-                  <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
-                <Button variant="outline" className="h-16 px-10 text-lg font-bold rounded-2xl border-2 glass-morphism hover:bg-white/80 transition-all">
-                  Voir la démo
-                </Button>
+                <I18nLink href="/login">
+                  <Button className="h-16 px-10 text-lg font-bold rounded-2xl bg-slate-900 border-none hover:bg-slate-800 text-white shadow-2xl hover:shadow-primary/30 transition-all active:scale-95 group">
+                    {t.common.start} 
+                    <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </I18nLink>
+                <I18nLink href="#demo">
+                  <Button variant="outline" className="h-16 px-10 text-lg font-bold rounded-2xl border-2 glass-morphism hover:bg-white/80 transition-all">
+                    {t.common.see_demo}
+                  </Button>
+                </I18nLink>
               </div>
             </div>
 
@@ -80,8 +90,7 @@ export default function MarketingPage() {
                <div className="relative w-full max-w-5xl aspect-video rounded-[2.5rem] overflow-hidden glass-card p-4 border-2 border-white/40 shadow-2xl animate-float">
                   <div className="w-full h-full rounded-[2rem] bg-slate-800 overflow-hidden relative group">
                      <div className="absolute inset-0 bg-gradient-to-tr from-primary/40 to-cyan-500/20 mix-blend-overlay"></div>
-                     {/* Dashboard Mockup Representation */}
-                     <div className="p-8 space-y-6">
+                     <div className="p-8 space-y-6 text-white/50 font-mono text-[10px]">
                         <div className="flex justify-between items-center bg-white/10 p-4 rounded-xl border border-white/20">
                            <div className="flex gap-4">
                               <div className="w-3 h-3 rounded-full bg-red-400"></div>
@@ -91,23 +100,23 @@ export default function MarketingPage() {
                            <div className="w-32 h-2 rounded-full bg-white/10"></div>
                         </div>
                         <div className="grid grid-cols-3 gap-6">
-                           <div className="h-32 rounded-2xl bg-white/5 border border-white/10"></div>
-                           <div className="h-32 rounded-2xl bg-white/5 border border-white/10"></div>
-                           <div className="h-32 rounded-2xl bg-white/10 border border-white/20"></div>
+                           <div className="h-32 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">Dashboard</div>
+                           <div className="h-32 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">Planning</div>
+                           <div className="h-32 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">Analytics</div>
                         </div>
-                        <div className="h-48 rounded-2xl bg-white/5 border border-white/10"></div>
+                        <div className="h-48 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-xs">Patient Records (Encrypted Law 25)</div>
                      </div>
                   </div>
                </div>
 
                {/* Stats Badges */}
                <div className="absolute -left-8 top-1/2 -translate-y-1/2 glass-card p-6 rounded-3xl space-y-2 hidden lg:block animate-in slide-in-from-left-20 duration-1000">
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Temps gagné</p>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{t.home.stats_save_time}</p>
                   <p className="text-4xl font-black text-primary">+45%</p>
-                  <p className="text-xs text-slate-400">par semaine</p>
+                  <p className="text-xs text-slate-400">{t.home.stats_per_week}</p>
                </div>
                <div className="absolute -right-8 bottom-20 glass-card p-6 rounded-3xl space-y-2 hidden lg:block animate-in slide-in-from-right-20 duration-1000">
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Satisfaction Patients</p>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{t.home.stats_satisfaction}</p>
                   <div className="flex gap-1">
                      {[1,2,3,4,5].map(i => <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />)}
                   </div>
@@ -120,46 +129,46 @@ export default function MarketingPage() {
         <section id="features" className="py-32 bg-white relative overflow-hidden">
           <div className="container mx-auto px-4 relative">
             <div className="text-center mb-24 space-y-4">
-              <h2 className="text-4xl md:text-6xl font-black text-slate-900">Tout ce dont vous avez besoin.</h2>
-              <p className="text-xl text-slate-500 max-w-2xl mx-auto">Une suite d'outils puissants intégrés pour propulser votre clinique.</p>
+              <h2 className="text-4xl md:text-6xl font-black text-slate-900">{t.features.title}</h2>
+              <p className="text-xl text-slate-500 max-w-2xl mx-auto">{t.features.subtitle}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
                 { 
                   icon: <Calendar className="h-7 w-7" />, 
-                  title: "Réservation Intelligente", 
-                  description: "Calcul automatique des créneaux selon vos spécialités et praticiens.",
+                  title: t.features.items.booking.title, 
+                  description: t.features.items.booking.desc,
                   color: "bg-blue-500" 
                 },
                 { 
                   icon: <ShieldCheck className="h-7 w-7" />, 
-                  title: "Conformité Loi 25", 
-                  description: "Chiffrement de bout en bout et hébergement sécurisé au Canada.",
+                  title: t.features.items.law25.title, 
+                  description: t.features.items.law25.desc,
                   color: "bg-emerald-500" 
                 },
                 { 
                   icon: <Activity className="h-7 w-7" />, 
-                  title: "Tableau de Bord Live", 
-                  description: "Suivez vos indicateurs de performance en temps réel.",
+                  title: t.features.items.dashboard.title, 
+                  description: t.features.items.dashboard.desc,
                   color: "bg-indigo-500" 
                 },
                 { 
                   icon: <Smartphone className="h-7 w-7" />, 
-                  title: "Portail Patient PWA", 
-                  description: "Une expérience native sur mobile sans téléchargement requis.",
+                  title: t.features.items.pwa.title, 
+                  description: t.features.items.pwa.desc,
                   color: "bg-amber-500" 
                 },
                 { 
                   icon: <Clock className="h-7 w-7" />, 
-                  title: "Module d'Urgences", 
-                  description: "Gérez les cas critiques avec un tunnel de tri prioritaire.",
+                  title: t.features.items.emergency.title, 
+                  description: t.features.items.emergency.desc,
                   color: "bg-rose-500" 
                 },
                 { 
                   icon: <Stethoscope className="h-7 w-7" />, 
-                  title: "Suivi Praticien", 
-                  description: "Outils dédiés pour optimiser le temps des dentistes.",
+                  title: t.features.items.practitioner.title, 
+                  description: t.features.items.practitioner.desc,
                   color: "bg-cyan-500" 
                 }
               ].map((feature, i) => (
@@ -188,23 +197,25 @@ export default function MarketingPage() {
           <div className="container mx-auto px-4">
              <div className="flex flex-col md:flex-row items-center justify-between gap-12">
                 <div className="space-y-4 text-center md:text-left">
-                   <h2 className="text-4xl font-black tracking-tight">Prêt à transformer votre clinique ?</h2>
-                   <p className="text-slate-400 text-lg">Rejoignez plus de 150 centres dentaires au Québec.</p>
+                   <h2 className="text-4xl font-black tracking-tight">{t.trust.title}</h2>
+                   <p className="text-slate-400 text-lg">{t.trust.subtitle}</p>
                 </div>
                 <div className="flex items-center gap-6">
                    <div className="text-center">
                       <p className="text-3xl font-black">99.9%</p>
-                      <p className="text-xs text-slate-500 uppercase font-bold mt-1">Disponibilité</p>
+                      <p className="text-xs text-slate-500 uppercase font-bold mt-1">{t.trust.availability}</p>
                    </div>
                    <div className="w-px h-12 bg-white/10 hidden sm:block"></div>
                    <div className="text-center">
                       <p className="text-3xl font-black">1.2M+</p>
-                      <p className="text-xs text-slate-500 uppercase font-bold mt-1">RDV Gérés</p>
+                      <p className="text-xs text-slate-500 uppercase font-bold mt-1">{t.trust.appointments}</p>
                    </div>
                    <div className="w-px h-12 bg-white/10 hidden sm:block"></div>
-                   <Button className="h-14 px-8 bg-white text-slate-900 hover:bg-slate-100 font-bold rounded-2xl">
-                      Demander un essai
-                   </Button>
+                   <I18nLink href="#demo">
+                      <Button className="h-14 px-8 bg-white text-slate-900 hover:bg-slate-100 font-bold rounded-2xl">
+                         {t.trust.cta}
+                      </Button>
+                   </I18nLink>
                 </div>
              </div>
           </div>
@@ -215,7 +226,7 @@ export default function MarketingPage() {
       <footer className="bg-white py-12 border-t mt-auto">
         <div className="container mx-auto px-4 text-center">
           <p className="text-slate-500 text-sm font-medium italic">
-            © 2026 DentaFlow. La technologie au service du sourire.
+            {t.footer.copy}
           </p>
         </div>
       </footer>

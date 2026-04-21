@@ -25,7 +25,9 @@ export async function toggleEmergencyHandled(id: string) {
   revalidatePath('/admin/emergencies')
 }
 
-export async function submitEmergencyRequest(tenantId: string, data: any) {
+import { EmergencyInput } from '@/schemas/emergency'
+
+export async function submitEmergencyRequest(tenantId: string, data: EmergencyInput) {
   const emergency = await prisma.emergencyRequest.create({
     data: {
       tenantId,
@@ -33,7 +35,7 @@ export async function submitEmergencyRequest(tenantId: string, data: any) {
       lastName: data.lastName,
       phone: data.phone,
       email: data.email,
-      painLevel: parseInt(data.painLevel),
+      painLevel: data.painLevel,
       category: data.category,
       description: data.description,
     }

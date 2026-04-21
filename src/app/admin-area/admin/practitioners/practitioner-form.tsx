@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { practitionerSchema, type PractitionerInput } from '@/schemas/practitioner'
 import { createPractitioner, updatePractitioner } from '@/server/practitioners'
@@ -20,8 +20,10 @@ import {
 import { Loader2, User, Camera } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { Practitioner } from '@prisma/client'
+
 interface PractitionerFormProps {
-  practitioner?: any // If editing
+  practitioner?: Practitioner // If editing
   open: boolean
   onOpenChange: (open: boolean) => void
 }
@@ -30,7 +32,7 @@ export function PractitionerForm({ practitioner, open, onOpenChange }: Practitio
   const [isLoading, setIsLoading] = useState(false)
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<PractitionerInput>({
-    resolver: zodResolver(practitionerSchema) as any,
+    resolver: zodResolver(practitionerSchema),
     defaultValues: practitioner || {
       firstName: '',
       lastName: '',
@@ -55,7 +57,8 @@ export function PractitionerForm({ practitioner, open, onOpenChange }: Practitio
         reset()
       }
       onOpenChange(false)
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error('Practitioner form error:', error)
       toast.error('Une erreur est survenue')
     } finally {
       setIsLoading(false)
@@ -74,7 +77,7 @@ export function PractitionerForm({ practitioner, open, onOpenChange }: Practitio
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6 pt-4">
+        <form onSubmit={handleSubmit((data: PractitionerInput) => onSubmit(data))} className="space-y-6 pt-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="firstName" className="font-bold">Prénom</Label>

@@ -74,8 +74,11 @@ export function AppointmentWizard({ tenantId, services, practitioners }: Appoint
       <div className="space-y-4">
         <div className="flex justify-between items-end">
            <div className="space-y-1">
-              <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Étape {stepOrder.indexOf(currentStep) + 1} sur 5</p>
-              <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">
+              <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]" aria-hidden="true">Étape {stepOrder.indexOf(currentStep) + 1} sur 5</p>
+              <h3 
+                 className="text-lg font-black text-slate-900 uppercase tracking-tight"
+                 aria-live="polite"
+              >
                  {currentStep === 'service' && 'Choix du soin'}
                  {currentStep === 'practitioner' && 'Votre praticien'}
                  {currentStep === 'date' && 'Date du RDV'}
@@ -83,11 +86,11 @@ export function AppointmentWizard({ tenantId, services, practitioners }: Appoint
                  {currentStep === 'confirm' && 'Confirmation'}
               </h3>
            </div>
-           <div className="text-right">
+           <div className="text-right" aria-hidden="true">
               <span className="text-2xl font-black text-slate-200">{Math.round(progress)}%</span>
            </div>
         </div>
-        <Progress value={progress} className="h-2 rounded-full bg-slate-100" />
+        <Progress value={progress} className="h-2 rounded-full bg-slate-100" aria-label={`Progression : ${Math.round(progress)}%`} />
       </div>
 
       {/* Steps Rendering */}
@@ -156,11 +159,11 @@ export function AppointmentWizard({ tenantId, services, practitioners }: Appoint
       {/* Trust Footer */}
       <div className="pt-12 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6 opacity-60">
          <div className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-emerald-500" />
+            <ShieldCheck className="h-5 w-5 text-emerald-500" aria-hidden="true" />
             <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Paiement sécurisé sur place</p>
          </div>
          <div className="flex items-center gap-2">
-            <CalendarIcon className="h-5 w-5 text-blue-500" />
+            <CalendarIcon className="h-5 w-5 text-blue-500" aria-hidden="true" />
             <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Modification possible 24h avant</p>
          </div>
       </div>

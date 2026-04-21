@@ -3,10 +3,11 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 const ROOT_DOMAIN = 'dentaflow.ca'
 const ADMIN_SUBDOMAIN = 'admin'
+const LOCALES = ['fr', 'en']
+const DEFAULT_LOCALE = 'fr'
 
 /**
- * Middleware de routing multi-tenant pour DentaFlow
- * Version DEBUG : Normalisation des chemins et headers de diagnostic
+ * Middleware de routing multi-tenant + i18n (/fr, /en) pour DentaFlow
  */
 export default async function middleware(request: NextRequest) {
   // 0. Mise à jour de la session Supabase
@@ -33,14 +34,31 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // 2. LOGIQUE DE DÉCISION
+  // 2. LOGIQUE I18N (Extraction de la locale de l'URL)
+  const pathnameSegments = pathname.split('/')
+  const urlLocale = pathnameSegments[1]
+  const isLocalePresent = LOCALES.includes(urlLocale)
+  
+  // S'il n'y a pas de langue dans l'URL, on redirige vers la langue par défaut (/fr/...)
+  if (!isLocalePresent) {
+    const redirectUrl = new URL(`/${DEFAULT_LOCALE}${pathname === '/' ? '' : pathname}`, request.url)
+    // On garde les search params
+    redirectUrl.search = url.search
+    return NextResponse.redirect(redirectUrl)
+  }
+
+  // On extrait le reste du chemin (sans le segment de locale)
+  const locale = urlLocale
+  const actualPath = '/' + pathnameSegments.slice(2).join('/')
+
+  // 3. LOGIQUE DE DÉCISION (Multi-tenant)
   let slug: string | null = null
   let isAdmin = false
   let isMarketing = false
 
   // Cas spécial Login (Partagé)
-  if (pathname.startsWith('/login')) {
-     isMarketing = true // On le traite via le dossier marketing
+  if (actualPath.startsWith('/login')) {
+     isMarketing = true
   } else if (isLocalhost) {
     const parts = pureHostname.split('.')
     if (parts.length > 1) {
@@ -60,22 +78,20 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  // 3. CONSTRUCTION DU CHEMIN DE RÉÉCRITURE (SANS DOUBLE SLASH)
+  // 4. CONSTRUCTION DU CHEMIN DE RÉÉCRITURE INTERNE
   let targetPath = ''
   
   if (isAdmin) {
-    targetPath = `/admin-area/admin${pathname === '/' ? '' : pathname}`
+    targetPath = `/admin-area/admin${actualPath === '/' ? '' : actualPath}`
   } else if (slug) {
-    targetPath = `/public-site/${slug}${pathname === '/' ? '' : pathname}`
-  } else if (isMarketing) {
-    targetPath = `/marketing-site${pathname === '/' ? '' : pathname}`
+    targetPath = `/public-site/${slug}${actualPath === '/' ? '' : actualPath}`
   } else {
-    // Fallback ultime vers le site marketing
-    targetPath = `/marketing-site${pathname === '/' ? '' : pathname}`
+    targetPath = `/marketing-site${actualPath === '/' ? '' : actualPath}`
   }
 
-  // 4. RÉÉCRITURE AVEC HEADERS DE DEBUG
+  // 5. RÉÉCRITURE AVEC HEADERS (Locale + Tenant)
   const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-locale', locale)
   if (slug) requestHeaders.set('x-tenant-slug', slug)
   
   url.pathname = targetPath
@@ -85,9 +101,9 @@ export default async function middleware(request: NextRequest) {
     }
   })
 
-  // On ajoute le header pour debug visible dans les outils de dev (Network)
+  // Headers de diagnostic
+  response.headers.set('x-dentaflow-locale', locale)
   response.headers.set('x-dentaflow-rewrite', targetPath)
-  response.headers.set('x-dentaflow-hostname', pureHostname)
   
   return response
 }

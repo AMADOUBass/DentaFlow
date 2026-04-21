@@ -1,3 +1,4 @@
+import React from 'react'
 import { getAdminUser } from '@/lib/auth-utils'
 import { prisma } from '@/lib/prisma'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
@@ -101,7 +102,7 @@ export default async function BillingSettingsPage() {
   )
 }
 
-function Settings(props: any) {
+function Settings(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
