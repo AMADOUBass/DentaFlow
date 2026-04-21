@@ -1,13 +1,13 @@
 import { updateSession } from '@/lib/supabase/middleware'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'dentaflow.ca'
+const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'oros.ca'
 const ADMIN_SUBDOMAIN = 'admin'
 const LOCALES = ['fr', 'en']
 const DEFAULT_LOCALE = 'fr'
 
 /**
- * Middleware de routing multi-tenant + i18n (/fr, /en) pour DentaFlow
+ * Middleware de routing multi-tenant + i18n (/fr, /en) pour Oros
  */
 export default async function middleware(request: NextRequest) {
   // 0. Mise à jour de la session Supabase

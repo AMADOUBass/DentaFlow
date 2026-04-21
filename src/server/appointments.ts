@@ -170,7 +170,7 @@ export async function createAppointment(tenantId: string, data: AppointmentInput
           
           <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;" />
           <p style="font-size: 12px; color: #94a3b8;">
-            Ce courriel a été envoyé automatiquement par DentaFlow pour ${tenant.name}.
+            Ce courriel a été envoyé automatiquement par Oros pour ${tenant.name}.
           </p>
         </div>
       `

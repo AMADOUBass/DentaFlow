@@ -103,7 +103,7 @@ export default async function TenantLayout({
 
               <p className="text-xs font-bold text-slate-300 italic">
                  {t.clinic.powered_by} <span className="text-primary not-italic inline-flex items-center gap-1">
-                    <Image src="/icon.png" alt="" width={14} height={14} /> DentaFlow
+                    <Image src="/icon.png" alt="" width={14} height={14} /> Oros
                  </span>
               </p>
            </div>

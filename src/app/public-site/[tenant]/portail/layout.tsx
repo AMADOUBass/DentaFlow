@@ -120,7 +120,7 @@ export default async function PatientPortalLayout({ children, params }: PatientL
       <footer className="bg-white border-t py-8">
          <div className="max-w-7xl mx-auto px-4 text-center">
             <p className="text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em]">
-               Sécurisé par DentaFlow — Logiciel de gestion dentaire
+               Sécurisé par Oros — Logiciel de gestion dentaire
             </p>
          </div>
       </footer>

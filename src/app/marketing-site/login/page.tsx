@@ -46,7 +46,7 @@ export default function LoginPage() {
             <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-xl rotate-3">
               <span className="text-primary font-black text-xl">DF</span>
             </div>
-            <span className="font-extrabold text-3xl tracking-tight text-white">DentaFlow</span>
+            <span className="font-extrabold text-3xl tracking-tight text-white">Oros</span>
          </I18nLink>
 
          <div className="relative z-10 space-y-10">

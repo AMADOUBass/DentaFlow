@@ -50,7 +50,7 @@ export default function PricingPage() {
         'Statistiques avancées',
         'Multi-clinique',
         'Support dédié 24/7',
-        'Accès API DentaFlow'
+        'Accès API Oros'
       ]
     }
   ]

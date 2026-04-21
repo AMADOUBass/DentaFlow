@@ -82,7 +82,7 @@ export function PublicMobileNav({ clinicName, logoUrl }: PublicMobileNavProps) {
               </Button>
            </Link>
            <p className="text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-6">
-              © 2026 DentaFlow
+              © 2026 Oros
            </p>
         </div>
       </SheetContent>

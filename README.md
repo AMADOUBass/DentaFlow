@@ -1,78 +1,43 @@
-# DentaFlow 🦷🚀
+# Oros 🦷🚀
 
-> La plateforme de gestion dentaire multi-tenant, moderne et conforme pour le Québec.
+Oros est une solution logicielle complète conçue pour simplifier la gestion des centres dentaires. Alliant une expérience patient fluide à des outils administratifs puissants, la plateforme répond aux exigences les plus strictes en matière de sécurité et de confidentialité (Loi 25).
 
-DentaFlow est une solution logicielle complète conçue pour simplifier la gestion des centres dentaires. Alliant une expérience patient fluide à des outils administratifs puissants, la plateforme répond aux exigences les plus strictes en matière de sécurité et de confidentialité (Loi 25).
+## ✨ Fonctionnalités clés
 
----
+- **Multi-Tenant** : Chaque clinique possède son propre espace sécurisé et sa base de données isolée.
+- **Portail Patient** : Prise de rendez-vous en ligne, historique et notifications par courriel.
+- **Gestion Administrative** : Tableau de bord complet pour la gestion des patients et des rendez-vous.
+- **Sécurité Loi 25** : Chiffrement des données sensibles et journalisation des accès.
+- **Multi-Domaine** : Support des domaines personnalisés pour chaque clinique (ex: `cliniquezenith.ca`).
 
-## ✨ Fonctionnalités Clés
+## 🛠️ Stack Technique
 
-### 🏥 Pour les Cliniques (Admin)
-- **Multi-tenant** : Chaque clinique bénéficie de son propre sous-domaine et de données isolées.
-- **Gestion d'Équipe** : Administration des praticiens (titres, spécialités, couleurs d'agenda).
-- **Catalogue de Soins** : Configuration flexible des prix, durées et services offerts.
-- **Tableau de Bord** : Vue d'ensemble sur les rendez-vous, les urgences et la facturation Stripe.
+- **Framework** : Next.js 16 (App Router)
+- **Langage** : TypeScript (Strict)
+- **Base de données** : Prisma + PostgreSQL (via Supabase)
+- **Authentification** : Supabase Auth
+- **Styles** : Tailwind CSS v4 & Lucide Icons
+- **Composants UI** : Radix UI & Shadcn/UI
+- **i18n** : Support natif Français (par défaut) et Anglais
 
-### 👤 Pour les Patients (Public/Portail)
-- **Tunnel de Réservation** : Processus de prise de rendez-vous en 5 étapes, intuitif et rapide.
-- **Portail Patient** : Historique des RDV, modification de profil et gestion de la confidentialité.
-- **Bilinguisme (FR/EN)** : Support complet de l'anglais et du français avec détection automatique.
-- **Urgences** : Flux dédié pour les requêtes urgentes avec évaluation du niveau de douleur.
+## 🚀 Installation & Lancement
 
-### 🔐 Sécurité & Conformité (Loi 25)
-- **Portabilité** : Exportation des données au format JSON pour les patients et administrateurs.
-- **Droit à l'Oubli** : Processus d'anonymisation des données sensibles.
-- **Chiffrement** : Protection des données RAMQ et des notes médicales sensibles en base de données.
-- **Journaux d'Audit** : Traçabilité complète des accès aux données sensibles.
-
----
-
-## 🛠 Stack Technique
-
-- **Framework** : [Next.js 15 (App Router)](https://nextjs.org/)
-- **Langage** : [TypeScript](https://www.typescriptlang.org/) (Strict mode)
-- **Base de données** : [PostgreSQL](https://www.postgresql.org/) avec [Prisma ORM](https://www.prisma.io/)
-- **Authentification** : [Supabase Auth](https://supabase.com/auth)
-- **Paiements** : [Stripe](https://stripe.com/) (Abonnements & Connect)
-- **Styling** : [Tailwind CSS v4](https://tailwindcss.com/) & [Shadcn/UI](https://ui.shadcn.com/)
-- **Emails/SMS** : [Resend](https://resend.com/) & Integration de rappels automatisés
-
----
-
-## 🚀 Installation & Développement
-
-### 1. Cloner le projet
 ```bash
-git clone https://github.com/AMADOUBass/DentaFlow.git
-cd DentaFlow
-```
+# 1. Cloner le projet
+git clone https://github.com/AMADOUBass/Oros.git
+cd Oros
 
-### 2. Installer les dépendances
-```bash
+# 2. Installer les dépendances
 npm install
-```
 
-### 3. Configurer l'environnement
-Créez un fichier `.env.local` et renseignez les variables nécessaires :
-```env
-DATABASE_URL="votre_url_prisma"
-NEXT_PUBLIC_SUPABASE_URL="votre_url_supabase"
-NEXT_PUBLIC_SUPABASE_ANON_KEY="votre_clé_supabase"
-STRIPE_SECRET_KEY="votre_clé_stripe"
-STRIPE_WEBHOOK_SECRET="votre_secret_webhook"
-```
+# 3. Configurer les variables d'environnement
+cp .env.example .env
+# Remplir DATABASE_URL, NEXT_PUBLIC_SUPABASE_URL, etc.
 
-### 4. Lancer le serveur
-```bash
+# 4. Lancer en développement
 npm run dev
 ```
 
----
+## 📜 Licence
 
-## 📄 Licence
-Propriété exclusive de DentaFlow. Tous droits réservés.
-
----
-
-*Développé avec passion pour moderniser la gestion dentaire au Québec.* ❄️🧤
+Propriété exclusive d'Oros. Tous droits réservés.

@@ -1,5 +1,5 @@
 /**
- * Simple i18n utility for DentaFlow
+ * Simple i18n utility for Oros
  */
 
 export type Locale = 'fr' | 'en'
@@ -87,7 +87,7 @@ const translations = {
       feature_law25: "Protection des données Loi 25 intégrée",
       feature_ai: "Moteur de prise de rendez-vous IA",
       feature_ui: "Interface moderne et intuitive pour l'équipe",
-      testimonial: "DentaFlow a littéralement transformé notre façon de travailler. C'est l'outil que nous attendions.",
+      testimonial: "Oros a littéralement transformé notre façon de travailler. C'est l'outil que nous attendions.",
       secure_space: "Espace Sécurisé",
       portal_title: "Portail Direction",
       portal_desc: "Accédez à votre tableau de bord clinique.",
@@ -118,7 +118,7 @@ const translations = {
       manage_emergency: "Gérer une urgence",
     },
     footer: {
-      copy: "© 2026 DentaFlow. La technologie au service du sourire."
+      copy: "© 2026 Oros. La technologie au service du sourire."
     },
     emergencies: {
       title: "Urgence dentaire ?",
@@ -280,7 +280,7 @@ const translations = {
       feature_law25: "Integrated Law 25 data protection",
       feature_ai: "AI appointment booking engine",
       feature_ui: "Modern and intuitive team interface",
-      testimonial: "DentaFlow has literally transformed the way we work. It's the tool we've been waiting for.",
+      testimonial: "Oros has literally transformed the way we work. It's the tool we've been waiting for.",
       secure_space: "Secure Space",
       portal_title: "Management Portal",
       portal_desc: "Access your clinical dashboard.",
@@ -311,7 +311,7 @@ const translations = {
       manage_emergency: "Manage an emergency",
     },
     footer: {
-      copy: "© 2026 DentaFlow. Technology at the service of your smile."
+      copy: "© 2026 Oros. Technology at the service of your smile."
     },
     emergencies: {
       title: "Dental Emergency?",
