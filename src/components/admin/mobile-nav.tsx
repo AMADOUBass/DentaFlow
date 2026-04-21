@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { Menu, LayoutDashboard, Calendar, Users, Settings, LogOut, MessageSquare, Lock } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
@@ -36,8 +37,8 @@ export function MobileNav({ tenantName, userName, userRole }: MobileNavProps) {
       <SheetContent side="left" className="w-[300px] p-0 border-none rounded-r-[2.5rem] shadow-2xl">
         <SheetHeader className="p-8 pb-4 text-left">
            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-                <span className="text-white font-black text-sm">{tenantName.charAt(0)}</span>
+              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md border overflow-hidden p-1.5">
+                <Image src="/icon.png" alt="DentaFlow" width={40} height={40} className="object-contain" />
               </div>
               <div className="min-w-0">
                  <SheetTitle className="font-black text-lg tracking-tight text-slate-800 truncate">{tenantName}</SheetTitle>

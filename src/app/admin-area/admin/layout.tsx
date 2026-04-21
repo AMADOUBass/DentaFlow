@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
+import Image from 'next/image'
 import { 
   LayoutDashboard, 
   Calendar, 
@@ -31,12 +32,12 @@ export default async function AdminLayout({
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r hidden md:flex flex-col sticky top-0 h-screen shadow-sm">
         <div className="p-6">
-          <Link href="/admin/dashboard" className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
-              <span className="text-white font-black text-sm">{tenant.name.charAt(0)}</span>
+          <Link href="/admin/dashboard" className="flex items-center gap-3 group transition-all">
+            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md border group-hover:scale-105 transition-all overflow-hidden p-1.5">
+              <Image src="/icon.png" alt="DentaFlow" width={40} height={40} className="object-contain" />
             </div>
             <div className="min-w-0">
-               <span className="font-black text-sm tracking-tight text-slate-800 block truncate">{tenant.name}</span>
+               <span className="font-black text-sm tracking-tight text-slate-800 block truncate group-hover:text-primary transition-colors">{tenant.name}</span>
                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Administration</span>
             </div>
           </Link>

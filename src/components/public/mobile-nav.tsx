@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { Menu, Home, Stethoscope, Users, Phone, AlertTriangle, Calendar } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { Separator } from '@/components/ui/separator'
 
@@ -31,8 +32,8 @@ export function PublicMobileNav({ clinicName }: PublicMobileNavProps) {
       <SheetContent side="right" className="w-[300px] p-0 border-none rounded-l-[2.5rem] shadow-2xl">
         <SheetHeader className="p-8 pb-4 text-left">
            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20">
-                <Stethoscope className="h-5 w-5 text-primary" />
+              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md border overflow-hidden p-1.5">
+                <Image src="/icon.png" alt="DentaFlow" width={40} height={40} className="object-contain" />
               </div>
               <div className="min-w-0">
                  <SheetTitle className="font-black text-lg tracking-tight text-slate-800 truncate">Centre {clinicName}</SheetTitle>

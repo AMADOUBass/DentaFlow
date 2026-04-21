@@ -10,6 +10,10 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "DentaFlow | Plateforme pour centres dentaires",
   description: "Gestion de rendez-vous, portail patient et conformité Loi 25 pour cliniques dentaires au Québec.",
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 export default async function RootLayout({

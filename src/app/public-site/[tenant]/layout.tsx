@@ -1,4 +1,5 @@
-import { Stethoscope, Calendar, Phone, Clock, AlertTriangle } from 'lucide-react'
+import { Calendar, Phone, Clock, AlertTriangle } from 'lucide-react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { PublicMobileNav } from '@/components/public/mobile-nav'
 import { ConsentBanner } from '@/components/public/consent-banner'
@@ -25,8 +26,8 @@ export default async function TenantLayout({
       <header className="sticky top-0 z-50 w-full glass-morphism border-b">
           <div className="container mx-auto px-4 h-20 flex items-center justify-between gap-4">
              <I18nLink href="/" className="flex items-center gap-3 group transition-transform active:scale-95 shrink-0">
-                <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 group-hover:bg-primary group-hover:text-white transition-all">
-                   <Stethoscope className="h-5 w-5" />
+                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border shadow-sm group-hover:scale-105 transition-all overflow-hidden p-1.5">
+                   <Image src="/icon.png" alt="DentaFlow Icon" width={40} height={40} className="object-contain" />
                 </div>
                 <div className="flex flex-col">
                    <span className="font-black text-lg sm:text-xl tracking-tight text-slate-900 group-hover:text-primary transition-colors truncate max-w-[150px] sm:max-w-none">
@@ -74,7 +75,7 @@ export default async function TenantLayout({
         <div className="container mx-auto px-4">
            <div className="flex flex-col md:flex-row justify-between items-center gap-8">
               <div className="flex items-center gap-2 grayscale opacity-50">
-                 <Stethoscope className="h-4 w-4" />
+                 <Image src="/icon.png" alt="DentaFlow" width={20} height={20} className="object-contain" />
                  <span className="text-xs font-black uppercase tracking-widest leading-none">{clinicName}</span>
               </div>
               
@@ -84,7 +85,9 @@ export default async function TenantLayout({
               </div>
 
               <p className="text-xs font-bold text-slate-300 italic">
-                 {t.clinic.powered_by} <span className="text-primary not-italic">DentaFlow</span>
+                 {t.clinic.powered_by} <span className="text-primary not-italic inline-flex items-center gap-1">
+                    <Image src="/icon.png" alt="" width={14} height={14} /> DentaFlow
+                 </span>
               </p>
            </div>
         </div>
