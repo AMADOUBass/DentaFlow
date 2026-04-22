@@ -32,22 +32,23 @@ export async function middleware(request: NextRequest) {
   const searchParams = url.searchParams.toString();
   const path = `${pathname}${searchParams.length > 0 ? `?${searchParams}` : ""}`;
 
+  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
+  
   let subdomain = "";
   let isCustomDomain = false;
 
-  if (
-    host.includes(".") &&
-    !host.includes("localhost:3000") &&
-    !host.startsWith("localhost")
-  ) {
-    const parts = host.split(".");
-    // Si c'est un domaine à 2 segments (ex: clinique.ca), c'est un domaine custom
-    if (parts.length === 2) {
-      isCustomDomain = true;
-    } else {
-      subdomain = parts[0];
-    }
+  // Détection du tenant (sous-domaine ou domaine personnalisé)
+  if (host === rootDomain || host === `www.${rootDomain}`) {
+    // Cas : Site Principal (marketing)
+    subdomain = "";
+  } else if (host.endsWith(`.${rootDomain}`)) {
+    // Cas : Sous-domaine (ex: demo.dentaflow.ca)
+    subdomain = host.replace(`.${rootDomain}`, "");
+  } else if (host !== "localhost:3000" && !host.includes(".localhost:3000")) {
+    // Cas : Domaine personnalisé (ex: clinique.oros.ca)
+    isCustomDomain = true;
   } else if (host.includes(".localhost:3000")) {
+    // Cas : Localhost avec sous-domaine
     subdomain = host.split(".localhost:3000")[0];
   }
 
