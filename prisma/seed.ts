@@ -1,4 +1,4 @@
-import { PrismaClient, PlanTier, UserRole, ServiceCategory } from '@prisma/client'
+import { PrismaClient, PlanTier, UserRole, ServiceCategory, AppointmentStatus } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -7,6 +7,7 @@ async function main() {
 
   // 1. Clear existing data
   await prisma.$transaction([
+    prisma.auditLog.deleteMany(),
     prisma.emergencyRequest.deleteMany(),
     prisma.appointment.deleteMany(),
     prisma.patient.deleteMany(),
@@ -23,20 +24,23 @@ async function main() {
   const tenant = await prisma.tenant.create({
     data: {
       slug: 'demo',
-      name: 'Centre Dentaire Démo',
-      email: 'demo@dentaflow.ca',
-      phone: '514-555-0000',
-      address: '123 Avenue de la Santé',
-      city: 'Québec',
-      postalCode: 'G1R 1A1',
-      primaryColor: '#0F766E', // Teal 700
+      name: 'Centre Dentaire Oros (Démo)',
+      email: 'contact@oros-demo.ca',
+      phone: '514-555-0123',
+      address: '1230 Rue Sherbrooke Ouest',
+      city: 'Montréal',
+      postalCode: 'H3G 1H6',
+      primaryColor: '#0F172A',
       planTier: PlanTier.COMPLET,
+      isActive: true,
+      isValidated: true,
+      neq: '1234567890',
       businessHours: {
         create: [
-          { weekday: 1, openTime: '08:00', closeTime: '17:00' },
-          { weekday: 2, openTime: '08:00', closeTime: '17:00' },
-          { weekday: 3, openTime: '08:00', closeTime: '17:00' },
-          { weekday: 4, openTime: '08:00', closeTime: '17:00' },
+          { weekday: 1, openTime: '08:00', closeTime: '18:00' },
+          { weekday: 2, openTime: '08:00', closeTime: '18:00' },
+          { weekday: 3, openTime: '08:00', closeTime: '18:00' },
+          { weekday: 4, openTime: '08:00', closeTime: '20:00' },
           { weekday: 5, openTime: '08:00', closeTime: '16:00' },
         ]
       }
@@ -44,6 +48,7 @@ async function main() {
   })
 
   // 3. Create Practitioners
+  // Dr. Dante (Généraliste) - Lundi, Mercredi, Vendredi
   const dante = await prisma.practitioner.create({
     data: {
       tenantId: tenant.id,
@@ -51,7 +56,7 @@ async function main() {
       lastName: 'Alighieri',
       title: 'Dr',
       specialty: 'Dentiste généraliste',
-      color: '#0EA5E9', // Blue 500
+      color: '#0EA5E9',
       schedules: {
         create: [
           { weekday: 1, startTime: '08:00', endTime: '17:00', lunchStart: '12:00', lunchEnd: '13:00' },
@@ -62,88 +67,81 @@ async function main() {
     }
   })
 
+  // Dre. Beatrice (Orthodontiste) - PLEIN TEMPS pour tes tests
   const beatrice = await prisma.practitioner.create({
     data: {
       tenantId: tenant.id,
       firstName: 'Beatrice',
       lastName: 'Portinari',
       title: 'Dre',
-      specialty: 'Orthodontiste',
-      color: '#EC4899', // Pink 500
+      specialty: 'Orthodontiste Spécialisée',
+      color: '#EC4899',
       schedules: {
         create: [
-          { weekday: 2, startTime: '09:00', endTime: '17:00', lunchStart: '12:00', lunchEnd: '13:00' },
-          { weekday: 4, startTime: '09:00', endTime: '17:00', lunchStart: '12:00', lunchEnd: '13:00' },
+          { weekday: 1, startTime: '08:00', endTime: '17:00', lunchStart: '12:00', lunchEnd: '13:00' },
+          { weekday: 2, startTime: '08:00', endTime: '17:00', lunchStart: '12:00', lunchEnd: '13:00' },
+          { weekday: 3, startTime: '08:00', endTime: '17:00', lunchStart: '12:00', lunchEnd: '13:00' },
+          { weekday: 4, startTime: '08:00', endTime: '17:00', lunchStart: '12:00', lunchEnd: '13:00' },
+          { weekday: 5, startTime: '08:00', endTime: '16:00', lunchStart: '12:00', lunchEnd: '13:00' },
         ]
       }
     }
   })
 
   // 4. Create Services
-  const services = await Promise.all([
-    prisma.service.create({
-      data: {
-        tenantId: tenant.id,
-        name: 'Examen + Nettoyage',
-        nameEn: 'Exam + Cleaning',
-        durationMin: 60,
-        priceCents: 15000,
-        category: ServiceCategory.PREVENTION,
-        practitioners: { create: [{ practitionerId: dante.id }] }
-      }
-    }),
-    prisma.service.create({
-      data: {
-        tenantId: tenant.id,
-        name: 'Plombage (Composite)',
-        nameEn: 'Filling (Composite)',
-        durationMin: 45,
-        priceCents: 20000,
-        category: ServiceCategory.RESTORATION,
-        practitioners: { create: [{ practitionerId: dante.id }] }
-      }
-    }),
-    prisma.service.create({
-      data: {
-        tenantId: tenant.id,
-        name: 'Consultation Orthodontie',
-        nameEn: 'Orthodontic Consultation',
-        durationMin: 30,
-        priceCents: 10000,
-        category: ServiceCategory.ORTHODONTICS,
-        practitioners: { create: [{ practitionerId: beatrice.id }] }
-      }
-    }),
-    prisma.service.create({
-      data: {
-        tenantId: tenant.id,
-        name: 'Blanchiment des dents',
-        nameEn: 'Teeth Whitening',
-        durationMin: 90,
-        priceCents: 45000,
-        category: ServiceCategory.ESTHETIC,
-        practitioners: { create: [{ practitionerId: dante.id }] }
-      }
-    }),
-    prisma.service.create({
-      data: {
-        tenantId: tenant.id,
-        name: 'Urgence dentaire',
-        nameEn: 'Emergency',
-        durationMin: 45,
-        priceCents: 15000,
-        category: ServiceCategory.EMERGENCY,
-        practitioners: { create: [{ practitionerId: dante.id }] }
-      }
-    }),
-  ])
+  const orthoConsult = await prisma.service.create({
+    data: {
+      tenantId: tenant.id,
+      name: 'Consultation Orthodontie',
+      nameEn: 'Orthodontic Consultation',
+      durationMin: 30,
+      priceCents: 10000,
+      category: ServiceCategory.ORTHODONTICS,
+      practitioners: { create: [{ practitionerId: beatrice.id }] }
+    }
+  })
 
-  // 5. Create a test user (Clinic Owner)
+  const orthoSuivi = await prisma.service.create({
+    data: {
+      tenantId: tenant.id,
+      name: 'Suivi Orthodontique',
+      nameEn: 'Orthodontic Follow-up',
+      durationMin: 45,
+      priceCents: 15000,
+      category: ServiceCategory.ORTHODONTICS,
+      practitioners: { create: [{ practitionerId: beatrice.id }] }
+    }
+  })
+
+  await prisma.service.create({
+    data: {
+      tenantId: tenant.id,
+      name: 'Examen + Nettoyage',
+      nameEn: 'Exam + Cleaning',
+      durationMin: 60,
+      priceCents: 15000,
+      category: ServiceCategory.PREVENTION,
+      practitioners: { create: [{ practitionerId: dante.id }] }
+    }
+  })
+
+  // 5. Create Users
+  // Super Admin
+  await prisma.user.create({
+    data: {
+      authId: 'superadmin-auth-id',
+      email: 'admin@dentaflow.ca',
+      name: 'Super Admin DentaFlow',
+      role: UserRole.SUPERADMIN,
+    }
+  })
+
+  // Proprio de la clinique démo
   await prisma.user.create({
     data: {
       authId: '739a11d7-e0ad-41f6-a0b7-7642652fb126',
       email: 'proprio@demo.ca',
-      name: 'Proprio Démo',
+      name: 'Dr. Dante (Proprio)',
       role: UserRole.CLINIC_OWNER,
       tenantId: tenant.id
     }

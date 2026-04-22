@@ -79,12 +79,12 @@ export async function getPlatformStatsAction() {
 export async function getGlobalAuditLogsAction(limit = 20) {
   await ensureSuperAdmin()
   
-  return (prisma as any).auditLog.findMany({
+  return prisma.auditLog.findMany({
     orderBy: { createdAt: 'desc' },
     take: limit,
     include: {
       tenant: { select: { name: true } },
-      user: { select: { firstName: true, lastName: true } }
+      user: { select: { name: true } }
     }
   })
 }

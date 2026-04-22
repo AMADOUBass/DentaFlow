@@ -68,19 +68,19 @@ export function SlotsStep({
            <Button variant="outline" onClick={onBack} className="rounded-xl">Changer de date</Button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {slots.map((slot) => (
             <Button
               key={slot}
               variant={selectedSlot === slot ? 'default' : 'outline'}
               onClick={() => onSelect(slot)}
-              className={`h-12 rounded-xl font-bold transition-all ${
+              className={`h-16 rounded-2xl font-black text-base transition-all duration-300 ${
                 selectedSlot === slot 
-                  ? 'bg-primary text-white scale-105 shadow-lg shadow-primary/20' 
-                  : 'hover:border-primary hover:text-primary'
+                  ? 'bg-primary text-white scale-105 shadow-xl shadow-primary/30 border-none' 
+                  : 'border-slate-100 hover:border-primary/30 hover:bg-primary/5 hover:text-primary text-slate-600'
               }`}
             >
-              <Clock className="mr-1.5 h-3.5 w-3.5 opacity-50" />
+              <Clock className="mr-2 h-4 w-4 opacity-50" />
               {slot}
             </Button>
           ))}

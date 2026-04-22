@@ -64,7 +64,7 @@ export default async function SuperAdminLogsPage() {
                            <td className="p-6">
                               <div className="flex items-center gap-2">
                                  <User className="h-4 w-4 text-slate-300" />
-                                 <span className="text-sm font-bold text-slate-600">{log.user.firstName} {log.user.lastName}</span>
+                                 <span className="text-sm font-bold text-slate-600">{log.user?.name || 'Système'}</span>
                               </div>
                            </td>
                            <td className="p-6">

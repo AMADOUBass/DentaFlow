@@ -4,14 +4,14 @@ import {
   isBefore, 
   isAfter, 
   parse, 
-  isWithinInterval, 
   areIntervalsOverlapping,
   startOfDay,
-  setHours,
-  setMinutes
 } from 'date-fns'
+import { toZonedTime, fromZonedTime } from 'date-fns-tz'
 import { prisma } from './prisma'
 import { AppointmentStatus } from '@prisma/client'
+
+const TIMEZONE = 'America/Toronto'
 
 /**
  * Calculates available time slots for a specific date, service and practitioner
@@ -33,34 +33,30 @@ export async function getAvailableSlots({
   })
   if (!service) throw new Error("Service non trouvé")
 
-  const targetDate = new Date(date + 'T00:00:00')
-  const weekday = targetDate.getDay() // 0=Dim, 1=Lun ...
+  // Ensure we work in America/Toronto
+  const targetDate = fromZonedTime(`${date}T00:00:00`, TIMEZONE)
+  const nowInToronto = toZonedTime(new Date(), TIMEZONE)
+  const weekday = targetDate.getDay()
 
-  // 2. Fetch all eligible practitioners if 'any'
+  // 2. Fetch all eligible practitioners
   const practitioners = await prisma.practitioner.findMany({
     where: {
       tenantId,
       active: true,
       ...(practitionerId !== 'any' ? { id: practitionerId } : {}),
-      services: {
-        some: { serviceId }
-      }
+      services: { some: { serviceId } }
     },
     include: {
-      schedules: {
-        where: { weekday }
-      }
+      schedules: { where: { weekday } }
     }
   })
 
   let allSlots: string[] = []
 
-  // 3. For each practitioner, calculate their individual slots
   for (const practitioner of practitioners) {
     const schedule = practitioner.schedules[0]
     if (!schedule) continue
 
-    // Get existing appointments for this practitioner on this day
     const existingAppointments = await prisma.appointment.findMany({
       where: {
         practitionerId: practitioner.id,
@@ -68,13 +64,10 @@ export async function getAvailableSlots({
           gte: startOfDay(targetDate),
           lt: addMinutes(startOfDay(targetDate), 1440)
         },
-        status: {
-          notIn: [AppointmentStatus.CANCELLED]
-        }
+        status: { notIn: [AppointmentStatus.CANCELLED] }
       }
     })
 
-    // Get time-offs
     const timeOffs = await prisma.timeOff.findMany({
       where: {
         practitionerId: practitioner.id,
@@ -84,9 +77,8 @@ export async function getAvailableSlots({
       }
     })
 
-    // Calculate possible slots
-    const dayStart = parse(schedule.startTime, 'HH:mm', targetDate)
-    const dayEnd = parse(schedule.endTime, 'HH:mm', targetDate)
+    const dayStart = fromZonedTime(`${date}T${schedule.startTime}:00`, TIMEZONE)
+    const dayEnd = fromZonedTime(`${date}T${schedule.endTime}:00`, TIMEZONE)
     
     let currentSlot = dayStart
     
@@ -97,34 +89,38 @@ export async function getAvailableSlots({
 
       const slotInterval = { start: currentSlot, end: slotEnd }
 
-      // Check lunch break
+      // --- CHECKS ---
+      
+      // 1. Check if slot is in the past
+      const isPast = isBefore(currentSlot, nowInToronto)
+
+      // 2. Check lunch break
       let isLunch = false
       if (schedule.lunchStart && schedule.lunchEnd) {
-        const lunchStart = parse(schedule.lunchStart, 'HH:mm', targetDate)
-        const lunchEnd = parse(schedule.lunchEnd, 'HH:mm', targetDate)
+        const lunchStart = fromZonedTime(`${date}T${schedule.lunchStart}:00`, TIMEZONE)
+        const lunchEnd = fromZonedTime(`${date}T${schedule.lunchEnd}:00`, TIMEZONE)
         if (areIntervalsOverlapping(slotInterval, { start: lunchStart, end: lunchEnd })) {
           isLunch = true
         }
       }
 
-      // Check existing appointments
+      // 3. Check existing appointments
       const hasConflict = existingAppointments.some(apt => 
         areIntervalsOverlapping(slotInterval, { start: apt.startsAt, end: apt.endsAt })
       )
 
-      // Check time-offs
+      // 4. Check time-offs
       const hasTimeOff = timeOffs.some(to => 
         areIntervalsOverlapping(slotInterval, { start: to.startDate, end: to.endDate })
       )
 
-      if (!isLunch && !hasConflict && !hasTimeOff) {
+      if (!isPast && !isLunch && !hasConflict && !hasTimeOff) {
         allSlots.push(format(currentSlot, 'HH:mm'))
       }
 
-      currentSlot = addMinutes(currentSlot, 15) // Step of 15 mins for slot starts
+      currentSlot = addMinutes(currentSlot, 15)
     }
   }
 
-  // 4. Sort and unique if multiple practitioners
   return Array.from(new Set(allSlots)).sort()
 }

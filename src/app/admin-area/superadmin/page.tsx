@@ -132,17 +132,21 @@ export default async function SuperAdminDashboard() {
             <p className="text-sm text-slate-500 font-medium">Validez les nouveaux comptes et gérez les abonnements.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Button variant="outline" className="h-20 rounded-[1.5rem] border-slate-100 font-bold flex flex-col gap-1 items-start px-6 hover:border-primary/20 hover:bg-primary/5 transition-all">
-              <span className="text-primary flex items-center gap-2"><CheckCircle className="h-4 w-4" /> 12 Attentes</span>
-              <span className="text-[10px] uppercase tracking-widest text-slate-400">Validation REQ</span>
-            </Button>
-            <Button variant="outline" className="h-20 rounded-[1.5rem] border-slate-100 font-bold flex flex-col gap-1 items-start px-6 hover:border-rose-100 hover:bg-rose-50 transition-all">
-              <span className="text-rose-600 flex items-center gap-2"><ShieldAlert className="h-4 w-4" /> 2 Alertes</span>
-              <span className="text-[10px] uppercase tracking-widest text-slate-400">Paiements échoués</span>
-            </Button>
+            <Link href="/admin-area/superadmin/tenants?filter=pending" className="w-full">
+              <Button variant="outline" className="h-20 w-full rounded-[1.5rem] border-slate-100 font-bold flex flex-col gap-1 items-start px-6 hover:border-primary/20 hover:bg-primary/5 transition-all">
+                <span className="text-primary flex items-center gap-2"><CheckCircle className="h-4 w-4" /> 12 Attentes</span>
+                <span className="text-[10px] uppercase tracking-widest text-slate-400">Validation REQ</span>
+              </Button>
+            </Link>
+            <Link href="/admin-area/superadmin/tenants?filter=alerts" className="w-full">
+              <Button variant="outline" className="h-20 w-full rounded-[1.5rem] border-slate-100 font-bold flex flex-col gap-1 items-start px-6 hover:border-rose-100 hover:bg-rose-50 transition-all">
+                <span className="text-rose-600 flex items-center gap-2"><ShieldAlert className="h-4 w-4" /> 2 Alertes</span>
+                <span className="text-[10px] uppercase tracking-widest text-slate-400">Paiements échoués</span>
+              </Button>
+            </Link>
           </div>
           <Button asChild className="w-full h-14 rounded-2xl bg-slate-900 hover:bg-slate-800 font-black text-lg gap-3">
-             <Link href="/superadmin/clinics">Ouvrir le Gestionnaire de Tenants</Link>
+             <Link href="/admin-area/superadmin/tenants">Ouvrir le Gestionnaire de Tenants</Link>
           </Button>
         </Card>
 
@@ -160,7 +164,7 @@ export default async function SuperAdminDashboard() {
           </div>
 
           <Button asChild className="w-full h-14 rounded-2xl bg-white hover:bg-slate-100 text-slate-900 font-black text-lg gap-3 relative z-10">
-             <Link href="/superadmin/logs">Consulter les Logs d'Audit</Link>
+             <Link href="/admin-area/superadmin/logs">Consulter les Logs d'Audit</Link>
           </Button>
         </Card>
       </div>

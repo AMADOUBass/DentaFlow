@@ -84,7 +84,13 @@ export function ConfirmStep({
     <div className="space-y-8">
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-black text-slate-900">Confirmez vos informations</h2>
-        <p className="text-slate-500">Dernière étape avant la confirmation de votre soin.</p>
+        <div className="flex flex-col items-center gap-2">
+           <p className="text-slate-500">Dernière étape avant la confirmation de votre soin.</p>
+           <div className="px-4 py-1.5 bg-primary/5 rounded-full border border-primary/10 flex items-center gap-2">
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Déjà patient ?</span>
+              <a href="/login/patient" className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline">Se connecter pour gagner du temps</a>
+           </div>
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
