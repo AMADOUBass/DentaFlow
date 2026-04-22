@@ -31,7 +31,7 @@ export default async function MarketingPage() {
               <Star className="h-3 w-3 fill-primary" /> {t.home.badge}
             </div>
             
-            <h1 className="text-6xl md:text-8xl font-black tracking-tight text-slate-900 animate-in fade-in slide-in-from-bottom-8 duration-1000 leading-[1.1]">
+            <h1 className="text-4xl md:text-8xl font-black tracking-tight text-slate-900 animate-in fade-in slide-in-from-bottom-8 duration-1000 leading-[1.1]">
               {t.home.hero_title_part1} <span className="text-primary italic text-glow">{t.home.hero_title_accent}</span>.
             </h1>
             
@@ -40,14 +40,14 @@ export default async function MarketingPage() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8 animate-in fade-in slide-in-from-bottom-16 duration-1500">
-              <I18nLink href="/login">
-                <button className="h-16 px-10 bg-white text-[#0f172a] hover:bg-slate-100 font-black rounded-2xl shadow-xl transition-all duration-300 active:scale-95">
+              <I18nLink href="/login" className="w-full sm:w-auto">
+                <button className="w-full h-16 px-10 bg-white text-[#0f172a] hover:bg-slate-100 font-black rounded-2xl shadow-xl transition-all duration-300 active:scale-95">
                   {t.common.start} 
                   <ChevronRight className="ml-2 h-5 w-5 inline-block group-hover:translate-x-1 transition-transform" />
                 </button>
               </I18nLink>
-              <I18nLink href="http://demo.lvh.me:3000/fr">
-                <button className="h-16 px-10 text-slate-900 border-2 border-slate-200 glass-morphism hover:bg-white/80 transition-all font-bold rounded-2xl active:scale-95">
+              <I18nLink href="http://demo.lvh.me:3000/fr" className="w-full sm:w-auto">
+                <button className="w-full h-16 px-10 text-slate-900 border-2 border-slate-200 glass-morphism hover:bg-white/80 transition-all font-bold rounded-2xl active:scale-95">
                   {t.common.see_demo}
                 </button>
               </I18nLink>

@@ -49,7 +49,7 @@ export default async function PricingPage() {
                    </li>
                 ))}
              </ul>
-             <I18nLink href="/login" className="block">
+             <I18nLink href="/register" className="block">
                 <Button variant="outline" className="w-full h-14 rounded-xl border-2 font-black">Choisir Essentiel</Button>
              </I18nLink>
           </div>
@@ -79,7 +79,7 @@ export default async function PricingPage() {
                       </li>
                    ))}
                 </ul>
-                <I18nLink href="/login" className="block">
+                <I18nLink href="/register" className="block">
                    <Button className="w-full h-16 rounded-2xl bg-slate-900 text-white font-black text-lg shadow-xl hover:bg-slate-800 transition-all active:scale-95">
                       Démarrer l'essai
                    </Button>
@@ -107,7 +107,7 @@ export default async function PricingPage() {
                    </li>
                 ))}
              </ul>
-             <I18nLink href="/login" className="block">
+             <I18nLink href="/register" className="block">
                 <Button variant="outline" className="w-full h-14 rounded-xl border-2 font-black">Nous contacter</Button>
              </I18nLink>
           </div>

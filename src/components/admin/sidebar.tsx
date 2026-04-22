@@ -15,7 +15,9 @@ import {
   Lock,
   Stethoscope,
   Activity,
-  AlertCircle
+  AlertCircle,
+  Monitor,
+  Download
 } from 'lucide-react'
 import { logout } from '@/server/auth'
 import { cn } from '@/lib/utils'
@@ -38,19 +40,21 @@ export function AdminSidebar({ tenant }: SidebarProps) {
     { href: '/admin/services', label: 'Services', icon: Activity },
     { href: '/admin/emergencies', label: 'Urgences', icon: AlertCircle },
     { href: '/admin/messages', label: 'Messages', icon: MessageSquare },
+    { href: '/admin/kiosk', label: 'Mode Kiosque', icon: Monitor },
   ]
 
   const settingsRoutes = [
     { href: '/admin/settings/security', label: 'Sécurité (Loi 25)', icon: Lock },
+    { href: '/admin/settings/export', label: 'Exportation des données', icon: Download },
     { href: '/admin/settings', label: 'Configuration', icon: Settings },
   ]
 
   return (
-    <aside className="w-72 bg-white border-r hidden md:flex flex-col sticky top-0 h-screen shadow-sm z-40">
+    <aside className="w-72 bg-white dark:bg-slate-900 border-r dark:border-slate-800 hidden md:flex flex-col sticky top-0 h-screen shadow-sm z-40 transition-colors">
       {/* Logo & Tenant Info */}
       <div className="p-8">
         <Link href="/admin/dashboard" className="flex items-center gap-4 group">
-          <div className="w-11 h-11 bg-white rounded-2xl flex items-center justify-center shadow-lg border-2 border-slate-50 overflow-hidden p-1.5 transition-transform group-hover:scale-105 group-hover:rotate-3">
+          <div className="w-11 h-11 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center shadow-lg border-2 border-slate-50 dark:border-slate-700 overflow-hidden p-1.5 transition-transform group-hover:scale-105 group-hover:rotate-3">
              {tenant.logoUrl ? (
                 <Image src={tenant.logoUrl} alt={tenant.name} width={44} height={44} className="object-contain" />
              ) : (
@@ -60,7 +64,7 @@ export function AdminSidebar({ tenant }: SidebarProps) {
              )}
           </div>
           <div className="min-w-0">
-             <span className="font-black text-base tracking-tight text-slate-800 block truncate group-hover:text-primary transition-colors">{tenant.name}</span>
+             <span className="font-black text-base tracking-tight text-slate-800 dark:text-slate-100 block truncate group-hover:text-primary transition-colors">{tenant.name}</span>
              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Administration</span>
           </div>
         </Link>
@@ -77,13 +81,13 @@ export function AdminSidebar({ tenant }: SidebarProps) {
               href={route.href} 
               className={cn(
                 "relative flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 group",
-                isActive ? "text-primary" : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                isActive ? "text-primary" : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50"
               )}
             >
               {isActive && (
                 <motion.div
                   layoutId="active-pill"
-                  className="absolute inset-0 bg-primary/5 border border-primary/10 rounded-2xl"
+                  className="absolute inset-0 bg-primary/5 dark:bg-primary/10 border border-primary/10 rounded-2xl"
                   initial={false}
                   transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
@@ -99,7 +103,7 @@ export function AdminSidebar({ tenant }: SidebarProps) {
       </nav>
 
       {/* Footer Navigation */}
-      <div className="p-4 mt-auto border-t space-y-1">
+      <div className="p-4 mt-auto border-t dark:border-slate-800 space-y-1">
         {settingsRoutes.map((route) => {
           const isActive = pathname === route.href || (route.href !== '/admin/settings' && pathname?.startsWith(route.href))
           return (
@@ -108,13 +112,13 @@ export function AdminSidebar({ tenant }: SidebarProps) {
               href={route.href} 
               className={cn(
                 "relative flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 group",
-                isActive ? "text-primary" : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                isActive ? "text-primary" : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50"
               )}
             >
                {isActive && (
                 <motion.div
                   layoutId="active-pill-settings"
-                  className="absolute inset-0 bg-primary/5 border border-primary/10 rounded-2xl"
+                  className="absolute inset-0 bg-primary/5 dark:bg-primary/10 border border-primary/10 rounded-2xl"
                   initial={false}
                   transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
@@ -129,7 +133,7 @@ export function AdminSidebar({ tenant }: SidebarProps) {
         })}
 
         <form action={logout}>
-          <button className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-rose-600 hover:bg-rose-50 w-full text-left transition-all duration-300 group">
+          <button className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 w-full text-left transition-all duration-300 group">
             <LogOut className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
             Déconnexion
           </button>

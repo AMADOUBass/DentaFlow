@@ -4,13 +4,27 @@ import {notFound} from 'next/navigation';
 import { Inter } from "next/font/google";
 import "../globals.css";
 import { cn } from "@/lib/utils";
-import { Metadata } from "next";
+import { Metadata, Viewport } from "next";
+import { PwaRegistration } from "@/components/pwa/PwaRegistration";
 
 const inter = Inter({ subsets: ["latin"] });
+
+export const viewport: Viewport = {
+  themeColor: "#0f172a",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
 
 export const metadata: Metadata = {
   title: "Oros | Plateforme pour centres dentaires",
   description: "Gestion de rendez-vous, portail patient et conformité Loi 25 pour cliniques dentaires au Québec.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Oros",
+  },
   icons: {
     icon: "/icon.png",
     apple: "/icon.png",
@@ -41,6 +55,7 @@ export default async function LocaleLayout({
         suppressHydrationWarning
       >
         <NextIntlClientProvider messages={messages}>
+          <PwaRegistration />
           {children}
         </NextIntlClientProvider>
       </body>

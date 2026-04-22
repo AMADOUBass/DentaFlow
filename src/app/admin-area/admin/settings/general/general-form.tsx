@@ -38,15 +38,14 @@ export function GeneralForm({ initialData }: GeneralFormProps) {
     }
   })
 
-  const onSubmit = async (data: TenantSettingsInput) => {
+  const onSubmit = async (values: TenantSettingsInput) => {
     setIsLoading(true)
     try {
-      const result = await updateTenantAction(data)
+      const result = await updateTenantAction(values)
       if (result.success) {
         setWasSuccessful(true)
         toast.success("Paramètres mis à jour")
         
-        // Redirection après un court délai pour laisser l'utilisateur voir le succès
         setTimeout(() => {
           router.push('/admin/settings')
         }, 800)

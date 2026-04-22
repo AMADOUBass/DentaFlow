@@ -107,3 +107,30 @@ export async function createPatientAdmin(tenantId: string, data: AdminPatientInp
   revalidatePath('/admin/patients')
   return { success: true, patient }
 }
+
+/**
+ * Admin action to permanently delete a patient (Droit à l'oubli - Loi 25).
+ */
+export async function deletePatientAction(tenantId: string, patientId: string) {
+  const supabase = await createClient()
+  const { data: { user: authUser } } = await supabase.auth.getUser()
+
+  if (!authUser) throw new Error('Non authentifié')
+
+  // Log the deletion BEFORE deleting (so we know who did it)
+  await logAudit({
+    tenantId,
+    userId: authUser.id,
+    patientId,
+    action: 'DELETE',
+    category: 'PATIENT_DATA',
+    description: `Suppression définitive du patient (Droit à l'oubli).`
+  })
+
+  await prisma.patient.delete({
+    where: { id: patientId, tenantId }
+  })
+
+  revalidatePath('/admin/patients')
+  return { success: true }
+}

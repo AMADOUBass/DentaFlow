@@ -28,6 +28,9 @@ model Tenant {
   planTier       PlanTier @default(ESSENTIEL)
   stripeCustomer String?  @unique
   stripeSubId    String?  @unique
+  neq            String?  // Numéro d'entreprise du Québec
+  isValidated    Boolean  @default(false)
+  isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   users          User[]
@@ -39,6 +42,13 @@ model Tenant {
   auditLogs      AuditLog[]
   emergencies    EmergencyRequest[]
   insurances     InsuranceProvider[]
+  clinicalNotes  ClinicalNote[]
+  toothConditions ToothCondition[]
+  prescriptions  Prescription[]
+  invoices       Invoice[]
+  payments       Payment[]
+  media          PatientMedia[]
+  notifications  Notification[]
 }
 
 enum PlanTier {
@@ -56,6 +66,7 @@ model User {
   role      UserRole
   tenantId  String?
   tenant    Tenant?  @relation(fields: [tenantId], references: [id])
+  media     PatientMedia[]
   createdAt DateTime @default(now())
 }
 
@@ -83,6 +94,10 @@ model Practitioner {
   schedules    PractitionerSchedule[]
   appointments Appointment[]
   services     ServicePractitioner[]
+  clinicalNotes ClinicalNote[]
+  toothConditions ToothCondition[]
+  prescriptions Prescription[]
+  invoices     Invoice[]
   createdAt    DateTime @default(now())
 }
 
@@ -175,8 +190,100 @@ model Patient {
   consentDate  DateTime?
   smsOptIn     Boolean  @default(true)
   appointments Appointment[]
+  clinicalNotes ClinicalNote[]
+  toothConditions ToothCondition[]
+  prescriptions   Prescription[]
+  invoices        Invoice[]
+  media           PatientMedia[]
   createdAt    DateTime @default(now())
   @@unique([tenantId, email])
+  @@index([tenantId, lastName, firstName])
+  @@index([tenantId, phone])
+}
+
+model Invoice {
+  id              String        @id @default(cuid())
+  tenantId        String
+  tenant          Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  patientId       String
+  patient         Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  practitionerId  String?       // Le praticien responsable de la facturation
+  practitioner    Practitioner? @relation(fields: [practitionerId], references: [id])
+  status          InvoiceStatus @default(DRAFT)
+  items           InvoiceItem[]
+  payments        Payment[]
+  totalAmount     Float
+  subtotal        Float
+  taxTPS          Float         @default(0)
+  taxTVQ          Float         @default(0)
+  insuranceShare  Float         @default(0)
+  patientShare    Float         @default(0)
+  stripeSessionId String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([patientId, createdAt])
+  @@index([practitionerId])
+}
+
+model InvoiceItem {
+  id          String  @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  actCode     String  // Code ACDQ
+  description String
+  amount      Float
+  quantity    Int     @default(1)
+  isTaxable   Boolean @default(false)
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PAID
+  CANCELLED
+  VOID
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  amount      Float
+  method      PaymentMethod
+  reference   String?  // Stripe ID, Check number, etc.
+  createdAt   DateTime @default(now())
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  CASH
+  DEBIT
+  INTERAC
+  INSURANCE
+  STRIPE
+}
+
+model PatientMedia {
+  id             String    @id @default(cuid())
+  tenantId       String
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  patientId      String
+  patient        Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  practitionerId String?
+  practitioner   User?     @relation(fields: [practitionerId], references: [id])
+  url            String    @db.Text
+  storagePath    String    @db.Text
+  name           String
+  fileType       String    // IMAGE, PDF
+  category       String    @default("PHOTO") // XRAY, PHOTO, DOC
+  notes          String?
+  createdAt      DateTime  @default(now())
+
+  @@index([tenantId])
+  @@index([patientId])
 }
 
 model InsuranceProvider {
@@ -283,4 +390,87 @@ enum AuditCategory {
   SECURITY
   BILLING
   SYSTEM
+}
+
+// ==================== CLINIQUE / DPI ====================
+
+model ClinicalNote {
+  id             String      @id @default(cuid())
+  tenantId       String
+  tenant         Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  patientId      String
+  patient        Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  practitionerId String
+  practitioner   Practitioner @relation(fields: [practitionerId], references: [id])
+  content        String      @db.Text
+  type           String      @default("GENERIC") // EXAM, CLEANING, EMERGENCY, etc.
+  isLocked       Boolean     @default(false)
+  lockedAt       DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@index([patientId, createdAt])
+}
+
+model ToothCondition {
+  id             String      @id @default(cuid())
+  tenantId       String
+  tenant         Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  patientId      String
+  patient        Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  toothNumber    Int         // FDI System (11-48)
+  surface        String?     // "M", "D", "O", "B", "L"
+  condition      String      // "CARIES", "FILLING", "CROWN", "ABSENT", "ENDO", etc.
+  notes          String?     @db.Text
+  practitionerId String
+  practitioner   Practitioner @relation(fields: [practitionerId], references: [id])
+  createdAt      DateTime    @default(now())
+
+  @@index([patientId, toothNumber])
+}
+
+model Prescription {
+  id             String      @id @default(cuid())
+  tenantId       String
+  tenant         Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  patientId      String
+  patient        Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  practitionerId String
+  practitioner   Practitioner @relation(fields: [practitionerId], references: [id])
+  medication     String
+  dosage         String
+  frequency      String
+  duration       String
+  notes          String?     @db.Text
+  createdAt      DateTime    @default(now())
+
+  @@index([patientId, createdAt])
+}
+
+model WebhookLog {
+  id        String   @id @default(cuid())
+  type      String   
+  provider  String   @default("STRIPE")
+  payload   Json?
+  status    String   
+  error     String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([type])
+  @@index([status])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId    String?  // Destinataire (optionnel)
+  title     String
+  message   String   @db.Text
+  type      String   @default("INFO") // "INFO", "SUCCESS", "WARNING", "ERROR"
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, isRead])
 }

@@ -50,12 +50,12 @@ export default async function MarketingLayout({
             <I18nLink href="/contact" className="text-sm font-semibold text-slate-600 hover:text-primary transition-colors">{t.nav.contact}</I18nLink>
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <LanguageSwitcher />
             <I18nLink href="/login">
-              <Button variant="ghost" className="font-semibold rounded-xl px-6">{t.common.login}</Button>
+              <Button variant="ghost" className="font-semibold rounded-xl px-4 md:px-6">{t.common.login}</Button>
             </I18nLink>
-            <I18nLink href="/login">
+            <I18nLink href="/login" className="hidden sm:inline-flex">
               <Button className="bg-primary hover:bg-primary/90 text-white font-bold rounded-xl px-6 shadow-xl shadow-primary/20">{t.common.demo}</Button>
             </I18nLink>
           </div>
@@ -103,7 +103,7 @@ export default async function MarketingLayout({
                  <h4 className="font-black text-xs uppercase tracking-[0.2em] text-slate-900">{t.footer_ext.contact}</h4>
                  <ul className="space-y-4">
                     <li><I18nLink href="/contact" className="text-sm text-slate-500 hover:text-primary font-medium transition-colors">{t.footer_ext.contact}</I18nLink></li>
-                    <li><a href="#" className="text-sm text-slate-500 hover:text-primary font-medium transition-colors">{t.footer_ext.support}</a></li>
+                    <li><a href="mailto:support@oros.ca" className="text-sm text-slate-500 hover:text-primary font-medium transition-colors">{t.footer_ext.support}</a></li>
                  </ul>
               </div>
            </div>

@@ -53,18 +53,28 @@ export default function LoginPage() {
     setIsLoading(true)
     setServerError(null)
 
-    // Préparation des données pour l'action serveur qui attend un FormData
-    const formData = new FormData()
-    formData.append('email', values.email)
-    formData.append('password', values.password)
-    
-    const result = await login(formData)
+    try {
+      const formData = new FormData()
+      formData.append('email', values.email)
+      formData.append('password', values.password)
+      
+      const result = await login(formData)
 
-    if (result?.error) {
-      setServerError(result.error)
+      if (result?.error) {
+        setServerError(result.error)
+        setIsLoading(false)
+      }
+      // If no error, the server action will redirect the page
+    } catch (error: any) {
+      // Check if it's a Next.js redirect error (sometimes caught on client)
+      if (error?.message === 'NEXT_REDIRECT') {
+        return;
+      }
+      
+      console.error("Login client error:", error)
+      setServerError("Une erreur est survenue. Vérifiez vos identifiants.")
       setIsLoading(false)
     }
-    // Note: redirect est géré par l'action serveur en cas de succès
   }
 
   return (
@@ -74,12 +84,7 @@ export default function LoginPage() {
          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/20 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-500/10 blur-[100px] rounded-full -translate-x-1/2 translate-y-1/2"></div>
 
-         <I18nLink href="/" className="relative z-10 flex items-center gap-3">
-            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-xl rotate-3">
-              <span className="text-primary font-black text-xl">DF</span>
-            </div>
-            <span className="font-extrabold text-3xl tracking-tight text-white">Oros</span>
-         </I18nLink>
+         
 
          <div className="relative z-10 space-y-10">
             <h2 className="text-5xl font-black text-white leading-tight animate-in fade-in slide-in-from-left-4 duration-700">
@@ -127,19 +132,15 @@ export default function LoginPage() {
          <div className="absolute inset-0 mesh-gradient opacity-40 lg:hidden"></div>
          
          <div className="absolute top-8 left-8 lg:hidden">
-            <I18nLink href="/" className="flex items-center gap-2">
-               <div className="p-2 bg-primary rounded-xl shadow-lg">
-                  <span className="font-bold text-white text-sm">DF</span>
-               </div>
-            </I18nLink>
-         </div>
+             {/* Logo/Texte retiré */}
+          </div>
 
-         <Card className="w-full max-w-md border-none shadow-none bg-transparent lg:p-4">
+         <Card className="w-full max-w-md border-none shadow-none bg-transparent lg:p-4 relative z-10">
             <div className="space-y-2 mb-10 text-center lg:text-left">
                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-wider mb-2">
-                  <ShieldCheck className="h-3 w-3" /> {t.login_page.secure_space}
+                   {t.login_page.secure_space}
                </div>
-               <h1 className="text-4xl font-black text-slate-900 tracking-tight">{t.login_page.portal_title}</h1>
+               <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">{t.login_page.portal_title}</h1>
                <p className="text-slate-500 font-medium tracking-tight">{t.login_page.portal_desc}</p>
             </div>
 
@@ -214,6 +215,18 @@ export default function LoginPage() {
                  </Button>
               </form>
             </Form>
+
+            <div className="mt-6 text-center space-y-4">
+               <p className="text-sm text-slate-500 font-medium tracking-tight">
+                  {t.login_page.no_account || "Pas encore de compte ?"} <I18nLink href="/register" className="text-primary font-black hover:underline transition-all active:scale-95 inline-block">{t.login_page.register_link || "Inscrire ma clinique"}</I18nLink>
+               </p>
+               
+               <div className="pt-4 border-t border-slate-100/50">
+                  <I18nLink href="/superadmin" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary transition-colors inline-flex items-center gap-2">
+                    <ShieldCheck className="h-3 w-3" /> Accès Plateforme Administrateur
+                  </I18nLink>
+               </div>
+            </div>
 
             <div className="mt-10 pt-10 border-t border-slate-100 space-y-4">
                <p className="text-xs text-slate-400 font-medium text-center italic">

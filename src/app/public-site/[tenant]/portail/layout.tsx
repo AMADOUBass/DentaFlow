@@ -7,7 +7,8 @@ import {
   Settings, 
   LogOut, 
   ShieldCheck,
-  Menu
+  Menu,
+  CreditCard
 } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -52,6 +53,7 @@ export default async function PatientPortalLayout({ children, params }: PatientL
   const navItems = [
     { label: 'Accueil', href: `/${tenantSlug}/portail`, icon: ShieldCheck },
     { label: 'Mes Rendez-vous', href: `/${tenantSlug}/portail/rendez-vous`, icon: CalendarIcon },
+    { label: 'Factures', href: `/${tenantSlug}/portail/factures`, icon: CreditCard },
     { label: 'Mon Profil', href: `/${tenantSlug}/portail/profil`, icon: UserIcon },
   ]
 

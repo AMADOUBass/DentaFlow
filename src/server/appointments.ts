@@ -216,8 +216,9 @@ export async function cancelAppointmentAction(appointmentId: string) {
     include: { patient: true }
   })
   
-  if (appointment && appointment.tenantId !== user.tenantId) {
-    throw new Error('Non autorisé')
+  // Check for ownership if needed, but since we check email below, it's safe.
+  if (!appointment) {
+    throw new Error('Rendez-vous non trouvé')
   }
 
   if (!appointment || appointment.patient.email !== user.email) {

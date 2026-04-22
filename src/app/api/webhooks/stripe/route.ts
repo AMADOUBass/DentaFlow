@@ -1,22 +1,19 @@
-import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe'
-import { prisma } from '@/lib/prisma'
+import { headers } from 'next/headers'
 import Stripe from 'stripe'
+import { prisma } from '@/lib/prisma'
 import { PlanTier } from '@prisma/client'
 
-// Configuration des Price IDs (À mettre à jour avec les vrais IDs Stripe)
-const PRICE_TO_TIER: Record<string, PlanTier> = {
-  'price_essential_id': PlanTier.ESSENTIEL,
-  'price_complet_id': PlanTier.COMPLET,
-  'price_premium_id': PlanTier.PREMIUM,
-}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2025-01-27' as any,
+})
 
 export async function POST(req: Request) {
   const body = await req.text()
-  const signature = (await headers()).get('Stripe-Signature') as string
+  const signature = (await headers()).get('Stripe-Signature')!
 
   let event: Stripe.Event
+  let logEntryId: string | null = null
 
   try {
     event = stripe.webhooks.constructEvent(
@@ -24,65 +21,72 @@ export async function POST(req: Request) {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
     )
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unknown error'
-    return new Response(`Webhook Error: ${message}`, { status: 400 })
-  }
 
-  // 1. Lorsqu'une session de paiement est complétée
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session
-    const tenantId = session.metadata?.tenantId
-    const customerId = session.customer as string
-    const subscriptionId = session.subscription as string
-
-    // Récupérer le prix pour déterminer le tier
-    const lineItems = await stripe.checkout.sessions.listLineItems(session.id)
-    const priceId = lineItems.data[0]?.price?.id
-    const tier = priceId ? PRICE_TO_TIER[priceId] : PlanTier.ESSENTIEL
-
-    if (tenantId) {
-      await prisma.tenant.update({
-        where: { id: tenantId },
-        data: {
-          stripeCustomer: customerId,
-          stripeSubId: subscriptionId,
-          planTier: tier || PlanTier.ESSENTIEL,
-        }
-      })
-      console.log(`[STRIPE] Abonnement activé pour le tenant: ${tenantId}`)
-    }
-  }
-
-  // 2. Lorsqu'une souscription est supprimée (annulation)
-  if (event.type === 'customer.subscription.deleted') {
-    const session = event.data.object as Stripe.Subscription
-    const subscriptionId = session.id
-    
-    await prisma.tenant.updateMany({
-      where: { stripeSubId: subscriptionId },
+    // Log initial event reception
+    const log = await prisma.webhookLog.create({
       data: {
-        planTier: PlanTier.ESSENTIEL, // On peut repasser en gratuit ou révoquer l'accès
-        stripeSubId: null,
+        type: event.type,
+        provider: 'STRIPE',
+        payload: event.data.object as any,
+        status: 'RECEIVED'
       }
     })
-    console.log(`[STRIPE] Abonnement résilié: ${subscriptionId}`)
-  }
+    logEntryId = log.id
 
-  // 3. Lorsqu'une souscription est mise à jour (Upgrade/Downgrade)
-  if (event.type === 'customer.subscription.updated') {
-    const session = event.data.object as Stripe.Subscription
-    const subscriptionId = session.id
-    const priceId = session.items.data[0].price.id
-    const tier = PRICE_TO_TIER[priceId]
+    console.log(`[STRIPE] Événement reçu: ${event.type}`)
 
-    if (tier) {
-      await prisma.tenant.updateMany({
-        where: { stripeSubId: subscriptionId },
-        data: { planTier: tier }
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object as Stripe.Checkout.Session
+      const tenantId = session.metadata?.tenantId
+      const subscriptionId = session.subscription as string
+      const customerId = session.customer as string
+      const tier = session.metadata?.tier as PlanTier
+
+      if (tenantId) {
+        await prisma.tenant.update({
+          where: { id: tenantId },
+          data: {
+            stripeCustomer: customerId,
+            stripeSubId: subscriptionId,
+            planTier: tier || PlanTier.ESSENTIEL,
+            isActive: true, // Activation automatique après paiement
+          }
+        })
+        console.log(`[STRIPE] Abonnement activé pour le tenant: ${tenantId}`)
+      }
+    }
+
+    if (event.type === 'invoice.paid') {
+      const invoice = event.data.object as Stripe.Invoice
+      const customerId = invoice.customer as string
+      
+      // On peut marquer les factures locales comme payées ici si nécessaire
+      console.log(`[STRIPE] Facture payée pour le client: ${customerId}`)
+    }
+
+    // Update log to success
+    if (logEntryId) {
+      await prisma.webhookLog.update({
+        where: { id: logEntryId },
+        data: { status: 'SUCCESS' }
       })
     }
-  }
 
-  return NextResponse.json({ received: true })
+    return new Response(JSON.stringify({ received: true }), { status: 200 })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    
+    if (logEntryId) {
+      await prisma.webhookLog.update({
+        where: { id: logEntryId },
+        data: { status: 'ERROR', error: message }
+      })
+    } else {
+      await prisma.webhookLog.create({
+        data: { type: 'ERROR_CONSTRUCT', provider: 'STRIPE', status: 'ERROR', error: message }
+      })
+    }
+    
+    return new Response(`Webhook Error: ${message}`, { status: 400 })
+  }
 }

@@ -8,7 +8,15 @@ import { redirect } from 'next/navigation'
  */
 export async function getAdminUser() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  
+  let user = null
+  try {
+    const { data } = await supabase.auth.getUser()
+    user = data.user
+  } catch (err) {
+    console.error("Supabase Auth Network Error:", err)
+    redirect('/login?error=network_error')
+  }
 
   if (!user) {
     redirect('/login')

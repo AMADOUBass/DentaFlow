@@ -175,6 +175,8 @@ const translations = {
       submitting: "Authentification...",
       help_text: "Besoin d'aide pour accéder à votre plateforme ?",
       contact_support: "Contactez le support",
+      no_account: "Pas encore de compte ?",
+      register_link: "Inscrire ma clinique"
     },
     clinic_home: {
       badge: "Expertise de pointe",
@@ -456,6 +458,8 @@ const translations = {
       submitting: "Authenticating...",
       help_text: "Need help accessing your platform?",
       contact_support: "Contact support",
+      no_account: "No account yet?",
+      register_link: "Register my clinic"
     },
     clinic_home: {
       badge: "Cutting-edge expertise",

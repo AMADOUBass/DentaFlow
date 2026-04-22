@@ -14,9 +14,30 @@ import { Metadata } from 'next'
 export async function generateMetadata(): Promise<Metadata> {
   const tenant = await getTenant()
   if (!tenant) return { title: 'Oros' }
+  
+  const ogUrl = new URL('/api/og', process.env.NEXT_PUBLIC_APP_URL || 'https://dentaflow.ca')
+  ogUrl.searchParams.set('tenantSlug', tenant.slug)
+
   return {
     title: `${tenant.name} | Portail Patient`,
-    description: `Prenez rendez-vous en ligne chez ${tenant.name}.`
+    description: `Prenez rendez-vous en ligne chez ${tenant.name}.`,
+    openGraph: {
+      title: tenant.name,
+      description: `Prenez rendez-vous en ligne chez ${tenant.name}.`,
+      images: [
+        {
+          url: ogUrl.toString(),
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: tenant.name,
+      description: `Prenez rendez-vous en ligne chez ${tenant.name}.`,
+      images: [ogUrl.toString()],
+    },
   }
 }
 
