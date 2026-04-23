@@ -39,9 +39,24 @@ export async function middleware(request: NextRequest) {
   const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
   let subdomain = "";
   let isCustomDomain = false;
+  let tenantFromPath = "";
 
-  if (host === rootDomain || host === `www.${rootDomain}`) {
+  const hostIsRoot = host === rootDomain || host === `www.${rootDomain}`;
+
+  if (hostIsRoot) {
     subdomain = "";
+    // On essaie de récupérer le tenant depuis le path (ex: /demo/...)
+    const segments = pathname.split("/").filter(Boolean);
+    const firstSegment = segments[0];
+    const locales = ["fr", "en"];
+    
+    if (firstSegment && !locales.includes(firstSegment)) {
+      // Le premier segment n'est pas une locale, c'est potentiellement un tenant
+      tenantFromPath = firstSegment;
+    } else if (segments[1] && locales.includes(firstSegment)) {
+      // Le premier segment est une locale, le deuxième est potentiellement le tenant
+      tenantFromPath = segments[1];
+    }
   } else if (host.endsWith(`.${rootDomain}`)) {
     subdomain = host.replace(`.${rootDomain}`, "");
   } else if (host !== "localhost:3000" && !host.includes(".localhost:3000")) {
@@ -100,7 +115,7 @@ export async function middleware(request: NextRequest) {
 
   // 8. Injection des headers métier
   finalResponse.headers.set("x-locale", locale);
-  const tenantSlug = isCustomDomain ? host : subdomain;
+  const tenantSlug = isCustomDomain ? host : (subdomain || tenantFromPath);
   if (tenantSlug) {
     finalResponse.headers.set("x-tenant-slug", tenantSlug);
   }

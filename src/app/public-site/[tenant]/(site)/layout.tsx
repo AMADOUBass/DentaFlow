@@ -62,6 +62,11 @@ export default async function TenantSiteLayout({
                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">{t.clinic.need_help}</span>
                    <span className="text-sm font-black text-slate-900">{tenant.phone}</span>
                 </div>
+                <I18nLink href="/login/patient" className="hidden sm:block">
+                   <Button variant="ghost" className="font-bold rounded-xl text-slate-600 hover:text-primary">
+                      {t.common.login}
+                   </Button>
+                </I18nLink>
                 <I18nLink href="/rendez-vous" className="hidden sm:block">
                    <Button className="bg-primary hover:bg-primary/90 text-white font-bold rounded-xl px-6 shadow-xl shadow-primary/20 group">
                       <Calendar className="mr-2 h-4 w-4 group-hover:rotate-12 transition-transform" /> 

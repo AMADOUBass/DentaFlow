@@ -48,15 +48,17 @@ export async function getTenant() {
 export async function getTenantPath(path: string) {
   const headersList = await headers()
   const host = headersList.get('host') || ''
+  const locale = headersList.get('x-locale') || 'fr'
   const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'localhost:3000'
   const slug = headersList.get('x-tenant-slug')
 
+  const cleanPath = path.startsWith('/') ? path : `/${path}`
+
   // If we are on root domain, we need the slug in the path
   if (host === rootDomain || host === `www.${rootDomain}`) {
-    const cleanPath = path.startsWith('/') ? path : `/${path}`
-    return `/${slug}${cleanPath}`
+    return `/${slug}/${locale}${cleanPath}`
   }
 
-  // If we are on a subdomain or custom domain, the path is already relative to the tenant
-  return path.startsWith('/') ? path : `/${path}`
+  // If we are on a subdomain or custom domain, the path is relative to the tenant
+  return `/${locale}${cleanPath}`
 }
