@@ -227,7 +227,13 @@ export function QuestionnaireStep({ onBack, onNext }: QuestionnaireStepProps) {
           </div>
         </div>
 
-        <div className="p-6 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+        <div className="p-6 bg-slate-50 rounded-2xl border border-dashed border-slate-200 space-y-4">
+           <div className="flex items-start space-x-3">
+              <Checkbox id="certified" required className="mt-1" />
+              <label htmlFor="certified" className="text-xs font-bold text-slate-600 leading-tight cursor-pointer">
+                 Je certifie sur l'honneur que les informations fournies ci-dessus sont exactes et complètes au meilleur de ma connaissance.
+              </label>
+           </div>
            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center">
               Confidentialité garantie — Ces données sont protégées par le secret médical et la Loi 25.
            </p>
