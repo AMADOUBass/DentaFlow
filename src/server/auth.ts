@@ -12,6 +12,12 @@ export async function login(formData: FormData) {
 
   const email = formData.get('email') as string
   const password = formData.get('password') as string
+  const rawReturnUrl = formData.get('returnUrl') as string | null
+  // Validate returnUrl: internal paths only, no open-redirect
+  const returnUrl =
+    rawReturnUrl && rawReturnUrl.startsWith('/') && !rawReturnUrl.startsWith('//')
+      ? rawReturnUrl
+      : null
 
   const { data: { user }, error } = await supabase.auth.signInWithPassword({
     email,
@@ -19,11 +25,8 @@ export async function login(formData: FormData) {
   })
 
   if (error || !user) {
-    console.error("Login error for", email, ":", error?.message)
     return { error: "Identifiants invalides." }
   }
-
-  console.log("Login successful for", email, "UID:", user.id)
 
   // Fetch role from Prisma
   let dbUser = await prisma.user.findUnique({
@@ -39,7 +42,7 @@ export async function login(formData: FormData) {
     let role = (user.user_metadata?.role as UserRole) || UserRole.CLINIC_OWNER
     
     // Force SUPERADMIN if email matches master email
-    if (user.email === process.env.NEXT_PUBLIC_SUPERADMIN_EMAIL) {
+    if (user.email === process.env.SUPERADMIN_EMAIL) {
       role = UserRole.SUPERADMIN
     }
 
@@ -59,7 +62,7 @@ export async function login(formData: FormData) {
   }
 
   // Force SUPERADMIN role update if email matches master email
-  if (user.email === process.env.NEXT_PUBLIC_SUPERADMIN_EMAIL && dbUser.role !== UserRole.SUPERADMIN) {
+  if (user.email === process.env.SUPERADMIN_EMAIL && dbUser.role !== UserRole.SUPERADMIN) {
     console.log(`Upgrading user ${user.email} to SUPERADMIN...`)
     dbUser = await prisma.user.update({
       where: { id: dbUser.id },
@@ -71,11 +74,10 @@ export async function login(formData: FormData) {
   revalidatePath('/', 'layout')
 
   if (dbUser.role === UserRole.SUPERADMIN) {
-    redirect('/superadmin')
+    redirect(returnUrl || '/superadmin')
   }
 
-  // Pour les cliniques, on utilise le chemin physique direct pour éviter les conflits de sous-domaines lors du login
-  redirect('/admin-area/admin/dashboard')
+  redirect(returnUrl || '/admin-area/admin/dashboard')
 }
 
 export async function loginWithMagicLink(formData: FormData) {

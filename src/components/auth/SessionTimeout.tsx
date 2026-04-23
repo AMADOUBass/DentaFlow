@@ -14,7 +14,6 @@ export function SessionTimeout() {
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
     
     timeoutRef.current = setTimeout(async () => {
-      console.log("[SECURITY]: Session timeout reached. Logging out.")
       await logout()
       router.push('/login?error=timeout')
     }, TIMEOUT_MS)

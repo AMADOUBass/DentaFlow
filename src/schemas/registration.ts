@@ -5,7 +5,7 @@ export const clinicRegistrationSchema = z.object({
   name: z.string().min(3, "Le nom de la clinique doit contenir au moins 3 caractères"),
   slug: z.string()
     .min(3, "Le sous-domaine doit contenir au moins 3 caractères")
-    .regex(/^[a-z0-0-]+$/, "Le sous-domaine ne peut contenir que des lettres minuscules, chiffres et tirets"),
+    .regex(/^[a-z0-9-]+$/, "Le sous-domaine ne peut contenir que des lettres minuscules, chiffres et tirets"),
   neq: z.string().length(10, "Le NEQ doit comporter exactement 10 chiffres").regex(/^\d+$/, "Le NEQ ne doit contenir que des chiffres"),
   phone: z.string().min(10, "Un numéro de téléphone valide est requis"),
   address: z.string().min(5, "Une adresse complète est requise"),

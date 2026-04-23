@@ -34,7 +34,7 @@ export default async function PatientProfilePage({ params }: ProfilePageProps) {
         <p className="text-slate-500 mt-2">{t.patient_portal.profile.subtitle}</p>
       </div>
       
-      <ProfileForm patient={patient} tenantId={tenant.id} locale={locale} />
+      <ProfileForm patient={patient} tenantSlug={tenantSlug} locale={locale} />
     </div>
   )
 }

@@ -26,13 +26,15 @@ import {
   Sparkles, 
   CheckCircle2 
 } from 'lucide-react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations, Locale } from '@/lib/i18n'
 import { I18nLink } from '@/components/I18nLink'
 import { loginSchema, LoginInput } from '@/schemas/auth'
 
 export default function LoginPage() {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const returnUrl = searchParams.get('returnUrl') || ''
   const locale = pathname.startsWith('/en') ? 'en' as Locale : 'fr' as Locale
   const t = useTranslations(locale)
   
@@ -57,6 +59,7 @@ export default function LoginPage() {
       const formData = new FormData()
       formData.append('email', values.email)
       formData.append('password', values.password)
+      if (returnUrl) formData.append('returnUrl', returnUrl)
       
       const result = await login(formData)
 

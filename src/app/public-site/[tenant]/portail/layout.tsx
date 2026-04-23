@@ -27,7 +27,7 @@ export default async function PatientPortalLayout({ children, params }: PatientL
   // 1. Check for logged in user
   const { data: { user } } = await supabase.auth.getUser()
   if (!user || !user.email) {
-    redirect(`/login/patient`)
+    redirect(`/${tenantSlug}/login/patient`)
   }
 
   // 2. Fetch tenant and patient
@@ -45,9 +45,7 @@ export default async function PatientPortalLayout({ children, params }: PatientL
 
   // 3. Security: If user is logged in but not a patient of this clinic, block access
   if (!patient) {
-    // Optional: We could automatically create the patient if they exist in Supabase but not in this Tenant
-    // But per our decision: Access only if already in the DB.
-    redirect('/')
+    redirect(`/${tenantSlug}/login/patient`)
   }
 
   const navItems = [

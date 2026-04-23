@@ -65,6 +65,8 @@ async function main() {
           { weekday: 3, startTime: '08:00', endTime: '17:00', lunchStart: '12:00', lunchEnd: '13:00' },
           { weekday: 4, startTime: '08:00', endTime: '17:00', lunchStart: '12:00', lunchEnd: '13:00' },
           { weekday: 5, startTime: '08:00', endTime: '16:00', lunchStart: '12:00', lunchEnd: '13:00' },
+          { weekday: 6, startTime: '09:00', endTime: '16:00', lunchStart: '12:00', lunchEnd: '13:00' },
+          { weekday: 0, startTime: '09:00', endTime: '13:00' },
         ]
       }
     }
@@ -86,6 +88,8 @@ async function main() {
           { weekday: 3, startTime: '08:00', endTime: '17:00', lunchStart: '12:00', lunchEnd: '13:00' },
           { weekday: 4, startTime: '08:00', endTime: '17:00', lunchStart: '12:00', lunchEnd: '13:00' },
           { weekday: 5, startTime: '08:00', endTime: '16:00', lunchStart: '12:00', lunchEnd: '13:00' },
+          { weekday: 6, startTime: '09:00', endTime: '16:00', lunchStart: '12:00', lunchEnd: '13:00' },
+          { weekday: 0, startTime: '09:00', endTime: '13:00' },
         ]
       }
     }
@@ -107,6 +111,7 @@ async function main() {
           { weekday: 3, startTime: '09:00', endTime: '18:00', lunchStart: '13:00', lunchEnd: '14:00' },
           { weekday: 4, startTime: '09:00', endTime: '18:00', lunchStart: '13:00', lunchEnd: '14:00' },
           { weekday: 5, startTime: '09:00', endTime: '17:00', lunchStart: '13:00', lunchEnd: '14:00' },
+          { weekday: 6, startTime: '10:00', endTime: '15:00', lunchStart: '12:00', lunchEnd: '13:00' },
         ]
       }
     }

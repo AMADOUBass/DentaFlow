@@ -14,16 +14,15 @@ import { Loader2, Save, Mail, Phone, MapPin, ShieldCheck, CheckCircle2 } from 'l
 import { getTranslations, type Locale } from '@/lib/i18n'
 
 import React from 'react'
-import { getAdminUser } from '@/lib/auth-utils'
 import { Patient } from '@prisma/client'
 
 interface ProfileFormProps {
   patient: Patient
-  tenantId: string
+  tenantSlug: string
   locale: Locale
 }
 
-export function ProfileForm({ patient, tenantId, locale }: ProfileFormProps) {
+export function ProfileForm({ patient, tenantSlug, locale }: ProfileFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const t = getTranslations(locale)
   const tp = t.patient_portal.profile
@@ -44,7 +43,7 @@ export function ProfileForm({ patient, tenantId, locale }: ProfileFormProps) {
   const onSubmit = async (data: PatientProfileInput) => {
     setIsLoading(true)
     try {
-      await updatePatientProfile(tenantId, data)
+      await updatePatientProfile(tenantSlug, data)
       toast.success(tp.success)
     } catch (error: unknown) {
       console.error('Update profile error:', error)

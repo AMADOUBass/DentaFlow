@@ -7,7 +7,7 @@ import { revalidatePath } from 'next/cache'
 import { encrypt, decrypt } from '@/lib/crypto'
 import { logAudit } from '@/lib/audit'
 
-export async function updatePatientProfile(tenantId: string, data: PatientProfileInput) {
+export async function updatePatientProfile(tenantSlug: string, data: PatientProfileInput) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -15,21 +15,24 @@ export async function updatePatientProfile(tenantId: string, data: PatientProfil
     throw new Error('Non authentifié')
   }
 
+  // Resolve tenantId from slug — never trust a tenantId from the client
+  const tenant = await prisma.tenant.findUnique({ where: { slug: tenantSlug }, select: { id: true } })
+  if (!tenant) throw new Error('Clinique introuvable')
+
   const validatedData = patientProfileSchema.parse(data)
 
-  // Enforce encryption for sensitive fields
   if (validatedData.ramqNumber) {
     validatedData.ramqNumber = encrypt(validatedData.ramqNumber)
   }
 
   await prisma.patient.update({
-    where: { 
-      tenantId_email: { 
-        tenantId, 
-        email: user.email 
-      } 
+    where: {
+      tenantId_email: {
+        tenantId: tenant.id,
+        email: user.email,
+      },
     },
-    data: validatedData
+    data: validatedData,
   })
 
   revalidatePath('/[tenant]/portail', 'layout')
@@ -40,20 +43,25 @@ export async function updatePatientProfile(tenantId: string, data: PatientProfil
  * Admin action to fetch a patient's full record with audit logging.
  * Compliant with Loi 25 (Access log).
  */
-export async function getPatientDetail(tenantId: string, patientId: string) {
+export async function getPatientDetail(patientId: string) {
   const supabase = await createClient()
   const { data: { user: authUser } } = await supabase.auth.getUser()
 
   if (!authUser) throw new Error('Non authentifié')
 
-  // Log the access event immediately
+  // Resolve tenantId from the authenticated admin — never accept it as a parameter
+  const adminUser = await prisma.user.findUnique({ where: { authId: authUser.id }, select: { id: true, tenantId: true } })
+  if (!adminUser?.tenantId) throw new Error('Tenant non trouvé')
+  const tenantId = adminUser.tenantId
+
+  // Log access AFTER confirming who is asking (Loi 25)
   await logAudit({
     tenantId,
-    userId: authUser.id,
+    userId: adminUser.id,
     patientId,
     action: 'VIEW',
     category: 'PATIENT_DATA',
-    description: `Consultation de la fiche détaillée du patient.`
+    description: `Consultation de la fiche détaillée du patient.`,
   })
 
   const patient = await prisma.patient.findUnique({

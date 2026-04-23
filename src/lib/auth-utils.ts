@@ -21,7 +21,6 @@ export async function getAdminUser() {
     include: { tenant: true }
   })
 
-  console.log(`Auth check for ${user.email}: Role=${prismaUser?.role}, Tenant=${prismaUser?.tenantId}`)
 
   // AUTO-SYNC LOGIC: If user exists in Supabase but not in Prisma, try to heal
   if (!prismaUser) {
@@ -30,7 +29,7 @@ export async function getAdminUser() {
      let role = (user.user_metadata?.role as UserRole) || UserRole.CLINIC_OWNER
 
      // Force SUPERADMIN if email matches master email
-     if (user.email === process.env.NEXT_PUBLIC_SUPERADMIN_EMAIL) {
+     if (user.email === process.env.SUPERADMIN_EMAIL) {
        role = UserRole.SUPERADMIN
      }
 
@@ -58,7 +57,7 @@ export async function getAdminUser() {
   }
 
   // Force role repair if email matches master email but role is wrong
-  if (user.email === process.env.NEXT_PUBLIC_SUPERADMIN_EMAIL && prismaUser.role !== UserRole.SUPERADMIN) {
+  if (user.email === process.env.SUPERADMIN_EMAIL && prismaUser.role !== UserRole.SUPERADMIN) {
      console.log(`Repairing role for ${user.email} to SUPERADMIN...`)
      try {
        prismaUser = await prisma.user.update({

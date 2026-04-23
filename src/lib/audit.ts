@@ -24,7 +24,8 @@ export async function logAudit({
   description
 }: AuditParams) {
     const headersList = await headers()
-    const ip = headersList.get('x-forwarded-for') || 'unknown'
+    // Take only the first IP — x-forwarded-for can be "client, proxy1, proxy2"
+    const ip = headersList.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown'
     const userAgent = headersList.get('user-agent') || 'unknown'
 
     await prisma.auditLog.create({

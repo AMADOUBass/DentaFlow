@@ -2,15 +2,40 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { updateSession } from "./lib/supabase/middleware";
 
-export async function middleware(request: NextRequest) {
-  // 1. Refresh Supabase session and get the initial response
-  let response = await updateSession(request);
+function isAdminPath(path: string) {
+  return (
+    path === "/admin" ||
+    path.startsWith("/admin/") ||
+    path === "/superadmin" ||
+    path.startsWith("/superadmin/") ||
+    path.startsWith("/admin-area")
+  );
+}
 
+function applySecurityHeaders(response: NextResponse, isProduction: boolean) {
+  response.headers.set("X-Frame-Options", "SAMEORIGIN");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-XSS-Protection", "1; mode=block");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set(
+    "Permissions-Policy",
+    "camera=(), microphone=(), geolocation=(), payment=()",
+  );
+  if (isProduction) {
+    response.headers.set(
+      "Strict-Transport-Security",
+      "max-age=63072000; includeSubDomains; preload",
+    );
+  }
+}
+
+export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
   const host = request.headers.get("host") || "";
   const { pathname } = url;
+  const isProduction = process.env.NODE_ENV === "production";
 
-  // 2. Détection du sous-domaine (Tenant)
+  // 1. Détection du sous-domaine (Tenant)
   const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
   let subdomain = "";
   let isCustomDomain = false;
@@ -25,7 +50,7 @@ export async function middleware(request: NextRequest) {
     subdomain = host.split(".localhost:3000")[0];
   }
 
-  // 3. Détection de la Locale
+  // 2. Détection de la Locale
   const locales = ["fr", "en"];
   const firstSegment = pathname.split("/")[1];
   const locale = locales.includes(firstSegment) ? firstSegment : "fr";
@@ -33,16 +58,7 @@ export async function middleware(request: NextRequest) {
     ? pathname.replace(`/${firstSegment}`, "") || "/"
     : pathname;
 
-  // 4. Protection des routes Admin/Superadmin
-  // Note: On laisse getAdminUser() faire le check de rôle fin, mais on bloque les non-connectés ici.
-  // Cependant, pour ne pas casser le flow de login, on ignore /login et /register.
-  if (pathWithoutLocale.startsWith("/admin-area") || pathWithoutLocale.startsWith("/admin") || pathWithoutLocale.startsWith("/superadmin")) {
-     // Si updateSession n'a pas trouvé d'user (on pourrait repasser par supabase.auth.getUser() ici si besoin)
-     // Mais pour simplifier et éviter de re-fetcher, on se fie à getAdminUser dans les pages.
-     // Si on veut vraiment bloquer ici, il faut que updateSession retourne l'user.
-  }
-
-  // 5. Routage interne
+  // 3. Routage interne
   let targetPath = pathWithoutLocale;
 
   if (pathWithoutLocale === "/admin" || pathWithoutLocale.startsWith("/admin/")) {
@@ -63,16 +79,25 @@ export async function middleware(request: NextRequest) {
   }
 
   const finalTargetPath = targetPath.startsWith("/") ? targetPath : `/${targetPath}`;
-  
-  // 6. Créer la réponse réécrite en conservant les cookies de updateSession
-  const finalResponse = NextResponse.rewrite(new URL(finalTargetPath, request.url));
-  
-  // Copier les headers et cookies de la réponse de updateSession
-  response.headers.forEach((value, key) => {
-    finalResponse.headers.set(key, value);
-  });
 
-  // Injection des headers métier
+  // 4. Construire la réponse finale (rewrite)
+  // On la construit avant updateSession pour que les cookies Supabase atterrissent directement dessus.
+  const finalResponse = NextResponse.rewrite(new URL(finalTargetPath, request.url));
+
+  // 5. Rafraîchir la session Supabase — les cookies sont injectés dans finalResponse
+  const user = await updateSession(request, finalResponse);
+
+  // 6. Protection des routes admin/superadmin — redirige avec returnUrl pour reprendre après login
+  if (isAdminPath(pathWithoutLocale) && !user) {
+    const loginUrl = new URL(`/${locale}/login`, request.url);
+    loginUrl.searchParams.set("returnUrl", pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // 7. Headers de sécurité HTTP
+  applySecurityHeaders(finalResponse, isProduction);
+
+  // 8. Injection des headers métier
   finalResponse.headers.set("x-locale", locale);
   const tenantSlug = isCustomDomain ? host : subdomain;
   if (tenantSlug) {
@@ -84,13 +109,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, icon.png, logo.png (static assets)
-     */
     "/((?!api|_next/static|_next/image|favicon.ico|icon.png|logo.png|demo|marketing|manifest.webmanifest|manifest.json|sw.js|offline).*)",
   ],
 };
