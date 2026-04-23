@@ -101,7 +101,12 @@ export async function loginWithMagicLink(formData: FormData) {
   })
 
   if (error) {
-    return { error: "Erreur lors de l'envoi du lien." }
+    console.error('[loginWithMagicLink] Supabase OTP error:', error.message, '| redirectTo:', emailRedirectTo)
+    // Expose the real reason in dev so we can diagnose; generic message in prod
+    const message = process.env.NODE_ENV === 'development'
+      ? `Supabase: ${error.message}`
+      : "Erreur lors de l'envoi du lien. Vérifiez votre adresse courriel et réessayez."
+    return { error: message }
   }
 
   return { success: "Lien envoyé ! Vérifiez vos courriels." }
