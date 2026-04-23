@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { LogOut, ShieldCheck, Globe, Activity } from 'lucide-react'
 import { logout } from '@/server/auth'
 import Link from 'next/link'
+import { SuperAdminMobileNav } from '@/components/admin/superadmin/SuperAdminMobileNav'
 
 export default async function SuperAdminLayout({
   children,
@@ -20,13 +21,14 @@ export default async function SuperAdminLayout({
   return (
     <div className="min-h-screen bg-slate-50/50">
       {/* Top Navigation Bar */}
-      <header className="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-8 sticky top-0 z-50">
-        <div className="flex items-center gap-8">
+      <header className="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-4 md:px-8 sticky top-0 z-50">
+        <div className="flex items-center gap-4 md:gap-8">
+          <SuperAdminMobileNav />
           <Link href="/superadmin" className="flex items-center gap-3 group">
             <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white shadow-lg shadow-slate-200 group-hover:scale-105 transition-transform">
               <ShieldCheck className="h-6 w-6 text-primary" />
             </div>
-            <div>
+            <div className="hidden sm:block">
               <p className="text-sm font-black text-slate-900 leading-none">Oros</p>
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Platform Console</p>
             </div>
@@ -46,12 +48,12 @@ export default async function SuperAdminLayout({
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 rounded-xl border border-emerald-100">
+          <div className="hidden xs:flex items-center gap-2 px-4 py-2 bg-emerald-50 rounded-xl border border-emerald-100">
             <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-[10px] font-black text-emerald-700 uppercase tracking-widest">Système Live</span>
           </div>
           
-          <form action={logout}>
+          <form action={logout} className="hidden sm:block">
             <Button variant="ghost" size="sm" className="rounded-xl text-slate-400 hover:text-rose-600 transition-colors">
               <LogOut className="h-4 w-4" />
             </Button>

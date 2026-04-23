@@ -49,7 +49,7 @@ export function GreetingHeader({ userName }: GreetingHeaderProps) {
         {greeting.icon}
       </div>
       <div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 flex items-center gap-2">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 flex items-center gap-2">
           {greeting.text}, {userName} <Sparkles className="h-5 w-5 text-primary animate-pulse" />
         </h1>
         <p className="text-slate-500 mt-1 font-medium italic">{greeting.message}</p>

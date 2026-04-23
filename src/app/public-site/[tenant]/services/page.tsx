@@ -1,93 +1,118 @@
 import { 
   Stethoscope, 
-  Baby, 
-  ShieldCheck, 
   Sparkles, 
-  Activity, 
-  Search, 
+  Baby, 
+  Microscope, 
+  Ear, 
+  ShieldCheck, 
   ArrowRight,
-  Microscope,
-  Ear
+  Activity
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { getTenant } from '@/lib/tenant'
+import { notFound } from 'next/navigation'
+import Image from 'next/image'
 
-const services = [
-  {
-    icon: <Stethoscope className="h-6 w-6" />,
-    title: "Examens & Nettoyage",
-    description: "Prévention complète et nettoyage professionnel pour maintenir votre santé buccale.",
-    price: "À partir de 120$"
-  },
-  {
-    icon: <Sparkles className="h-6 w-6" />,
-    title: "Blanchiment Dentaire",
-    description: "Retrouvez l'éclat de votre sourire avec nos technologies de blanchiment au laser.",
-    price: "Offre: 299$"
-  },
-  {
-    icon: <Baby className="h-6 w-6" />,
-    title: "Dentisterie Pédiatrique",
-    description: "Des soins doux et ludiques pour les plus petits. Une approche sans peur.",
-    price: "Consultation"
-  },
-  {
-    icon: <Microscope className="h-6 w-6" />,
-    title: "Orthodontie",
-    description: "Alignement parfait via Invisalign ou appareils traditionnels.",
-    price: "Plan gratuit"
-  },
-  {
-    icon: <Ear className="h-6 w-6" />,
-    title: "Chirurgie Buccale",
-    description: "Extractions, implants et soins spécialisés avec sédation disponible.",
-    price: "Expertise"
-  },
-  {
-    icon: <ShieldCheck className="h-6 w-6" />,
-    title: "Urgences & Réparation",
-    description: "Couronnes, ponts et réparations rapides pour vos situations critiques.",
-    price: "Priorité"
-  }
-]
+const iconMap: Record<string, any> = {
+  'ORTHODONTICS': <Microscope className="h-6 w-6" />,
+  'PREVENTION': <Stethoscope className="h-6 w-6" />,
+  'ESTHETIC': <Sparkles className="h-6 w-6" />,
+  'SURGERY': <Ear className="h-6 w-6" />,
+  'EMERGENCY': <AlertTriangle className="h-6 w-6" />,
+  'GENERIC': <Activity className="h-6 w-6" />
+}
 
-export default function ServicesPage() {
+function AlertTriangle({ className }: { className?: string }) {
+   return (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+         <path d="m9 12 2 2 4-4" />
+      </svg>
+   )
+}
+
+export default async function ServicesPage() {
+  const tenant = await getTenant()
+  
+  if (!tenant) return notFound()
+
+  const services = tenant.services
+
   return (
     <div className="py-20 bg-slate-50">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center mb-20 space-y-4">
           <h1 className="text-5xl font-black text-slate-900 tracking-tight">Nos Soins & Services</h1>
-          <p className="text-xl text-slate-500">Une approche technologique au service de votre bien-être bucco-dentaire.</p>
+          <p className="text-xl text-slate-600 font-medium">Une approche technologique au service de votre bien-être bucco-dentaire chez {tenant.name}.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service, i) => (
-            <div 
-              key={i} 
-              className="group bg-white p-10 rounded-[2rem] border-2 border-transparent hover:border-primary/20 hover:shadow-2xl transition-all duration-300"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all">
-                {service.icon}
+          {services.length === 0 ? (
+             <div className="col-span-full text-center py-20 bg-white rounded-[3rem] border border-dashed border-slate-200">
+                <p className="text-slate-400 font-bold italic">Aucun service n'est affiché pour le moment.</p>
+             </div>
+          ) : (
+            services.map((service, i) => (
+              <div 
+                key={service.id} 
+                className="group bg-white rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-2 overflow-hidden flex flex-col"
+              >
+                {/* Service Image */}
+                <div className="aspect-video relative overflow-hidden">
+                   {service.imageUrl ? (
+                      <Image 
+                        src={service.imageUrl} 
+                        alt={service.name} 
+                        fill 
+                        className="object-cover group-hover:scale-110 transition-transform duration-700" 
+                      />
+                   ) : (
+                      <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-300">
+                         <Stethoscope className="h-12 w-12" />
+                      </div>
+                   )}
+                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
+                   <div className="absolute top-4 left-4">
+                      <div className="w-10 h-10 rounded-xl bg-white/90 backdrop-blur-sm text-primary flex items-center justify-center shadow-lg group-hover:bg-primary group-hover:text-white transition-all">
+                        {iconMap[service.category] || <Activity className="h-5 w-5" />}
+                      </div>
+                   </div>
+                </div>
+
+                <div className="p-8 flex-grow flex flex-col">
+                  <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">{service.name}</h3>
+                  <p className="text-slate-600 font-medium leading-relaxed mb-6 line-clamp-3">
+                    {service.description || "Soins professionnels adaptés à vos besoins."}
+                  </p>
+                  
+                  <div className="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between">
+                    <span className="text-xs font-black uppercase tracking-widest text-slate-400">
+                      {service.priceCents ? `À partir de ${service.priceCents / 100}$` : 'Consultation'}
+                    </span>
+                    <Button variant="ghost" className="text-primary font-bold group-hover:translate-x-1 transition-transform p-0 hover:bg-transparent">
+                        Détails <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">{service.title}</h3>
-              <p className="text-slate-500 font-medium leading-relaxed mb-8">
-                {service.description}
-              </p>
-              <div className="pt-6 border-t border-slate-50 flex items-center justify-between">
-                 <span className="text-xs font-black uppercase tracking-widest text-slate-400">{service.price}</span>
-                 <Button variant="ghost" className="text-primary font-bold group-hover:translate-x-1 transition-transform">
-                    En savoir plus <ArrowRight className="ml-2 h-4 w-4" />
-                 </Button>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
-        <div className="mt-20 glass-card p-12 rounded-[3rem] text-center space-y-6">
-           <h2 className="text-3xl font-black text-slate-900 text-glow">Vous avez un besoin spécifique ?</h2>
-           <p className="text-slate-500 max-w-xl mx-auto">Nos spécialistes sont là pour établir un plan de traitement personnalisé adapté à vos besoins et votre budget.</p>
-           <Button size="lg" className="h-14 px-10 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold">
-              Consulter un professionnel
-           </Button>
+        <div className="mt-24 bg-slate-900 rounded-[3.5rem] p-12 md:p-20 text-center space-y-8 relative overflow-hidden shadow-2xl">
+           <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
+           <div className="relative z-10 space-y-6">
+              <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">Prêt pour votre <span className="text-primary italic">transformation ?</span></h2>
+              <p className="text-slate-400 max-w-2xl mx-auto text-lg font-medium">Nos spécialistes sont là pour établir un plan de traitement personnalisé adapté à votre santé et votre budget.</p>
+              <div className="flex flex-col sm:flex-row justify-center gap-6 pt-4">
+                <Button size="lg" className="h-16 px-10 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black text-lg shadow-xl shadow-primary/20">
+                    Prendre rendez-vous
+                </Button>
+                <Button variant="outline" size="lg" className="h-16 px-10 rounded-2xl border-2 border-white/10 bg-white/5 hover:bg-white/10 text-white font-black text-lg backdrop-blur-sm transition-all">
+                    Nous contacter
+                </Button>
+              </div>
+           </div>
         </div>
       </div>
     </div>

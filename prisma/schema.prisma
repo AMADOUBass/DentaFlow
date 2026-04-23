@@ -96,6 +96,7 @@ model Service {
   category      ServiceCategory
   active        Boolean               @default(true)
   order         Int                   @default(0)
+  imageUrl      String?
   createdAt     DateTime              @default(now())
   appointments  Appointment[]
   tenant        Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
