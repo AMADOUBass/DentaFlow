@@ -36,20 +36,25 @@ export default async function PatientPortalLayout({ children, params }: PatientL
   }
 
   // 2. Fetch tenant and patient
-  const tenant = await getTenant()
+  let tenant
+  try {
+    tenant = await getTenant()
+  } catch {
+    redirect('/')
+  }
   const locale = await getLocaleServer()
   const t = getTranslations(locale)
-  
+
   if (!tenant) redirect('/')
 
-  const patient = await prisma.patient.findUnique({
-    where: { 
-      tenantId_email: { 
-        tenantId: tenant.id, 
-        email: user.email 
-      } 
-    }
-  })
+  let patient
+  try {
+    patient = await prisma.patient.findUnique({
+      where: { tenantId_email: { tenantId: tenant.id, email: user.email! } }
+    })
+  } catch {
+    redirect(await getTenantPath('/login/patient'))
+  }
 
   // 3. Security: If user is logged in but not a patient of this clinic, block access
   if (!patient) {
