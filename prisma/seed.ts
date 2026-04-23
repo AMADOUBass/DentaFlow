@@ -25,7 +25,7 @@ async function main() {
     data: {
       slug: 'demo',
       name: 'Centre Dentaire Oros (Démo)',
-      email: 'contact@oros-demo.ca',
+      email: 'contact@oros.homes',
       phone: '514-555-0123',
       address: '1230 Rue Sherbrooke Ouest',
       city: 'Montréal',
@@ -130,8 +130,8 @@ async function main() {
   await prisma.user.create({
     data: {
       authId: 'superadmin-auth-id',
-      email: 'admin@dentaflow.ca',
-      name: 'Super Admin DentaFlow',
+      email: 'superadmin@oros.homes',
+      name: 'Super Admin Oros',
       role: UserRole.SUPERADMIN,
     }
   })

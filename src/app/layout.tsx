@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "fr_CA",
-    url: "https://oros.ca",
+    url: "https://oros.homes",
     siteName: "Oros",
     images: [
       {

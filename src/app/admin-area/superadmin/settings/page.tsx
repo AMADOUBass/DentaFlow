@@ -46,7 +46,7 @@ export default async function SuperAdminSettings() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="rootDomain" className="text-[10px] font-black uppercase tracking-widest text-slate-400">Domaine Principal</Label>
-                  <Input id="rootDomain" defaultValue="oros.ca" className="rounded-xl h-12 border-slate-200" />
+                  <Input id="rootDomain" defaultValue="oros.homes" className="rounded-xl h-12 border-slate-200" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="supportEmail" className="text-[10px] font-black uppercase tracking-widest text-slate-400">Email Support</Label>
