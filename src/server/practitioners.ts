@@ -36,7 +36,7 @@ export async function createPractitioner(data: PractitionerInput) {
     description: `Ajout d'un nouveau praticien : ${validatedData.firstName} ${validatedData.lastName} (${validatedData.title}).`
   })
 
-  revalidatePath('/admin/practitioners')
+  revalidatePath('/admin-area/admin/practitioners')
   return { success: true, id: practitioner.id }
 }
 
@@ -59,7 +59,7 @@ export async function updatePractitioner(id: string, data: PractitionerInput) {
     description: `Modification des informations du praticien ${validatedData.firstName} ${validatedData.lastName} (ID: ${id}).`
   })
 
-  revalidatePath('/admin/practitioners')
+  revalidatePath('/admin-area/admin/practitioners')
   return { success: true }
 }
 

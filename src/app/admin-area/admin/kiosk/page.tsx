@@ -24,8 +24,8 @@ export default function KioskWelcomePage() {
         </div>
 
         <div className="pt-10">
-          <Button asChild className="w-full h-24 rounded-[2rem] bg-white hover:bg-slate-100 text-slate-900 font-black text-2xl gap-4 shadow-2xl shadow-white/10">
-            <Link href="/admin/kiosk/check-in">
+          <Button asChild className="w-full h-24 rounded-[2rem] bg-white hover:bg-slate-100 text-slate-900 font-black text-2xl gap-4 shadow-2xl shadow-white/10 transition-all active:scale-95">
+            <Link href="/admin-area/admin/kiosk/check-in">
               <UserCheck className="h-8 w-8 text-primary" />
               Commencer mon Check-in
             </Link>

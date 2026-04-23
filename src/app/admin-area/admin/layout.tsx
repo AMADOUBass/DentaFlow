@@ -10,6 +10,7 @@ import { AdminSidebar } from '@/components/admin/sidebar'
 import { BugReportButton } from '@/components/admin/BugReportButton'
 import { NotificationBell } from '@/components/admin/NotificationBell'
 import { SessionTimeout } from '@/components/auth/SessionTimeout'
+import { Breadcrumbs } from '@/components/admin/breadcrumbs'
 import { Metadata } from 'next'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -74,6 +75,7 @@ export default async function AdminLayout({
         <main className="p-4 md:p-8 flex-1 overflow-x-hidden bg-white">
           <div className="max-w-7xl mx-auto w-full">
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+               <Breadcrumbs />
                {children}
             </div>
           </div>

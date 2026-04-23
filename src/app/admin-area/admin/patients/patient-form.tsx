@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { adminPatientSchema, type AdminPatientInput } from '@/schemas/patient'
-import { createPatientAdmin } from '@/server/patients'
+import { createPatientAdmin, updatePatientAdminAction } from '@/server/patients'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -22,21 +22,27 @@ import { toast } from 'sonner'
 import { usePathname } from 'next/navigation'
 
 interface PatientFormProps {
+  patient?: any
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export function PatientForm({ open, onOpenChange }: PatientFormProps) {
+export function PatientForm({ patient, open, onOpenChange }: PatientFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [wasSuccessful, setWasSuccessful] = useState(false)
   const pathname = usePathname()
   
-  // Extraire le tenantId de l'URL si possible, ou utiliser une autre méthode
-  // Pour cet exemple, on suppose que le serveur s'en occupe via le contexte auth
-  
   const form = useForm<AdminPatientInput>({
     resolver: zodResolver(adminPatientSchema),
-    defaultValues: {
+    defaultValues: patient ? {
+      firstName: patient.firstName,
+      lastName: patient.lastName,
+      email: patient.email,
+      phone: patient.phone,
+      address: patient.address || '',
+      medicalNotes: patient.medicalNotes || '',
+      smsOptIn: patient.smsOptIn ?? true
+    } : {
       firstName: '',
       lastName: '',
       email: '',
@@ -50,22 +56,25 @@ export function PatientForm({ open, onOpenChange }: PatientFormProps) {
   const onSubmit = async (data: AdminPatientInput) => {
     setIsLoading(true)
     try {
-      // Le tenantId sera récupéré côté serveur via l'utilisateur authentifié
-      // On passe un placeholder ou on adapte la signature de l'action
-      const result = await createPatientAdmin('', data) 
+      let result;
+      if (patient?.id) {
+        result = await updatePatientAdminAction(patient.id, data)
+      } else {
+        result = await createPatientAdmin('', data)
+      }
       
       if (result.success) {
         setWasSuccessful(true)
-        toast.success('Patient créé avec succès')
+        toast.success(patient ? 'Dossier mis à jour' : 'Patient créé avec succès')
         
         setTimeout(() => {
-          form.reset()
+          if (!patient) form.reset()
           setWasSuccessful(false)
           onOpenChange(false)
         }, 800)
       }
     } catch (error) {
-      toast.error('Une erreur est survenue lors de la création')
+      toast.error('Une erreur est survenue')
     } finally {
       setIsLoading(false)
     }
@@ -127,6 +136,19 @@ export function PatientForm({ open, onOpenChange }: PatientFormProps) {
               className="rounded-xl border-slate-200 resize-none"
               rows={3}
             />
+          </div>
+
+          <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+             <input 
+               type="checkbox" 
+               id="smsOptIn" 
+               {...form.register('smsOptIn')} 
+               className="h-5 w-5 rounded-lg border-slate-300 text-primary focus:ring-primary" 
+             />
+             <div className="space-y-0.5">
+               <Label htmlFor="smsOptIn" className="font-bold text-slate-700 cursor-pointer text-xs">Autoriser les rappels par SMS</Label>
+               <p className="text-[10px] text-slate-500 font-medium">Le patient recevra ses confirmations et rappels automatiquement.</p>
+             </div>
           </div>
 
           <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">

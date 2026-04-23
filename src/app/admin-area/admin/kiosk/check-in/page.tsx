@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
@@ -24,10 +25,10 @@ export default function KioskCheckInPage() {
         setPatientName(result.patientName!)
         setStep(2)
       } else {
-        alert("Nous n'avons pas trouvé de dossier à ce nom. Veuillez vous adresser à la réception.")
+        toast.error("Nous n'avons pas trouvé de dossier à ce nom. Veuillez vous adresser à la réception.")
       }
     } catch (e) {
-      alert("Une erreur est survenue. Veuillez réessayer.")
+      toast.error("Une erreur est survenue. Veuillez réessayer.")
     } finally {
       setLoading(false)
     }
@@ -44,7 +45,7 @@ export default function KioskCheckInPage() {
         {step === 1 ? (
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
             <Button variant="ghost" asChild className="rounded-full h-12 px-6 gap-2 text-slate-500 font-bold">
-               <Link href="/admin/kiosk"><ArrowLeft className="h-5 w-5" /> Retour</Link>
+               <Link href="/admin-area/admin/kiosk"><ArrowLeft className="h-5 w-5" /> Retour</Link>
             </Button>
 
             <div className="space-y-2">

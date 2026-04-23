@@ -15,6 +15,7 @@ import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { AddPatientButton } from './add-patient-button'
 import { ExportPatientButton } from './export-patient-button'
+import { DeletePatientButton } from './delete-patient-button'
 import { EmptyState } from '@/components/ui/empty-state'
 import Link from 'next/link'
 
@@ -111,7 +112,7 @@ export default async function PatientsPage() {
                           {format(patient.createdAt, 'd MMM yyyy', { locale: fr })}
                        </p>
                     </TableCell>
-                     <TableCell className="text-right">
+                      <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <ExportPatientButton 
                              tenantId={tenantId} 
@@ -119,10 +120,14 @@ export default async function PatientsPage() {
                              patientName={`${patient.firstName} ${patient.lastName}`} 
                           />
                           <Link href={`/admin-area/admin/patients/${patient.id}`}>
-                             <Button variant="ghost" size="sm" className="font-bold text-primary">Dossier</Button>
+                             <Button variant="ghost" size="sm" className="font-bold text-primary hover:bg-primary/5 rounded-lg">Dossier</Button>
                           </Link>
+                          <DeletePatientButton 
+                             patientId={patient.id} 
+                             patientName={`${patient.firstName} ${patient.lastName}`} 
+                          />
                         </div>
-                     </TableCell>
+                      </TableCell>
                   </TableRow>
                 )
               })}

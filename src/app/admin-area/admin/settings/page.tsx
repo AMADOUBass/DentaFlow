@@ -7,7 +7,7 @@ export default function SettingsRootPage() {
     {
       title: "Informations Cliniques",
       desc: "Gérez l'identité, le logo et les coordonnées.",
-      href: "/admin/settings/general",
+      href: "/admin-area/admin/settings/general",
       icon: Settings,
       color: "text-slate-900",
       bg: "bg-slate-100"
@@ -15,7 +15,7 @@ export default function SettingsRootPage() {
     {
       title: "Sécurité & Loi 25",
       desc: "Gestion de la confidentialité et audit logs.",
-      href: "/admin/settings/security",
+      href: "/admin-area/admin/settings/security",
       icon: Lock,
       color: "text-emerald-600",
       bg: "bg-emerald-50"
@@ -23,7 +23,7 @@ export default function SettingsRootPage() {
     {
       title: "Facturation & Plan",
       desc: "Gérez votre abonnement et vos factures.",
-      href: "/admin/settings/billing",
+      href: "/admin-area/admin/settings/billing",
       icon: CreditCard,
       color: "text-primary",
       bg: "bg-primary/10"
@@ -31,7 +31,7 @@ export default function SettingsRootPage() {
     {
       title: "Notifications",
       desc: "Préférences des rappels SMS et emails.",
-      href: "#",
+      href: "/admin-area/admin/settings/notifications",
       icon: Bell,
       color: "text-amber-600",
       bg: "bg-amber-50"
@@ -39,7 +39,7 @@ export default function SettingsRootPage() {
     {
       title: "Application Mobile",
       desc: "Paramètres de votre présence mobile.",
-      href: "#",
+      href: "/admin-area/admin/settings/mobile",
       icon: Smartphone,
       color: "text-sky-600",
       bg: "bg-sky-50"

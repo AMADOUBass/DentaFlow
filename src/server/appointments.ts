@@ -198,7 +198,7 @@ export async function createAppointment(tenantId: string, data: AppointmentInput
     description: `Nouveau rendez-vous créé via le portail public pour ${service.name}.`
   })
 
-  revalidatePath('/admin/dashboard')
+  revalidatePath('/admin-area/admin/dashboard')
   
   return { success: true, id: appointment.id }
 }

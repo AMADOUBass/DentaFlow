@@ -80,11 +80,19 @@ export async function getPatientDetail(tenantId: string, patientId: string) {
 /**
  * Admin action to create a new patient with encrypted data.
  */
-export async function createPatientAdmin(tenantId: string, data: AdminPatientInput) {
+export async function createPatientAdmin(_: string, data: AdminPatientInput) {
   const supabase = await createClient()
   const { data: { user: authUser } } = await supabase.auth.getUser()
 
   if (!authUser) throw new Error('Non authentifié')
+
+  // Récupérer le tenantId de l'utilisateur admin
+  const adminUser = await prisma.user.findUnique({
+    where: { authId: authUser.id }
+  })
+
+  if (!adminUser?.tenantId) throw new Error('Tenant non trouvé pour cet utilisateur')
+  const tenantId = adminUser.tenantId
 
   // Encrypt sensitive fields
   const finalData = { ...data, tenantId }
@@ -97,30 +105,77 @@ export async function createPatientAdmin(tenantId: string, data: AdminPatientInp
 
   await logAudit({
     tenantId,
-    userId: authUser.id,
+    userId: adminUser.id,
     patientId: patient.id,
     action: 'CREATE',
     category: 'PATIENT_DATA',
     description: `Création manuelle d'une fiche patient par le personnel.`
   })
 
-  revalidatePath('/admin/patients')
+  revalidatePath('/admin-area/admin/patients')
+  return { success: true, patient }
+}
+
+/**
+ * Admin action to update an existing patient.
+ */
+export async function updatePatientAdminAction(patientId: string, data: Partial<AdminPatientInput>) {
+  const supabase = await createClient()
+  const { data: { user: authUser } } = await supabase.auth.getUser()
+
+  if (!authUser) throw new Error('Non authentifié')
+
+  const adminUser = await prisma.user.findUnique({
+    where: { authId: authUser.id }
+  })
+
+  if (!adminUser?.tenantId) throw new Error('Tenant non trouvé')
+  const tenantId = adminUser.tenantId
+
+  // Encrypt sensitive fields if they are being updated
+  const updateData = { ...data }
+  if (updateData.ramqNumber) updateData.ramqNumber = encrypt(updateData.ramqNumber)
+  if (updateData.medicalNotes) updateData.medicalNotes = encrypt(updateData.medicalNotes)
+
+  const patient = await prisma.patient.update({
+    where: { id: patientId, tenantId },
+    data: updateData
+  })
+
+  await logAudit({
+    tenantId,
+    userId: adminUser.id,
+    patientId: patient.id,
+    action: 'UPDATE',
+    category: 'PATIENT_DATA',
+    description: `Mise à jour de la fiche patient par le personnel.`
+  })
+
+  revalidatePath('/admin-area/admin/patients')
+  revalidatePath(`/admin-area/admin/patients/${patientId}`)
   return { success: true, patient }
 }
 
 /**
  * Admin action to permanently delete a patient (Droit à l'oubli - Loi 25).
  */
-export async function deletePatientAction(tenantId: string, patientId: string) {
+export async function deletePatientAction(_: string, patientId: string) {
   const supabase = await createClient()
   const { data: { user: authUser } } = await supabase.auth.getUser()
 
   if (!authUser) throw new Error('Non authentifié')
 
+  const adminUser = await prisma.user.findUnique({
+    where: { authId: authUser.id }
+  })
+
+  if (!adminUser?.tenantId) throw new Error('Tenant non trouvé')
+  const tenantId = adminUser.tenantId
+
   // Log the deletion BEFORE deleting (so we know who did it)
   await logAudit({
     tenantId,
-    userId: authUser.id,
+    userId: adminUser.id,
     patientId,
     action: 'DELETE',
     category: 'PATIENT_DATA',
@@ -131,6 +186,6 @@ export async function deletePatientAction(tenantId: string, patientId: string) {
     where: { id: patientId, tenantId }
   })
 
-  revalidatePath('/admin/patients')
+  revalidatePath('/admin-area/admin/patients')
   return { success: true }
 }

@@ -37,6 +37,8 @@ import { ClinicalNotes } from '@/components/admin/patients/ClinicalNotes'
 import { InvoiceGenerator } from '@/components/admin/billing/InvoiceGenerator'
 import { PatientInvoiceList } from '@/components/admin/billing/PatientInvoiceList'
 import { MediaGallery } from '@/components/admin/patients/MediaGallery'
+import { EditPatientButton } from '../edit-patient-button'
+import { AddAppointmentButton } from '../../appointments/add-appointment-button'
 
 interface PatientDossierPageProps {
   params: Promise<{ id: string }>
@@ -78,6 +80,13 @@ export default async function PatientDossierPage({ params }: PatientDossierPageP
     }
   })
 
+  // Fetch additional data for the AddAppointmentButton
+  const [practitioners, services, allPatients] = await Promise.all([
+    prisma.practitioner.findMany({ where: { tenantId }, orderBy: { lastName: 'asc' } }),
+    prisma.service.findMany({ where: { tenantId, active: true }, orderBy: { order: 'asc' } }),
+    prisma.patient.findMany({ where: { tenantId }, orderBy: { lastName: 'asc' } })
+  ])
+
   if (!patient) notFound()
 
   return (
@@ -91,16 +100,19 @@ export default async function PatientDossierPage({ params }: PatientDossierPageP
                   <ChevronLeft className="h-5 w-5" />
                </Button>
             </Link>
-            <div>
-               <h1 className="text-3xl font-black text-slate-900 tracking-tight">Dossier Patient</h1>
-               <div className="flex items-center gap-2 mt-1">
-                  <Badge variant="outline" className="text-[10px] font-black tracking-widest uppercase border-slate-200 text-slate-500">ID: {id.slice(-6)}</Badge>
-                  <span className="text-slate-300">•</span>
-                  <p className="text-sm font-bold text-slate-500">{patient.firstName} {patient.lastName}</p>
-               </div>
-            </div>
-         </div>
-      </div>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                <div>
+                   <h1 className="text-3xl font-black text-slate-900 tracking-tight">Dossier Patient</h1>
+                   <div className="flex items-center gap-2 mt-1">
+                      <Badge variant="outline" className="text-[10px] font-black tracking-widest uppercase border-slate-200 text-slate-500">ID: {id.slice(-6)}</Badge>
+                      <span className="text-slate-300">•</span>
+                      <p className="text-sm font-bold text-slate-500">{patient.firstName} {patient.lastName}</p>
+                   </div>
+                </div>
+                <EditPatientButton patient={patient as any} />
+             </div>
+          </div>
+       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
          {/* Patient Sidebar */}
@@ -171,7 +183,16 @@ export default async function PatientDossierPage({ params }: PatientDossierPageP
 
               <TabsContent value="overview">
                  <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm">
-                    <h2 className="text-xl font-black text-slate-900 mb-6">Prochains Rendez-vous</h2>
+                    <div className="flex justify-between items-center mb-6">
+                       <h2 className="text-xl font-black text-slate-900">Prochains Rendez-vous</h2>
+                       <AddAppointmentButton 
+                          patients={allPatients} 
+                          practitioners={practitioners} 
+                          services={services} 
+                          defaultPatientId={id}
+                          variant="outline"
+                       />
+                    </div>
                      <div className="space-y-4">
                        {(patient as any).appointments?.length === 0 ? (
                          <p className="text-slate-400 italic">Aucun rendez-vous planifié.</p>

@@ -1,25 +1,33 @@
 'use client'
 
 import { useState } from 'react'
-import { Download, ShieldAlert, FileJson, Loader2, CheckCircle2 } from 'lucide-react'
+import { Download, ShieldAlert, FileJson, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { exportFullClinicDataAction } from '@/server/export'
+import { toast } from 'sonner'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 export default function ExportPage() {
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
   const handleExport = async () => {
-    if (!confirm("Attention: Ce fichier contiendra l'intégralité des données sensibles de vos patients. Assurez-vous de le stocker dans un endroit sécurisé. Voulez-vous continuer ?")) {
-      return
-    }
-
+    setConfirmOpen(false)
     setLoading(true)
     try {
       const data = await exportFullClinicDataAction()
       
-      // Create a blob and download it
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -31,8 +39,9 @@ export default function ExportPage() {
       URL.revokeObjectURL(url)
       
       setDone(true)
+      toast.success("Archive générée et téléchargée avec succès.")
     } catch (e) {
-      alert("Une erreur est survenue lors de l'exportation.")
+      toast.error("Une erreur est survenue lors de l'exportation.")
     } finally {
       setLoading(false)
     }
@@ -93,7 +102,7 @@ export default function ExportPage() {
                     </div>
                   ) : (
                     <Button 
-                      onClick={handleExport}
+                      onClick={() => setConfirmOpen(true)}
                       disabled={loading}
                       className="w-full h-16 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-lg gap-3 shadow-xl transition-all"
                     >
@@ -114,6 +123,32 @@ export default function ExportPage() {
             </CardContent>
          </Card>
       </div>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent className="rounded-[2rem] border-none shadow-2xl p-8">
+          <AlertDialogHeader>
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center mb-4">
+               <AlertTriangle className="h-6 w-6 text-amber-600" />
+            </div>
+            <AlertDialogTitle className="text-2xl font-black tracking-tight text-slate-900">
+              Action hautement sensible
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-500 font-medium text-base">
+              Attention: Ce fichier contiendra l'intégralité des données sensibles de vos patients. 
+              Assurez-vous de le stocker dans un endroit sécurisé. Voulez-vous continuer ?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-8">
+            <AlertDialogCancel className="rounded-xl font-bold h-12 border-slate-200">Annuler</AlertDialogCancel>
+            <Button 
+              onClick={handleExport}
+              className="rounded-xl font-black h-12 bg-slate-900 hover:bg-slate-800 text-primary min-w-[120px] uppercase tracking-widest text-[10px]"
+            >
+              Confirmer l'exportation
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

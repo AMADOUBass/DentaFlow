@@ -13,6 +13,8 @@ import { Badge } from '@/components/ui/badge'
 import { Plus, MoreVertical, Edit2, Trash2, User, Info } from 'lucide-react'
 import Image from 'next/image'
 import { AddPractitionerButton } from './add-practitioner-button'
+import { EditPractitionerButton } from './edit-practitioner-button'
+import { DeletePractitionerButton } from './delete-practitioner-button'
 import { checkPractitionerLimit } from '@/lib/plan-limits'
 import { UpgradeBanner } from '@/components/admin/UpgradeBanner'
 
@@ -99,16 +101,15 @@ export default async function PractitionersPage() {
                         {practitioner.active ? 'ACTIF' : 'INACTIF'}
                       </Badge>
                    </TableCell>
-                   <TableCell className="text-right">
-                     <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-slate-500 hover:text-primary">
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-slate-500 hover:text-rose-600">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                     </div>
-                   </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                         <EditPractitionerButton practitioner={practitioner} />
+                         <DeletePractitionerButton 
+                            practitionerId={practitioner.id} 
+                            name={`${practitioner.title} ${practitioner.lastName}`} 
+                         />
+                      </div>
+                    </TableCell>
                  </TableRow>
                ))
              )}

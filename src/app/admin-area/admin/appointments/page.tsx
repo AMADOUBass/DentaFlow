@@ -23,21 +23,28 @@ import {
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import { AddAppointmentButton } from './add-appointment-button'
+import { updateAppointmentStatusAction } from '@/server/admin-appointments'
 
 export default async function AppointmentsPage() {
   const user = await getAdminUser()
   const tenantId = user.tenantId!
 
-  const appointments = await prisma.appointment.findMany({
-    where: { tenantId },
-    include: {
-      patient: true,
-      practitioner: true,
-      service: true
-    },
-    orderBy: { startsAt: 'desc' },
-    take: 50 // Limit for the list view
-  })
+  const [appointments, patients, practitioners, services] = await Promise.all([
+    prisma.appointment.findMany({
+      where: { tenantId },
+      include: {
+        patient: true,
+        practitioner: true,
+        service: true
+      },
+      orderBy: { startsAt: 'desc' },
+      take: 50
+    }),
+    prisma.patient.findMany({ where: { tenantId }, orderBy: { lastName: 'asc' } }),
+    prisma.practitioner.findMany({ where: { tenantId }, orderBy: { lastName: 'asc' } }),
+    prisma.service.findMany({ where: { tenantId, active: true }, orderBy: { order: 'asc' } })
+  ])
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -47,12 +54,14 @@ export default async function AppointmentsPage() {
           <p className="text-slate-500 mt-1">Gérez le flux des patients et le calendrier médical.</p>
         </div>
         <div className="flex items-center gap-3">
-           <Button variant="outline" className="rounded-xl font-bold bg-white gap-2">
+           <Button variant="outline" className="rounded-xl font-bold bg-white gap-2 border-slate-200">
               <Filter className="h-4 w-4" /> Filtres
            </Button>
-           <Button className="h-12 px-6 rounded-xl font-bold bg-slate-900 shadow-xl shadow-slate-200">
-              Nouveau RDV
-           </Button>
+           <AddAppointmentButton 
+              patients={patients}
+              practitioners={practitioners}
+              services={services}
+           />
         </div>
       </div>
 
@@ -82,28 +91,28 @@ export default async function AppointmentsPage() {
       <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-x-auto scrollbar-hide">
         <Table className="min-w-[800px]">
           <TableHeader className="bg-slate-50/50">
-            <TableRow className="border-slate-100">
-              <TableHead className="font-bold">Horaire</TableHead>
+            <TableRow className="border-slate-100 h-16">
+              <TableHead className="font-bold pl-8">Horaire</TableHead>
               <TableHead className="font-bold">Patient</TableHead>
               <TableHead className="font-bold">Soin / Praticien</TableHead>
               <TableHead className="font-bold">Statut</TableHead>
-              <TableHead className="text-right font-bold w-[120px]">Actions</TableHead>
+              <TableHead className="text-right font-bold w-[120px] pr-8">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
              {appointments.length === 0 ? (
                <TableRow>
                  <TableCell colSpan={5} className="h-32 text-center text-slate-400 italic">
-                   Aucun rendez-vous trouvé.
+                    Aucun rendez-vous trouvé.
                  </TableCell>
                </TableRow>
              ) : (
                appointments.map((apt) => (
                  <TableRow key={apt.id} className="border-slate-50 hover:bg-slate-50/50 transition-colors h-24">
-                   <TableCell className="w-[150px]">
+                   <TableCell className="w-[180px] pl-8">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 text-slate-900 font-black">
-                           <Clock className="h-3 w-3 text-primary" />
+                           <Clock className="h-3.5 w-3.5 text-primary" />
                            {format(apt.startsAt, 'HH:mm')}
                         </div>
                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
@@ -136,23 +145,31 @@ export default async function AppointmentsPage() {
                    </TableCell>
                    <TableCell>
                       <Badge 
-                        variant={apt.status === 'CONFIRMED' ? 'default' : 'secondary'} 
-                        className={`rounded-lg font-black text-[10px] ${
-                           apt.status === 'PENDING' ? 'bg-amber-100 text-amber-700 border-amber-200' : ''
+                        className={`rounded-lg font-black text-[10px] uppercase tracking-widest px-3 py-1 border-none ${
+                           apt.status === 'CONFIRMED' 
+                             ? 'bg-emerald-100 text-emerald-700' 
+                             : apt.status === 'PENDING' 
+                               ? 'bg-amber-100 text-amber-700' 
+                               : 'bg-slate-100 text-slate-500'
                         }`}
                       >
-                        {apt.status === 'PENDING' ? 'EN ATTENTE' : apt.status}
+                        {apt.status === 'PENDING' ? 'En attente' : apt.status === 'CONFIRMED' ? 'Confirmé' : apt.status}
                       </Badge>
                    </TableCell>
-                   <TableCell className="text-right">
+                   <TableCell className="text-right pr-8">
                       <div className="flex justify-end gap-2">
                         {apt.status === 'PENDING' && (
-                           <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-emerald-600 hover:bg-emerald-50">
-                              <CheckCircle2 className="h-4 w-4" />
-                           </Button>
+                           <form action={async () => {
+                             'use server'
+                             await updateAppointmentStatusAction(apt.id, 'CONFIRMED')
+                           }}>
+                             <Button type="submit" variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-emerald-600 hover:bg-emerald-50">
+                                <CheckCircle2 className="h-5 w-5" />
+                             </Button>
+                           </form>
                         )}
                         <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-slate-400 hover:text-slate-900">
-                          <MoreVertical className="h-4 w-4" />
+                           <MoreVertical className="h-5 w-5" />
                         </Button>
                       </div>
                    </TableCell>

@@ -30,8 +30,8 @@ export async function toggleEmergencyHandled(id: string) {
     description: `Marquage d'une urgence comme ${!emergency.handled ? 'traitée' : 'non-traitée'} (Patient: ${emergency.firstName} ${emergency.lastName}).`
   })
 
-  revalidatePath('/admin/dashboard')
-  revalidatePath('/admin/emergencies')
+  revalidatePath('/admin-area/admin/dashboard')
+  revalidatePath('/admin-area/admin/emergencies')
 }
 
 import { EmergencyInput } from '@/schemas/emergency'
@@ -58,6 +58,6 @@ export async function submitEmergencyRequest(tenantId: string, data: EmergencyIn
     description: `Nouvelle demande d'urgence soumise par ${data.firstName} ${data.lastName} (Niveau: ${data.painLevel}).`
   })
 
-  revalidatePath('/admin/dashboard')
+  revalidatePath('/admin-area/admin/dashboard')
   return { success: true, id: emergency.id }
 }

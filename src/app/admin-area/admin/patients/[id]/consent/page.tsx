@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ShieldCheck, FileText, ArrowLeft, Send } from 'lucide-react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 export default function PatientConsentPage({ params }: { params: { id: string } }) {
   const [signature, setSignature] = useState<string | null>(null)
@@ -20,7 +21,7 @@ export default function PatientConsentPage({ params }: { params: { id: string } 
     // Simulation de sauvegarde dans la DB (PatientMedia ou ClinicalNote)
     setTimeout(() => {
       setIsSubmitting(false)
-      alert("Consentement enregistré avec succès !")
+      toast.success("Consentement enregistré avec succès !")
     }, 1500)
   }
 
@@ -28,7 +29,7 @@ export default function PatientConsentPage({ params }: { params: { id: string } 
     <div className="max-w-3xl mx-auto space-y-8 py-10">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild className="rounded-full">
-           <Link href={`/admin/patients/${params.id}`}><ArrowLeft className="h-5 w-5" /></Link>
+           <Link href={`/admin-area/admin/patients/${params.id}`}><ArrowLeft className="h-5 w-5" /></Link>
         </Button>
         <h1 className="text-3xl font-black text-slate-900 tracking-tight">Consentement Éclairé</h1>
       </div>

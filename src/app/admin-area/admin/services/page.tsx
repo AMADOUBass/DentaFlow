@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Plus, Edit2, Trash2, Clock, DollarSign, Tag } from 'lucide-react'
 import { AddServiceButton } from './add-service-button'
+import { EditServiceButton } from './edit-service-button'
+import { DeleteServiceButton } from './delete-service-button'
 
 export default async function ServicesPage() {
   const user = await getAdminUser()
@@ -84,15 +86,14 @@ export default async function ServicesPage() {
                       </Badge>
                    </TableCell>
                    <TableCell className="text-right">
-                     <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-slate-500 hover:text-primary">
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-slate-500 hover:text-rose-600">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                     </div>
-                   </TableCell>
+                      <div className="flex justify-end gap-2">
+                         <EditServiceButton service={service} />
+                         <DeleteServiceButton 
+                            serviceId={service.id} 
+                            name={service.name} 
+                         />
+                      </div>
+                    </TableCell>
                  </TableRow>
                ))
              )}

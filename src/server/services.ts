@@ -27,7 +27,7 @@ export async function createService(data: ServiceInput) {
     description: `Ajout d'un nouveau service : ${validatedData.name} (Prix: ${validatedData.priceCents ? validatedData.priceCents / 100 : 'N/A'}$, Durée: ${validatedData.durationMin}min).`
   })
 
-  revalidatePath('/admin/services')
+  revalidatePath('/admin-area/admin/services')
   return { success: true, id: service.id }
 }
 
@@ -50,7 +50,7 @@ export async function updateService(id: string, data: ServiceInput) {
     description: `Modification du service ${validatedData.name} (ID: ${id}).`
   })
 
-  revalidatePath('/admin/services')
+  revalidatePath('/admin-area/admin/services')
   return { success: true }
 }
 
