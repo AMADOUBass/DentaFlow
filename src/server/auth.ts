@@ -23,13 +23,41 @@ export async function login(formData: FormData) {
   }
 
   // Fetch role from Prisma
-  const dbUser = await prisma.user.findUnique({
-    where: { authId: user.id }
+  let dbUser = await prisma.user.findUnique({
+    where: { authId: user.id },
+    include: { tenant: true }
   })
+
+  // AUTO-SYNC LOGIC: If user exists in Supabase but not in Prisma
+  if (!dbUser) {
+    console.log(`Syncing user ${user.email} from Supabase to Prisma...`)
+    
+    // Extract metadata from Supabase
+    let role = (user.user_metadata?.role as UserRole) || UserRole.CLINIC_OWNER
+    
+    // Force SUPERADMIN if email matches master email
+    if (user.email === process.env.NEXT_PUBLIC_SUPERADMIN_EMAIL) {
+      role = UserRole.SUPERADMIN
+    }
+
+    const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'
+    const tenantId = user.user_metadata?.tenant_id as string | undefined
+
+    dbUser = await prisma.user.create({
+      data: {
+        authId: user.id,
+        email: user.email!,
+        name: name,
+        role: role,
+        tenantId: tenantId || null,
+      },
+      include: { tenant: true }
+    })
+  }
 
   revalidatePath('/', 'layout')
 
-  if (dbUser?.role === UserRole.SUPERADMIN) {
+  if (dbUser.role === UserRole.SUPERADMIN) {
     redirect('/superadmin')
   }
 
