@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from './prisma'
 import { redirect } from 'next/navigation'
+import { UserRole } from '@prisma/client'
 
 /**
  * Gets the current authenticated user and their Prisma record (with tenant info)
@@ -24,11 +25,11 @@ export async function getAdminUser() {
   if (!prismaUser) {
      console.log(`Auto-syncing user ${user.email} in getAdminUser...`)
      
-     let role = (user.user_metadata?.role as any) || 'CLINIC_OWNER'
+     let role = (user.user_metadata?.role as UserRole) || UserRole.CLINIC_OWNER
 
      // Force SUPERADMIN if email matches master email
      if (user.email === process.env.NEXT_PUBLIC_SUPERADMIN_EMAIL) {
-       role = 'SUPERADMIN'
+       role = UserRole.SUPERADMIN
      }
 
      const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'
@@ -55,12 +56,12 @@ export async function getAdminUser() {
   }
 
   // Force role repair if email matches master email but role is wrong
-  if (user.email === process.env.NEXT_PUBLIC_SUPERADMIN_EMAIL && prismaUser.role !== 'SUPERADMIN') {
+  if (user.email === process.env.NEXT_PUBLIC_SUPERADMIN_EMAIL && prismaUser.role !== UserRole.SUPERADMIN) {
      console.log(`Repairing role for ${user.email} to SUPERADMIN...`)
      try {
        prismaUser = await prisma.user.update({
          where: { id: prismaUser.id },
-         data: { role: 'SUPERADMIN' as any },
+         data: { role: UserRole.SUPERADMIN },
          include: { tenant: true }
        })
      } catch (err) {
@@ -69,7 +70,13 @@ export async function getAdminUser() {
   }
 
   // Security check: only clinicians can access admin area
-  const allowedRoles = ['SUPERADMIN', 'CLINIC_OWNER', 'CLINIC_STAFF', 'PRACTITIONER']
+  const allowedRoles: UserRole[] = [
+    UserRole.SUPERADMIN, 
+    UserRole.CLINIC_OWNER, 
+    UserRole.CLINIC_STAFF, 
+    UserRole.PRACTITIONER
+  ]
+  
   if (!allowedRoles.includes(prismaUser.role)) {
     redirect('/login?error=unauthorized')
   }
