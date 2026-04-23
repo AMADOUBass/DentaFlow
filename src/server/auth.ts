@@ -83,12 +83,21 @@ export async function login(formData: FormData) {
 export async function loginWithMagicLink(formData: FormData) {
   const supabase = await createClient()
   const email = formData.get('email') as string
+  const tenantSlug = formData.get('tenantSlug') as string | null
+
+  // Build redirect URL on the tenant subdomain so the session cookie lands on the right domain
+  let emailRedirectTo: string
+  if (tenantSlug) {
+    const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'localhost:3000'
+    const protocol = rootDomain.includes('localhost') ? 'http' : 'https'
+    emailRedirectTo = `${protocol}://${tenantSlug}.${rootDomain}/api/auth/callback?next=/portail`
+  } else {
+    emailRedirectTo = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback`
+  }
 
   const { error } = await supabase.auth.signInWithOtp({
     email,
-    options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback`,
-    },
+    options: { emailRedirectTo },
   })
 
   if (error) {

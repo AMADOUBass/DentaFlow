@@ -11,9 +11,10 @@ import { toast } from 'sonner'
 
 interface PatientLoginFormProps {
   t: any
+  tenantSlug: string
 }
 
-export function PatientLoginForm({ t }: PatientLoginFormProps) {
+export function PatientLoginForm({ t, tenantSlug }: PatientLoginFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [isSent, setIsSent] = useState(false)
 
@@ -22,6 +23,7 @@ export function PatientLoginForm({ t }: PatientLoginFormProps) {
     setIsLoading(true)
     
     const formData = new FormData(e.currentTarget)
+    formData.set('tenantSlug', tenantSlug)
     const result = await loginWithMagicLink(formData)
 
     if (result?.error) {

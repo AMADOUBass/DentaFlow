@@ -61,7 +61,7 @@ export default async function PatientLoginPage({
             </CardDescription>
           </CardHeader>
           <CardContent className="p-8">
-            <PatientLoginForm t={t} />
+            <PatientLoginForm t={t} tenantSlug={tenantSlug} />
           </CardContent>
         </Card>
 
