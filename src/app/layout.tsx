@@ -7,9 +7,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import dynamic from "next/dynamic";
 
-const ConsentBanner = dynamic(() => import("@/components/public/consent-banner").then(mod => mod.ConsentBanner), {
-  ssr: false // Only client-side since it uses localStorage
-});
+const ConsentBanner = dynamic(() => import("@/components/public/consent-banner").then(mod => mod.ConsentBanner));
 
 import { Analytics } from "@vercel/analytics/next";
 import { getLocaleServer } from "@/lib/i18n";
