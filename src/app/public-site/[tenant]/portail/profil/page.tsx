@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { ProfileForm } from './profile-form'
 import { getLocaleServer, useTranslations } from '@/lib/i18n'
+import { getTenantPath } from '@/lib/tenant'
 
 interface ProfilePageProps {
   params: Promise<{ tenant: string }>
@@ -16,7 +17,7 @@ export default async function PatientProfilePage({ params }: ProfilePageProps) {
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user?.email) redirect(`/${locale}/login/patient`)
+  if (!user?.email) redirect(await getTenantPath('/login/patient'))
 
   const tenant = await prisma.tenant.findUnique({ where: { slug: tenantSlug } })
   if (!tenant) redirect('/')

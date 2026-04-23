@@ -14,6 +14,7 @@ import {
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { createClinicalInvoiceSession } from '@/server/actions/stripe-clinical'
+import { getTenantPath } from '@/lib/tenant'
 
 interface InvoicesPageProps {
   params: Promise<{ tenant: string }>
@@ -24,7 +25,7 @@ export default async function PatientInvoicesPage({ params }: InvoicesPageProps)
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user || !user.email) redirect('/login/patient')
+  if (!user || !user.email) redirect(await getTenantPath('/login/patient'))
 
   const tenant = await prisma.tenant.findUnique({ where: { slug: tenantSlug } })
   if (!tenant) redirect('/')

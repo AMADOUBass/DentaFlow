@@ -14,6 +14,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { logout } from '@/server/auth'
+import { getTenantPath } from '@/lib/tenant'
 
 interface PatientLayoutProps {
   children: React.ReactNode
@@ -27,7 +28,7 @@ export default async function PatientPortalLayout({ children, params }: PatientL
   // 1. Check for logged in user
   const { data: { user } } = await supabase.auth.getUser()
   if (!user || !user.email) {
-    redirect(`/${tenantSlug}/login/patient`)
+    redirect(await getTenantPath('/login/patient'))
   }
 
   // 2. Fetch tenant and patient
@@ -45,14 +46,14 @@ export default async function PatientPortalLayout({ children, params }: PatientL
 
   // 3. Security: If user is logged in but not a patient of this clinic, block access
   if (!patient) {
-    redirect(`/${tenantSlug}/login/patient`)
+    redirect(await getTenantPath('/login/patient'))
   }
 
   const navItems = [
-    { label: 'Accueil', href: `/${tenantSlug}/portail`, icon: ShieldCheck },
-    { label: 'Mes Rendez-vous', href: `/${tenantSlug}/portail/rendez-vous`, icon: CalendarIcon },
-    { label: 'Factures', href: `/${tenantSlug}/portail/factures`, icon: CreditCard },
-    { label: 'Mon Profil', href: `/${tenantSlug}/portail/profil`, icon: UserIcon },
+    { label: 'Accueil', href: await getTenantPath('/portail'), icon: ShieldCheck },
+    { label: 'Mes Rendez-vous', href: await getTenantPath('/portail/rendez-vous'), icon: CalendarIcon },
+    { label: 'Factures', href: await getTenantPath('/portail/factures'), icon: CreditCard },
+    { label: 'Mon Profil', href: await getTenantPath('/portail/profil'), icon: UserIcon },
   ]
 
   return (

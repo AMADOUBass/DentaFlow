@@ -14,17 +14,18 @@ import { format, isAfter, addDays } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { Calendar, Clock, User as UserIcon, AlertCircle } from 'lucide-react'
 import { CancelAppointmentButton } from './cancel-button'
+import { getTenantPath } from '@/lib/tenant'
 
 interface AppointmentsPageProps {
-  params: { tenant: string }
+  params: Promise<{ tenant: string }>
 }
 
 export default async function PatientAppointmentsPage({ params }: AppointmentsPageProps) {
-  const { tenant: tenantSlug } = params
+  const { tenant: tenantSlug } = await params
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user?.email) redirect(`/login/patient`)
+  if (!user?.email) redirect(await getTenantPath('/login/patient'))
 
   const tenant = await prisma.tenant.findUnique({ where: { slug: tenantSlug } })
   if (!tenant) redirect('/')

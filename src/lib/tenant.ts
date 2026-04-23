@@ -39,3 +39,24 @@ export async function getTenant() {
 
   return tenant
 }
+
+/**
+ * Generates a tenant-aware link path.
+ * On subdomains/custom domains, it returns the relative path.
+ * On the root domain, it prepends the tenant slug.
+ */
+export async function getTenantPath(path: string) {
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'localhost:3000'
+  const slug = headersList.get('x-tenant-slug')
+
+  // If we are on root domain, we need the slug in the path
+  if (host === rootDomain || host === `www.${rootDomain}`) {
+    const cleanPath = path.startsWith('/') ? path : `/${path}`
+    return `/${slug}${cleanPath}`
+  }
+
+  // If we are on a subdomain or custom domain, the path is already relative to the tenant
+  return path.startsWith('/') ? path : `/${path}`
+}

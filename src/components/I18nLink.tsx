@@ -16,6 +16,7 @@ interface I18nLinkProps extends LinkProps {
 export function I18nLink({ href, children, ...props }: I18nLinkProps) {
   const params = useParams()
   const locale = params?.locale as string || 'fr'
+  const tenant = params?.tenant as string
 
   // Si le lien est déjà absolu ou commence par http, on ne touche à rien
   if (href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('tel:')) {
@@ -24,7 +25,13 @@ export function I18nLink({ href, children, ...props }: I18nLinkProps) {
 
   // On injecte la locale si elle n'est pas déjà présente dans le href
   const hasLocale = href.startsWith('/fr') || href.startsWith('/en')
-  const finalHref = hasLocale ? href : `/${locale}${href === '/' ? '' : href}`
+  let finalHref = hasLocale ? href : `/${locale}${href === '/' ? '' : href}`
+
+  // Si on est sur le domaine principal (identifié par la présence du segment tenant dans l'URL actuelle)
+  // On doit préfixer par le tenant slug pour ne pas perdre le contexte
+  if (tenant && !finalHref.includes(`/${tenant}`)) {
+    finalHref = `/${tenant}${finalHref}`
+  }
 
   return (
     <Link href={finalHref} {...props}>

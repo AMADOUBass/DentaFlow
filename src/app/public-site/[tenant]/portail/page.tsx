@@ -19,6 +19,7 @@ import Link from 'next/link'
 import { PrivacyActions } from './privacy-actions'
 import { getLocaleServer, useTranslations } from '@/lib/i18n'
 import { CancelButton } from './cancel-button'
+import { getTenantPath } from '@/lib/tenant'
 
 interface PortalPageProps {
   params: Promise<{ tenant: string }>
@@ -34,7 +35,7 @@ export default async function PatientPortalPage({ params }: PortalPageProps) {
 
   // 1. Get User
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user?.email) redirect(`/${locale}/login/patient`)
+  if (!user?.email) redirect(await getTenantPath('/login/patient'))
 
   // 2. Get Tenant
   const tenant = await prisma.tenant.findUnique({ where: { slug: tenantSlug } })
@@ -75,7 +76,7 @@ export default async function PatientPortalPage({ params }: PortalPageProps) {
                   <Calendar className="h-5 w-5 text-primary" /> {t.patient_portal.upcoming}
                </h3>
                {upcomingApts.length === 0 && (
-                 <Link href={`/${locale}/${tenantSlug}/rendez-vous`}>
+                 <Link href={await getTenantPath('/rendez-vous')}>
                     <Button variant="outline" size="sm" className="rounded-xl font-bold border-primary text-primary">{t.patient_portal.book_now}</Button>
                  </Link>
                )}
@@ -85,7 +86,7 @@ export default async function PatientPortalPage({ params }: PortalPageProps) {
               <Card className="border-dashed border-2 bg-slate-50/50 shadow-none rounded-[2rem]">
                  <CardContent className="py-12 text-center space-y-4">
                     <p className="text-slate-400 font-medium italic">{t.patient_portal.none_upcoming}</p>
-                    <Link href={`/${locale}/${tenantSlug}/rendez-vous`}>
+                    <Link href={await getTenantPath('/rendez-vous')}>
                        <Button className="rounded-xl font-bold bg-primary shadow-lg shadow-primary/20">{t.patient_portal.book_now}</Button>
                     </Link>
                  </CardContent>
@@ -195,12 +196,12 @@ export default async function PatientPortalPage({ params }: PortalPageProps) {
                  <CardTitle className="text-lg font-bold">{t.patient_portal.actions}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 relative">
-                 <Link href={`/${locale}/${tenantSlug}/portail/profil`}>
+                 <Link href={await getTenantPath('/portail/profil')}>
                     <Button variant="secondary" className="w-full justify-start rounded-xl font-bold bg-white/10 border-white/5 hover:bg-white/20 text-white">
                        <UserIcon className="mr-2 h-4 w-4" /> {t.patient_portal.profile_cta}
                     </Button>
                  </Link>
-                 <Link href={`/${locale}/${tenantSlug}/rendez-vous`}>
+                 <Link href={await getTenantPath('/rendez-vous')}>
                     <Button className="w-full justify-start rounded-xl font-bold bg-primary hover:bg-primary/90 text-white border-none shadow-lg shadow-primary/20">
                        <Calendar className="mr-2 h-4 w-4" /> {t.patient_portal.new_apt}
                     </Button>
