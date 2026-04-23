@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
-import { getLocaleServer, useTranslations } from '@/lib/i18n'
+import { getTranslations, useTranslations } from '@/lib/i18n'
+import { getLocaleServer } from '@/lib/i18n-server'
 import { I18nLink } from '@/components/I18nLink'
 import { PatientLoginForm } from './PatientLoginForm'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'

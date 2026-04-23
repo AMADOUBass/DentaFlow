@@ -17,6 +17,7 @@ import Image from 'next/image'
 import { logout } from '@/server/auth'
 import { getTenantPath, getTenant } from '@/lib/tenant'
 import { getTranslations } from '@/lib/i18n'
+import { getLocaleServer } from '@/lib/i18n-server'
 import { PortalMobileNav } from './mobile-nav'
 
 interface PatientLayoutProps {
@@ -36,7 +37,7 @@ export default async function PatientPortalLayout({ children, params }: PatientL
 
   // 2. Fetch tenant and patient
   const tenant = await getTenant()
-  const locale = (await (await headers()).get('x-locale')) as any || 'fr'
+  const locale = await getLocaleServer()
   const t = getTranslations(locale)
   
   if (!tenant) redirect('/')

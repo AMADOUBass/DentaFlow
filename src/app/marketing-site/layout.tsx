@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { getLocaleServer, useTranslations } from '@/lib/i18n'
+import { useTranslations } from '@/lib/i18n'
+import { getLocaleServer } from '@/lib/i18n-server'
 import { I18nLink } from '@/components/I18nLink'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { MarketingMobileNav } from '@/components/marketing/MarketingMobileNav'

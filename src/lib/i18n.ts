@@ -577,18 +577,8 @@ export function getTranslations(locale: Locale = 'fr') {
   return translations[locale] || translations.fr
 }
 
-import { headers } from 'next/headers'
-
 /**
- * Devrait être appelé uniquement dans les Server Components
- */
-export async function getLocaleServer() {
-  const headerList = await headers()
-  return (headerList.get('x-locale') as Locale) || 'fr'
-}
-
-/**
- * Hook-like function for server components
+ * Hook-like function for server components or shared logic
  */
 export function useTranslations(locale: Locale = 'fr') {
   return getTranslations(locale)

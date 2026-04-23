@@ -14,6 +14,8 @@ import {
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { createClinicalInvoiceSession } from '@/server/actions/stripe-clinical'
+import { useTranslations } from '@/lib/i18n'
+import { getLocaleServer } from '@/lib/i18n-server'
 import { getTenantPath } from '@/lib/tenant'
 
 interface InvoicesPageProps {

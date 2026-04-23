@@ -9,7 +9,8 @@ import {
   Lock,
   Zap
 } from 'lucide-react'
-import { getLocaleServer, useTranslations } from '@/lib/i18n'
+import { useTranslations } from '@/lib/i18n'
+import { getLocaleServer } from '@/lib/i18n-server'
 import { I18nLink } from '@/components/I18nLink'
 
 export default async function SolutionsPage() {

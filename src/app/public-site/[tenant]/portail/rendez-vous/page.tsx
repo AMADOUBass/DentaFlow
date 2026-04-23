@@ -14,6 +14,8 @@ import { format, isAfter, addDays } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { Calendar, Clock, User as UserIcon, AlertCircle } from 'lucide-react'
 import { CancelAppointmentButton } from './cancel-button'
+import { useTranslations } from '@/lib/i18n'
+import { getLocaleServer } from '@/lib/i18n-server'
 import { getTenantPath } from '@/lib/tenant'
 
 interface AppointmentsPageProps {

@@ -5,7 +5,8 @@ import { PublicMobileNav } from '@/components/public/mobile-nav'
 import { ConsentBanner } from '@/components/public/consent-banner'
 
 import { notFound } from 'next/navigation'
-import { getLocaleServer, useTranslations } from '@/lib/i18n'
+import { useTranslations } from '@/lib/i18n'
+import { getLocaleServer as getLocale } from '@/lib/i18n-server'
 import { I18nLink } from '@/components/I18nLink'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { getTenant } from '@/lib/tenant'
@@ -15,7 +16,7 @@ export default async function TenantSiteLayout({
 }: {
   children: React.ReactNode
 }) {
-  const locale = await getLocaleServer()
+  const locale = await getLocale()
   const t = useTranslations(locale)
   const tenant = await getTenant()
 

@@ -10,7 +10,8 @@ import dynamic from "next/dynamic";
 const ConsentBanner = dynamic(() => import("@/components/public/consent-banner").then(mod => mod.ConsentBanner));
 
 import { Analytics } from "@vercel/analytics/next";
-import { getLocaleServer } from "@/lib/i18n";
+import { useTranslations } from '@/lib/i18n'
+import { getLocaleServer } from "@/lib/i18n-server";
 
 const inter = Inter({ subsets: ["latin"] });
 

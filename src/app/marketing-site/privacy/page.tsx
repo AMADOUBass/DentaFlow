@@ -1,5 +1,6 @@
 import { Shield, Lock, Eye, FileText, Database, Globe, UserCheck } from 'lucide-react'
-import { getLocaleServer, useTranslations } from '@/lib/i18n'
+import { useTranslations } from '@/lib/i18n'
+import { getLocaleServer } from '@/lib/i18n-server'
 
 export default async function PrivacyPage() {
   const locale = await getLocaleServer()

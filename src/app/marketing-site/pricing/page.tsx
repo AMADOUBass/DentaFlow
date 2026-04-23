@@ -6,7 +6,8 @@ import {
   Shield,
   Crown
 } from 'lucide-react'
-import { getLocaleServer, useTranslations } from '@/lib/i18n'
+import { useTranslations } from '@/lib/i18n'
+import { getLocaleServer } from '@/lib/i18n-server'
 import { I18nLink } from '@/components/I18nLink'
 
 export default async function PricingPage() {
@@ -43,7 +44,7 @@ export default async function PricingPage() {
                 <span className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">/ mois</span>
              </div>
              <ul className="space-y-4">
-                {t.pricing_page.plans.essentiel.features.map((f, i) => (
+                {(t.pricing_page.plans.essentiel.features as string[]).map((f, i) => (
                    <li key={i} className="flex items-center gap-3 text-sm font-bold text-slate-600">
                       <CheckCircle2 className="h-4 w-4 text-emerald-500" /> {f}
                    </li>
@@ -73,7 +74,7 @@ export default async function PricingPage() {
                    <span className="text-slate-500 font-black uppercase tracking-widest text-[10px]">/ mois</span>
                 </div>
                 <ul className="space-y-5">
-                   {t.pricing_page.plans.complet.features.map((f, i) => (
+                   {(t.pricing_page.plans.complet.features as string[]).map((f, i) => (
                       <li key={i} className="flex items-center gap-4 text-sm font-bold text-slate-700">
                          <CheckCircle2 className="h-5 w-5 text-primary" /> {f}
                       </li>
@@ -101,7 +102,7 @@ export default async function PricingPage() {
                 <span className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">/ mois</span>
              </div>
              <ul className="space-y-4">
-                {t.pricing_page.plans.premium.features.map((f, i) => (
+                {(t.pricing_page.plans.premium.features as string[]).map((f, i) => (
                    <li key={i} className="flex items-center gap-3 text-sm font-bold text-slate-600">
                       <CheckCircle2 className="h-4 w-4 text-emerald-500" /> {f}
                    </li>

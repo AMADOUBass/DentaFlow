@@ -1,5 +1,6 @@
 import { FileText, CheckCircle, AlertCircle, Scale, CreditCard, ShieldAlert } from 'lucide-react'
-import { getLocaleServer, useTranslations } from '@/lib/i18n'
+import { useTranslations } from '@/lib/i18n'
+import { getLocaleServer } from '@/lib/i18n-server'
 
 export default async function TermsPage() {
   const locale = await getLocaleServer()

@@ -10,7 +10,8 @@ import {
   Smartphone,
   Star
 } from 'lucide-react'
-import { getLocaleServer, useTranslations } from '@/lib/i18n'
+import { useTranslations } from '@/lib/i18n'
+import { getLocaleServer } from '@/lib/i18n-server'
 import { I18nLink } from '@/components/I18nLink'
 import dynamic from 'next/dynamic'
 
@@ -81,7 +82,7 @@ export default async function MarketingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {Object.entries(t.features.items).map(([key, item]) => (
+            {(Object.entries(t.features.items) as [string, any][]).map(([key, item]) => (
               <div 
                 key={key} 
                 className="group relative bg-white p-10 rounded-[2.5rem] border border-slate-100 hover:border-primary/20 hover:shadow-[0_20px_50px_rgba(15,118,110,0.1)] transition-all duration-500 hover:-translate-y-2 overflow-hidden"
