@@ -33,7 +33,7 @@ interface ConfirmStepProps {
     slot: string
   }
   onBack: () => void
-  onComplete: (appointmentId: string) => void
+  onComplete: (appointmentId: string, patientId?: string) => void
 }
 
 export function ConfirmStep({
@@ -68,8 +68,8 @@ export function ConfirmStep({
     try {
       const result = await createAppointment(tenantId, data)
       if (result.success && result.id) {
-        toast.success("Rendez-vous confirmé !")
-        onComplete(result.id)
+        toast.success("Informations enregistrées !")
+        onComplete(result.id, result.patientId)
       } else {
         toast.error(result.error || "Une erreur est survenue")
       }

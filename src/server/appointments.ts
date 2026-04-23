@@ -200,7 +200,7 @@ export async function createAppointment(tenantId: string, data: AppointmentInput
 
   revalidatePath('/admin-area/admin/dashboard')
   
-  return { success: true, id: appointment.id }
+  return { success: true, id: appointment.id, patientId: patient.id }
 }
 
 export async function cancelAppointmentAction(appointmentId: string) {
@@ -251,4 +251,38 @@ export async function cancelAppointmentAction(appointmentId: string) {
 
   revalidatePath('/[tenant]/portail', 'layout')
   return { success: true }
+}
+
+/**
+ * Saves medical questionnaire for a patient
+ */
+export async function saveMedicalQuestionnaireAction(tenantId: string, patientId: string, data: any) {
+  try {
+    const questionnaire = await prisma.medicalQuestionnaire.upsert({
+      where: { patientId },
+      update: {
+        ...data,
+        updatedAt: new Date()
+      },
+      create: {
+        tenantId,
+        patientId,
+        ...data
+      }
+    })
+
+    await logAudit({
+      tenantId,
+      userId: patientId,
+      patientId,
+      action: 'UPDATE',
+      category: 'MEDICAL_RECORDS',
+      description: `Mise à jour du questionnaire médical antécédent.`
+    })
+
+    return { success: true, id: questionnaire.id }
+  } catch (error) {
+    console.error("Erreur Questionnaire:", error)
+    return { success: false, error: "Erreur lors de la sauvegarde du bilan médical" }
+  }
 }

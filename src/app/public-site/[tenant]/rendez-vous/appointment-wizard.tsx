@@ -8,10 +8,14 @@ import { PractitionerStep } from './steps/practitioner-step'
 import { CalendarStep } from './steps/calendar-step'
 import { SlotsStep } from './steps/slots-step'
 import { ConfirmStep } from './steps/confirm-step'
+import { QuestionnaireStep } from './steps/questionnaire-step'
+import { PaymentStep } from './steps/payment-step'
 import { format } from 'date-fns'
-import { CheckCircle2, Home, Calendar as CalendarIcon } from 'lucide-react'
+import { CheckCircle2, Home, Calendar as CalendarIcon, ShieldCheck as ShieldIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { saveMedicalQuestionnaireAction } from '@/server/appointments'
+import { toast } from 'sonner'
 
 interface AppointmentWizardProps {
   tenantId: string
@@ -19,7 +23,7 @@ interface AppointmentWizardProps {
   practitioners: Practitioner[]
 }
 
-type Step = 'service' | 'practitioner' | 'date' | 'slot' | 'confirm' | 'success'
+type Step = 'service' | 'practitioner' | 'date' | 'slot' | 'patient' | 'questionnaire' | 'payment' | 'success'
 
 export function AppointmentWizard({ tenantId, services, practitioners }: AppointmentWizardProps) {
   const [currentStep, setCurrentStep] = useState<Step>('service')
@@ -28,6 +32,11 @@ export function AppointmentWizard({ tenantId, services, practitioners }: Appoint
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
   const [appointmentId, setAppointmentId] = useState<string | null>(null)
+  const [patientId, setPatientId] = useState<string | null>(null)
+  
+  // Data from steps
+  const [patientData, setPatientData] = useState<any>(null)
+  const [questionnaireData, setQuestionnaireData] = useState<any>(null)
 
   // Derived data
   const selectedService = services.find(s => s.id === serviceId)
@@ -38,8 +47,44 @@ export function AppointmentWizard({ tenantId, services, practitioners }: Appoint
   const formattedDate = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : ''
 
   // Progress Calculation
-  const stepOrder: Step[] = ['service', 'practitioner', 'date', 'slot', 'confirm', 'success']
+  const stepOrder: Step[] = ['service', 'practitioner', 'date', 'slot', 'patient', 'questionnaire', 'payment', 'success']
   const progress = ((stepOrder.indexOf(currentStep)) / (stepOrder.length - 1)) * 100
+
+  const handlePatientInfoComplete = (data: any) => {
+    setPatientData(data)
+    // Decide next step
+    if (selectedService?.requiresQuestionnaire) {
+      setCurrentStep('questionnaire')
+    } else if (selectedService?.requiresDeposit && selectedService?.depositAmountCents) {
+      setCurrentStep('payment')
+    } else {
+      // Final confirmation happens inside ConfirmStep if no other steps
+      // But we can also move the actual creation to the end.
+      // For now, let's assume ConfirmStep still does the creation if no other steps are needed.
+    }
+  }
+
+  const handleQuestionnaireComplete = async (data: any) => {
+    setQuestionnaireData(data)
+    if (patientId) {
+      const res = await saveMedicalQuestionnaireAction(tenantId, patientId, data)
+      if (!res.success) {
+        toast.error("Erreur lors de la sauvegarde du bilan médical")
+        return
+      }
+      toast.success("Bilan médical enregistré")
+    }
+
+    if (selectedService?.requiresDeposit && selectedService?.depositAmountCents) {
+      setCurrentStep('payment')
+    } else {
+      setCurrentStep('success')
+    }
+  }
+
+  const handlePaymentComplete = () => {
+    setCurrentStep('success')
+  }
 
   if (currentStep === 'success') {
     return (
@@ -50,7 +95,7 @@ export function AppointmentWizard({ tenantId, services, practitioners }: Appoint
         <div className="space-y-4">
            <h2 className="text-4xl font-black text-slate-900 tracking-tight">Rendez-vous confirmé !</h2>
            <p className="text-xl text-slate-500 max-w-md mx-auto leading-relaxed">
-              Votre demande a été enregistrée avec succès. Vous recevrez un courriel de confirmation sous peu.
+              Votre demande a été enregistrée avec succès. Vous recevrez un courriel de confirmation et votre bilan médical a été transmis.
            </p>
         </div>
         
@@ -74,7 +119,7 @@ export function AppointmentWizard({ tenantId, services, practitioners }: Appoint
       <div className="space-y-4">
         <div className="flex justify-between items-end">
            <div className="space-y-1">
-              <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]" aria-hidden="true">Étape {stepOrder.indexOf(currentStep) + 1} sur 5</p>
+              <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]" aria-hidden="true">Étape {stepOrder.indexOf(currentStep) + 1} sur {stepOrder.length - 1}</p>
               <h3 
                  className="text-lg font-black text-slate-900 uppercase tracking-tight"
                  aria-live="polite"
@@ -83,7 +128,9 @@ export function AppointmentWizard({ tenantId, services, practitioners }: Appoint
                  {currentStep === 'practitioner' && 'Votre praticien'}
                  {currentStep === 'date' && 'Date du RDV'}
                  {currentStep === 'slot' && 'Heure du RDV'}
-                 {currentStep === 'confirm' && 'Confirmation'}
+                 {currentStep === 'patient' && 'Vos informations'}
+                 {currentStep === 'questionnaire' && 'Bilan médical'}
+                 {currentStep === 'payment' && 'Garantie de réservation'}
               </h3>
            </div>
            <div className="text-right" aria-hidden="true">
@@ -131,12 +178,12 @@ export function AppointmentWizard({ tenantId, services, practitioners }: Appoint
             date={formattedDate}
             selectedSlot={selectedSlot}
             onSelect={setSelectedSlot}
-            onNext={() => setCurrentStep('confirm')}
+            onNext={() => setCurrentStep('patient')}
             onBack={() => setCurrentStep('date')}
           />
         )}
 
-        {currentStep === 'confirm' && (
+        {currentStep === 'patient' && (
           <ConfirmStep 
             tenantId={tenantId}
             selection={{
@@ -148,19 +195,43 @@ export function AppointmentWizard({ tenantId, services, practitioners }: Appoint
               slot: selectedSlot!
             }}
             onBack={() => setCurrentStep('slot')}
-            onComplete={(id) => {
+            onComplete={(id, pId) => {
               setAppointmentId(id)
-              setCurrentStep('success')
+              setPatientId(pId || null)
+              if (selectedService?.requiresQuestionnaire) {
+                setCurrentStep('questionnaire')
+              } else if (selectedService?.requiresDeposit) {
+                setCurrentStep('payment')
+              } else {
+                setCurrentStep('success')
+              }
             }}
           />
+        )}
+
+        {currentStep === 'questionnaire' && (
+           <QuestionnaireStep 
+             onBack={() => setCurrentStep('patient')}
+             onNext={handleQuestionnaireComplete}
+           />
+        )}
+
+        {currentStep === 'payment' && (
+           <PaymentStep 
+             amount={selectedService?.depositAmountCents || 5000}
+             onBack={() => selectedService?.requiresQuestionnaire ? setCurrentStep('questionnaire') : setCurrentStep('patient')}
+             onPay={handlePaymentComplete}
+           />
         )}
       </div>
 
       {/* Trust Footer */}
       <div className="pt-12 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6 opacity-60">
          <div className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-emerald-500" aria-hidden="true" />
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Paiement sécurisé sur place</p>
+            <ShieldIcon className="h-5 w-5 text-emerald-500" aria-hidden="true" />
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+               {selectedService?.requiresDeposit ? 'Paiement sécurisé par Stripe' : 'Paiement sécurisé sur place'}
+            </p>
          </div>
          <div className="flex items-center gap-2">
             <CalendarIcon className="h-5 w-5 text-blue-500" aria-hidden="true" />
@@ -169,13 +240,4 @@ export function AppointmentWizard({ tenantId, services, practitioners }: Appoint
       </div>
     </div>
   )
-}
-
-function ShieldCheck({ className }: { className?: string }) {
-   return (
-      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
-         <path d="m9 12 2 2 4-4" />
-      </svg>
-   )
 }

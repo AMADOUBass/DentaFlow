@@ -124,6 +124,9 @@ async function main() {
         durationMin: 30,
         priceCents: 10000,
         category: ServiceCategory.ORTHODONTICS,
+        requiresQuestionnaire: true,
+        requiresDeposit: true,
+        depositAmountCents: 5000,
       },
       {
         tenantId: tenant.id,
@@ -134,6 +137,7 @@ async function main() {
         durationMin: 60,
         priceCents: 15000,
         category: ServiceCategory.PREVENTION,
+        requiresQuestionnaire: true,
       },
       {
         tenantId: tenant.id,
@@ -144,6 +148,8 @@ async function main() {
         durationMin: 90,
         priceCents: 45000,
         category: ServiceCategory.ESTHETIC,
+        requiresDeposit: true,
+        depositAmountCents: 10000,
       },
       {
         tenantId: tenant.id,
@@ -154,6 +160,9 @@ async function main() {
         durationMin: 120,
         priceCents: 250000,
         category: ServiceCategory.SURGERY,
+        requiresQuestionnaire: true,
+        requiresDeposit: true,
+        depositAmountCents: 50000,
       },
       {
         tenantId: tenant.id,
@@ -174,6 +183,9 @@ async function main() {
         durationMin: 150,
         priceCents: 120000,
         category: ServiceCategory.ESTHETIC,
+        requiresQuestionnaire: true,
+        requiresDeposit: true,
+        depositAmountCents: 20000,
       },
     ]
   })
