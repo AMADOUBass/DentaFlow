@@ -1,9 +1,10 @@
 import { PrismaClient, PlanTier, UserRole, ServiceCategory, AppointmentStatus } from '@prisma/client'
+import { addDays, setHours, setMinutes, startOfDay } from 'date-fns'
 
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Start seeding...')
+  console.log('🌱 Start seeding Oros Premium...')
 
   // 1. Clear existing data
   await prisma.$transaction([
@@ -47,8 +48,7 @@ async function main() {
     }
   })
 
-  // 3. Create Practitioners
-  // Dr. Dante (Généraliste) - Lundi, Mercredi, Vendredi
+  // 3. Create Practitioners with Avatars
   const dante = await prisma.practitioner.create({
     data: {
       tenantId: tenant.id,
@@ -57,17 +57,19 @@ async function main() {
       title: 'Dr',
       specialty: 'Dentiste généraliste',
       color: '#0EA5E9',
+      photoUrl: '/demo/dr-dante.png',
       schedules: {
         create: [
           { weekday: 1, startTime: '08:00', endTime: '17:00', lunchStart: '12:00', lunchEnd: '13:00' },
+          { weekday: 2, startTime: '08:00', endTime: '17:00', lunchStart: '12:00', lunchEnd: '13:00' },
           { weekday: 3, startTime: '08:00', endTime: '17:00', lunchStart: '12:00', lunchEnd: '13:00' },
+          { weekday: 4, startTime: '08:00', endTime: '17:00', lunchStart: '12:00', lunchEnd: '13:00' },
           { weekday: 5, startTime: '08:00', endTime: '16:00', lunchStart: '12:00', lunchEnd: '13:00' },
         ]
       }
     }
   })
 
-  // Dre. Beatrice (Orthodontiste) - PLEIN TEMPS pour tes tests
   const beatrice = await prisma.practitioner.create({
     data: {
       tenantId: tenant.id,
@@ -76,6 +78,7 @@ async function main() {
       title: 'Dre',
       specialty: 'Orthodontiste Spécialisée',
       color: '#EC4899',
+      photoUrl: '/demo/dre-beatrice.png',
       schedules: {
         create: [
           { weekday: 1, startTime: '08:00', endTime: '17:00', lunchStart: '12:00', lunchEnd: '13:00' },
@@ -101,19 +104,7 @@ async function main() {
     }
   })
 
-  const orthoSuivi = await prisma.service.create({
-    data: {
-      tenantId: tenant.id,
-      name: 'Suivi Orthodontique',
-      nameEn: 'Orthodontic Follow-up',
-      durationMin: 45,
-      priceCents: 15000,
-      category: ServiceCategory.ORTHODONTICS,
-      practitioners: { create: [{ practitionerId: beatrice.id }] }
-    }
-  })
-
-  await prisma.service.create({
+  const examination = await prisma.service.create({
     data: {
       tenantId: tenant.id,
       name: 'Examen + Nettoyage',
@@ -125,8 +116,49 @@ async function main() {
     }
   })
 
-  // 5. Create Users
-  // Super Admin
+  // 5. Create Sample Patient
+  const patient = await prisma.patient.create({
+    data: {
+      tenantId: tenant.id,
+      firstName: 'Jean',
+      lastName: 'Dupont',
+      email: 'jean.dupont@exemple.ca',
+      phone: '514-555-9988',
+      dateOfBirth: new Date('1985-05-15'),
+    }
+  })
+
+  // 6. Create Sample Appointments
+  const today = startOfDay(new Date())
+  
+  // Appointment for tomorrow
+  await prisma.appointment.create({
+    data: {
+      tenantId: tenant.id,
+      patientId: patient.id,
+      practitionerId: beatrice.id,
+      serviceId: orthoConsult.id,
+      startsAt: setMinutes(setHours(addDays(today, 1), 10), 0),
+      endsAt: setMinutes(setHours(addDays(today, 1), 10), 30),
+      status: AppointmentStatus.CONFIRMED,
+      notes: 'Premier rendez-vous de test.'
+    }
+  })
+
+  // Appointment for next week
+  await prisma.appointment.create({
+    data: {
+      tenantId: tenant.id,
+      patientId: patient.id,
+      practitionerId: dante.id,
+      serviceId: examination.id,
+      startsAt: setMinutes(setHours(addDays(today, 7), 14), 0),
+      endsAt: setMinutes(setHours(addDays(today, 7), 15), 0),
+      status: AppointmentStatus.CONFIRMED,
+    }
+  })
+
+  // 7. Create Super Admin
   await prisma.user.create({
     data: {
       authId: 'superadmin-auth-id',
@@ -136,18 +168,7 @@ async function main() {
     }
   })
 
-  // Proprio de la clinique démo
-  await prisma.user.create({
-    data: {
-      authId: '739a11d7-e0ad-41f6-a0b7-7642652fb126',
-      email: 'proprio@demo.ca',
-      name: 'Dr. Dante (Proprio)',
-      role: UserRole.CLINIC_OWNER,
-      tenantId: tenant.id
-    }
-  })
-
-  console.log('✅ Seeding completed.')
+  console.log('✅ Oros Premium Seeding completed.')
 }
 
 main()
