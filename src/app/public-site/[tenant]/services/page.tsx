@@ -19,7 +19,9 @@ const iconMap: Record<string, any> = {
   'ESTHETIC': <Sparkles className="h-6 w-6" />,
   'SURGERY': <Ear className="h-6 w-6" />,
   'EMERGENCY': <AlertTriangle className="h-6 w-6" />,
-  'GENERIC': <Activity className="h-6 w-6" />
+  'RESTORATION': <Activity className="h-6 w-6" />,
+  'ENDODONTICS': <Activity className="h-6 w-6" />,
+  'OTHER': <Activity className="h-6 w-6" />
 }
 
 function AlertTriangle({ className }: { className?: string }) {
