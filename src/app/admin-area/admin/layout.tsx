@@ -15,9 +15,18 @@ import { Metadata } from 'next'
 
 export async function generateMetadata(): Promise<Metadata> {
   const user = await getAdminUser()
-  const tenant = user.tenant!
+  
+  if (user.role === 'SUPERADMIN') {
+    return { title: 'Admin - Platform | DentaFlow' }
+  }
+
+  const tenant = user.tenant
+  if (!tenant) {
+    return { title: 'Admin - DentaFlow' }
+  }
+
   return {
-    title: `Admin - ${tenant.name} | Oros`,
+    title: `Admin - ${tenant.name} | DentaFlow`,
     description: `Plateforme de gestion pour ${tenant.name}`
   }
 }
@@ -28,7 +37,17 @@ export default async function AdminLayout({
   children: React.ReactNode
 }) {
   const user = await getAdminUser()
-  const tenant = user.tenant!
+
+  // Redirection de sécurité : les SuperAdmins n'ont rien à faire ici
+  if (user.role === 'SUPERADMIN') {
+    redirect('/superadmin')
+  }
+
+  const tenant = user.tenant
+  if (!tenant) {
+    // Si pas de tenant et pas superadmin, c'est une erreur de configuration
+    redirect('/login?error=unauthorized')
+  }
 
   return (
     <div className="flex min-h-screen bg-white selection:bg-primary/20">
