@@ -8,12 +8,14 @@ import {
   Activity, 
   Stethoscope, 
   Smartphone,
-  Star
+  Star,
+  ArrowRight
 } from 'lucide-react'
 import { useTranslations } from '@/lib/i18n'
 import { getLocaleServer } from '@/lib/i18n-server'
 import { I18nLink } from '@/components/I18nLink'
 import dynamic from 'next/dynamic'
+import NextImage from 'next/image'
 
 const Testimonials = dynamic(() => import('@/components/marketing/Testimonials').then(mod => mod.Testimonials), {
   ssr: true,
@@ -65,9 +67,11 @@ export default async function MarketingPage() {
           <div className="mt-20 relative animate-in fade-in zoom-in duration-1000 delay-300">
              <div className="absolute inset-0 bg-primary/20 blur-[120px] rounded-full scale-90 opacity-50"></div>
              <div className="relative glass-card p-2 md:p-4 rounded-[2.5rem] border-2 border-white/60 shadow-2xl overflow-hidden max-w-5xl mx-auto">
-                <img 
+                <NextImage 
                   src="/assets/images/dashboard-preview.png" 
                   alt="Oros Systems Dashboard Preview" 
+                  width={1200}
+                  height={800}
                   className="w-full h-auto rounded-[1.5rem] shadow-inner"
                 />
              </div>

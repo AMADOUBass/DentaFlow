@@ -11,7 +11,8 @@ import {
   User as UserIcon, 
   ChevronRight,
   AlertTriangle,
-  History
+  History,
+  ClipboardList
 } from 'lucide-react'
 import { format, isAfter, isBefore, addDays } from 'date-fns'
 import { fr, enUS } from 'date-fns/locale'
@@ -197,6 +198,11 @@ export default async function PatientPortalPage({ params }: PortalPageProps) {
                  <CardTitle className="text-lg font-bold">{t.patient_portal.actions}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 relative">
+                 <Link href={await getTenantPath('/portail/questionnaire')}>
+                    <Button variant="secondary" className="w-full justify-start rounded-xl font-bold bg-white/10 border-white/5 hover:bg-white/20 text-white">
+                       <ClipboardList className="mr-2 h-4 w-4" /> {locale === 'fr' ? 'Bilan de santé' : 'Medical Form'}
+                    </Button>
+                 </Link>
                  <Link href={await getTenantPath('/portail/profil')}>
                     <Button variant="secondary" className="w-full justify-start rounded-xl font-bold bg-white/10 border-white/5 hover:bg-white/20 text-white">
                        <UserIcon className="mr-2 h-4 w-4" /> {t.patient_portal.profile_cta}

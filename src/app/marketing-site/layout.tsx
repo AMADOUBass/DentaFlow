@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import NextImage from 'next/image'
 import { Button } from '@/components/ui/button'
 import { useTranslations } from '@/lib/i18n'
 import { getLocaleServer } from '@/lib/i18n-server'
@@ -40,7 +40,7 @@ export default async function MarketingLayout({
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
           <I18nLink href="/" className="flex items-center gap-3 group transition-transform active:scale-95">
             <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md border group-hover:rotate-6 transition-transform overflow-hidden p-1.5">
-               <Image src="/icon.png" alt="Oros" width={40} height={40} className="object-contain" />
+               <NextImage src="/icon.png" alt="Oros" width={40} height={40} className="object-contain" />
             </div>
             <span className="font-black text-2xl tracking-tighter text-slate-900 group-hover:text-primary transition-colors">Oros</span>
           </I18nLink>
@@ -76,7 +76,7 @@ export default async function MarketingLayout({
               <div className="col-span-2 md:col-span-1 space-y-6">
                  <I18nLink href="/" className="flex items-center gap-3 justify-center md:justify-start">
                     <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center p-1">
-                       <Image src="/icon.png" alt="Oros" width={32} height={32} />
+                       <NextImage src="/icon.png" alt="Oros" width={32} height={32} />
                     </div>
                     <span className="font-black text-xl tracking-tighter text-slate-900">Oros</span>
                  </I18nLink>

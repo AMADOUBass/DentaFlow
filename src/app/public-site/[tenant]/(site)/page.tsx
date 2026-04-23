@@ -8,9 +8,13 @@ import {
   Users,
   Sparkles,
   ArrowRight,
+  Activity,
 } from "lucide-react";
-import { useTranslations } from '@/lib/i18n'
-import { getLocaleServer } from '@/lib/i18n-server'
+import { useTranslations } from "@/lib/i18n";
+import { getLocaleServer } from "@/lib/i18n-server";
+import { getTenantPath, getTenant } from "@/lib/tenant";
+import NextImage from "next/image";
+import { notFound } from "next/navigation";
 import { I18nLink } from "@/components/I18nLink";
 
 export default async function TenantHomePage({
@@ -21,7 +25,11 @@ export default async function TenantHomePage({
   const { tenant } = await params;
   const locale = await getLocaleServer();
   const t = useTranslations(locale);
-  const clinicName = tenant.charAt(0).toUpperCase() + tenant.slice(1);
+  const tenantData = await getTenant();
+  
+  if (!tenantData) return notFound();
+  
+  const clinicName = tenantData.name;
 
   return (
     <div className="flex flex-col relative">
@@ -63,9 +71,20 @@ export default async function TenantHomePage({
                 </I18nLink>
                 <div className="flex items-center gap-4 px-6 border-l-2 border-slate-200">
                   <div className="flex -space-x-2">
-                    <img src="/demo/dr-dante.png" alt="Dr Dante Alighieri, dentiste généraliste chez Oros" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
-                    <img src="/demo/dre-beatrice.png" alt="Dre Beatrice Portinari, orthodontiste chez Oros" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
-                    <div className="w-10 h-10 rounded-full border-2 border-white bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary" aria-label="Et 8 autres membres de l'équipe">+8</div>
+                    {tenantData.practitioners.slice(0, 3).map((p, idx) => (
+                       <div key={p.id} className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden relative">
+                          {p.photoUrl ? (
+                            <NextImage src={p.photoUrl} alt={p.lastName} fill className="object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-[10px]">
+                               {p.firstName[0]}{p.lastName[0]}
+                            </div>
+                          )}
+                       </div>
+                    ))}
+                    <div className="w-10 h-10 rounded-full border-2 border-white bg-primary text-white flex items-center justify-center text-[10px] font-bold shadow-lg" aria-label="Et d'autres membres de l'équipe">
+                       +{Math.max(0, tenantData.practitioners.length - 3 + 5)}
+                    </div>
                   </div>
                   <p className="text-xs font-bold text-slate-600 uppercase tracking-widest line-clamp-1">
                     {t.clinic_home.patients_count}
@@ -76,9 +95,11 @@ export default async function TenantHomePage({
 
             <div className="relative animate-in fade-in slide-in-from-right-8 duration-1000">
               <div className="aspect-[4/3] rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white relative group">
-                <img 
+                <NextImage 
                   src="/assets/images/patient-trust.png" 
                   alt={`Intérieur moderne et accueillant de la clinique ${clinicName} à Montréal`} 
+                  width={800}
+                  height={600}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
@@ -116,32 +137,30 @@ export default async function TenantHomePage({
               {
                 icon: <MapPin className="text-primary" />,
                 title: t.clinic_home.location,
-                info:
-                  locale === "fr"
-                    ? "123 Rue de la Santé, Québec"
-                    : "123 Health St, Quebec City",
+                info: `${tenantData.address}, ${tenantData.city}`
               },
               {
                 icon: <Clock className="text-primary" />,
                 title: t.clinic_home.hours,
-                info:
-                  locale === "fr" ? "Lun-Ven: 8h - 18h" : "Mon-Fri: 8am - 6pm",
+                info: tenantData.businessHours.find(bh => bh.weekday === new Date().getDay())?.closed 
+                  ? (locale === 'fr' ? 'Fermé aujourd\'hui' : 'Closed today')
+                  : `${tenantData.businessHours.find(bh => bh.weekday === new Date().getDay())?.openTime} - ${tenantData.businessHours.find(bh => bh.weekday === new Date().getDay())?.closeTime}`
               },
               {
-                icon: <Clock className="text-primary" />,
+                icon: <Activity className="text-primary" />,
                 title: t.clinic_home.emergency_support,
                 info: t.clinic_home.emergency_desc,
               },
             ].map((item, i) => (
-              <div key={i} className="flex items-start gap-5">
-                <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0">
+              <div key={i} className="flex items-start gap-5 p-6 rounded-3xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100">
+                <div className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center shrink-0">
                   {item.icon}
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest">
+                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">
                     {item.title}
                   </h3>
-                  <p className="text-slate-600 font-medium">{item.info}</p>
+                  <p className="text-slate-900 font-bold leading-tight">{item.info}</p>
                 </div>
               </div>
             ))}

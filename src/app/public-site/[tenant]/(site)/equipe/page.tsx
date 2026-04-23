@@ -2,7 +2,7 @@ import { getTenant } from '@/lib/tenant'
 import { notFound } from 'next/navigation'
 import { Card } from '@/components/ui/card'
 import { Stethoscope, GraduationCap, Award, Mail } from 'lucide-react'
-import Image from 'next/image'
+import NextImage from 'next/image'
 
 export default async function EquipePage() {
   const tenant = await getTenant()
@@ -40,7 +40,7 @@ export default async function EquipePage() {
             >
               <div className="aspect-[4/5] relative overflow-hidden bg-slate-100">
                 {practitioner.photoUrl ? (
-                  <Image 
+                  <NextImage 
                     src={practitioner.photoUrl} 
                     alt={`${practitioner.title} ${practitioner.lastName}`}
                     fill

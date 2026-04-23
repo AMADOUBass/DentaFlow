@@ -12,6 +12,7 @@ import {
 import { useTranslations } from '@/lib/i18n'
 import { getLocaleServer } from '@/lib/i18n-server'
 import { I18nLink } from '@/components/I18nLink'
+import Image from 'next/image'
 
 export default async function SolutionsPage() {
   const locale = await getLocaleServer()
@@ -54,9 +55,11 @@ export default async function SolutionsPage() {
               </ul>
             </div>
             <div className="glass-card p-2 rounded-[3rem] border-2 border-white/60 shadow-2xl order-1 lg:order-2 overflow-hidden">
-                <img 
+                <Image 
                   src="/assets/images/clinic-interior.png" 
                   alt="Modern Dental Clinic Interior" 
+                  width={800}
+                  height={600}
                   className="w-full h-auto rounded-[2.5rem] object-cover"
                 />
             </div>
@@ -65,9 +68,11 @@ export default async function SolutionsPage() {
           {/* BOOKING */}
           <div className="grid lg:grid-cols-2 gap-16 items-center animate-in fade-in slide-in-from-right-8 duration-700">
              <div className="glass-card p-2 rounded-[3rem] border-2 border-white/60 shadow-2xl overflow-hidden">
-                <img 
+                <Image 
                   src="/assets/images/dashboard-preview.png" 
                   alt="AI Booking Engine Preview" 
+                  width={800}
+                  height={600}
                   className="w-full h-auto rounded-[2.5rem] object-cover"
                 />
             </div>
