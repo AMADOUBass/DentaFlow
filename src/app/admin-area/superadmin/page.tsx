@@ -57,16 +57,10 @@ export default async function SuperAdminDashboard() {
   ]
 
   return (
-    <div className="p-4 md:p-8 space-y-6 md:space-y-10 max-w-7xl mx-auto">
+    <div className="space-y-10">
       {/* Top Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="px-3 py-1 rounded-full bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest">
-              Root Console
-            </span>
-            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-          </div>
           <h1 className="text-4xl font-black text-slate-900 tracking-tight flex items-center gap-3">
             DentaFlow <span className="text-slate-400">/</span> SuperAdmin
           </h1>
@@ -74,14 +68,11 @@ export default async function SuperAdminDashboard() {
         </div>
 
         <div className="flex items-center gap-3">
-           <form action={logout}>
-              <Button variant="outline" className="rounded-2xl h-12 border-slate-200 font-bold gap-2 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition-all">
-                <LogOut className="h-4 w-4" /> Déconnexion
-              </Button>
-           </form>
-           <Button className="rounded-2xl h-12 bg-slate-900 hover:bg-slate-800 font-bold gap-2 shadow-xl shadow-slate-200">
-             <ShieldCheck className="h-4 w-4" /> Paramètres Globaux
-           </Button>
+           <Link href="/admin-area/superadmin/settings">
+             <Button className="rounded-2xl h-12 bg-slate-900 hover:bg-slate-800 font-bold gap-2 shadow-xl shadow-slate-200">
+               <ShieldCheck className="h-4 w-4 text-primary" /> Paramètres Globaux
+             </Button>
+           </Link>
         </div>
       </div>
 

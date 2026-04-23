@@ -21,6 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { TenantStatusToggle } from '@/components/superadmin/TenantStatusToggle'
+import { REQVerifier } from '@/components/superadmin/REQVerifier'
 
 export const metadata: Metadata = {
   title: 'Gestion des Cliniques | SuperAdmin',
@@ -31,7 +32,7 @@ export default async function SuperAdminTenants() {
   const tenants = await getTenantsAction()
 
   return (
-    <div className="p-8 space-y-10">
+    <div className="space-y-10">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="space-y-1">
           <h1 className="text-4xl font-black text-slate-900 tracking-tight">Gestion des <span className="text-primary italic">Cliniques</span></h1>
@@ -78,19 +79,7 @@ export default async function SuperAdminTenants() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="space-y-1">
-                      <p className="font-mono text-sm font-bold text-slate-600">{tenant.neq || 'N/A'}</p>
-                      {tenant.neq && (
-                        <a 
-                          href={`https://www.registreentreprises.gouv.qc.ca/adsearch/recherche.aspx?neq=${tenant.neq}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[10px] font-black text-primary hover:underline flex items-center gap-1 uppercase tracking-widest"
-                        >
-                          Vérifier REQ <ExternalLink className="h-2 w-2" />
-                        </a>
-                      )}
-                    </div>
+                    <REQVerifier neq={tenant.neq} />
                   </TableCell>
                   <TableCell>
                     <div className="space-y-1">

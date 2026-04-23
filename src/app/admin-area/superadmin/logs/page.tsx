@@ -11,16 +11,11 @@ export default async function SuperAdminLogsPage() {
   const logs = await getGlobalAuditLogsAction(50)
 
   return (
-    <div className="p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-8">
       
       {/* Header */}
       <div className="flex items-center justify-between">
          <div className="flex items-center gap-4">
-            <Link href="/admin-area/superadmin">
-               <Button variant="ghost" size="icon" className="rounded-xl border border-slate-100 shadow-sm hover:bg-slate-50 transition-all">
-                  <ArrowLeft className="h-5 w-5" />
-               </Button>
-            </Link>
             <div>
                <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
                   <ShieldCheck className="h-8 w-8 text-primary" /> Audit Logs Globaux
