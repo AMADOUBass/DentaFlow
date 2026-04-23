@@ -62,11 +62,11 @@ export default async function TenantHomePage({
                 </I18nLink>
                 <div className="flex items-center gap-4 px-6 border-l-2 border-slate-200">
                   <div className="flex -space-x-2">
-                    <img src="/demo/dr-dante.png" alt="Dr Dante" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
-                    <img src="/demo/dre-beatrice.png" alt="Dre Beatrice" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
-                    <div className="w-10 h-10 rounded-full border-2 border-white bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary">+8</div>
+                    <img src="/demo/dr-dante.png" alt="Dr Dante Alighieri, dentiste généraliste chez Oros" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
+                    <img src="/demo/dre-beatrice.png" alt="Dre Beatrice Portinari, orthodontiste chez Oros" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
+                    <div className="w-10 h-10 rounded-full border-2 border-white bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary" aria-label="Et 8 autres membres de l'équipe">+8</div>
                   </div>
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-widest line-clamp-1">
+                  <p className="text-xs font-bold text-slate-600 uppercase tracking-widest line-clamp-1">
                     {t.clinic_home.patients_count}
                   </p>
                 </div>
@@ -77,7 +77,7 @@ export default async function TenantHomePage({
               <div className="aspect-[4/3] rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white relative group">
                 <img 
                   src="/demo/clinic-hero.png" 
-                  alt={clinicName} 
+                  alt={`Intérieur moderne et accueillant de la clinique ${clinicName} à Montréal`} 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
@@ -109,6 +109,7 @@ export default async function TenantHomePage({
       {/* QUICK INFO BAR */}
       <section className="bg-white py-12 border-y">
         <div className="container mx-auto px-4">
+          <h2 className="sr-only">Informations pratiques</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {[
               {
@@ -136,10 +137,10 @@ export default async function TenantHomePage({
                   {item.icon}
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900 uppercase tracking-widest">
+                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest">
                     {item.title}
-                  </h4>
-                  <p className="text-slate-500 font-medium">{item.info}</p>
+                  </h3>
+                  <p className="text-slate-600 font-medium">{item.info}</p>
                 </div>
               </div>
             ))}

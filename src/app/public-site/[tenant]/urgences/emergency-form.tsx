@@ -88,8 +88,9 @@ export function EmergencyForm({ tenantId }: EmergencyFormProps) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label className="font-bold ml-1">Prénom</Label>
+          <Label htmlFor="firstName" className="font-bold ml-1">Prénom</Label>
           <Input 
+            id="firstName"
             {...register('firstName')}
             className={`h-12 rounded-xl bg-white/50 ${errors.firstName ? 'border-rose-500' : ''}`} 
             placeholder="Jean" 
@@ -97,8 +98,9 @@ export function EmergencyForm({ tenantId }: EmergencyFormProps) {
           {errors.firstName && <p className="text-[10px] text-rose-500 font-bold ml-1">{errors.firstName.message}</p>}
         </div>
         <div className="space-y-2">
-          <Label className="font-bold ml-1">Nom</Label>
+          <Label htmlFor="lastName" className="font-bold ml-1">Nom</Label>
           <Input 
+            id="lastName"
             {...register('lastName')}
             className={`h-12 rounded-xl bg-white/50 ${errors.lastName ? 'border-rose-500' : ''}`} 
             placeholder="Dupont" 
@@ -109,8 +111,9 @@ export function EmergencyForm({ tenantId }: EmergencyFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label className="font-bold ml-1">Téléphone</Label>
+          <Label htmlFor="phone" className="font-bold ml-1">Téléphone</Label>
           <Input 
+            id="phone"
             {...register('phone')}
             className={`h-12 rounded-xl bg-white/50 ${errors.phone ? 'border-rose-500' : ''}`} 
             placeholder="(514) 000-0000" 
@@ -119,8 +122,9 @@ export function EmergencyForm({ tenantId }: EmergencyFormProps) {
           {errors.phone && <p className="text-[10px] text-rose-500 font-bold ml-1">{errors.phone.message}</p>}
         </div>
         <div className="space-y-2">
-          <Label className="font-bold ml-1">Courriel (optionnel)</Label>
+          <Label htmlFor="email" className="font-bold ml-1">Courriel (optionnel)</Label>
           <Input 
+            id="email"
             {...register('email')}
             className={`h-12 rounded-xl bg-white/50 ${errors.email ? 'border-rose-500' : ''}`} 
             placeholder="jean.dupont@exemple.com" 
@@ -132,9 +136,9 @@ export function EmergencyForm({ tenantId }: EmergencyFormProps) {
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label className="font-bold ml-1">Type d'urgence</Label>
+          <Label htmlFor="category" className="font-bold ml-1">Type d'urgence</Label>
           <Select onValueChange={(v) => setValue('category', v as EmergencyCategory)}>
-            <SelectTrigger className="h-12 rounded-xl bg-white/50">
+            <SelectTrigger id="category" className="h-12 rounded-xl bg-white/50">
               <SelectValue placeholder="Sélectionner..." />
             </SelectTrigger>
             <SelectContent>
@@ -148,9 +152,9 @@ export function EmergencyForm({ tenantId }: EmergencyFormProps) {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label className="font-bold ml-1">Niveau de douleur (1-10)</Label>
+          <Label htmlFor="painLevel" className="font-bold ml-1">Niveau de douleur (1-10)</Label>
           <Select onValueChange={(v) => setValue('painLevel', parseInt(v))}>
-            <SelectTrigger className="h-12 rounded-xl bg-white/50">
+            <SelectTrigger id="painLevel" className="h-12 rounded-xl bg-white/50">
               <SelectValue placeholder="Indiquez..." />
             </SelectTrigger>
             <SelectContent>
@@ -163,8 +167,9 @@ export function EmergencyForm({ tenantId }: EmergencyFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label className="font-bold ml-1">Description</Label>
+        <Label htmlFor="description" className="font-bold ml-1">Description</Label>
         <Textarea 
+          id="description"
           {...register('description')}
           className={`rounded-xl bg-white/50 min-h-[100px] ${errors.description ? 'border-rose-500' : ''}`} 
           placeholder="Décrivez votre situation brièvement..." 

@@ -141,8 +141,9 @@ export function ConfirmStep({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
              <div className="space-y-2">
-                <Label className="font-bold ml-1">Prénom</Label>
+                <Label htmlFor="firstName" className="font-bold ml-1">Prénom</Label>
                 <Input 
+                  id="firstName"
                   {...register('firstName')} 
                   className={`h-12 rounded-xl focus:ring-primary/20 ${errors.firstName ? 'border-rose-500' : ''}`}
                   placeholder="Jean"
@@ -150,8 +151,9 @@ export function ConfirmStep({
                 {errors.firstName && <p className="text-[10px] text-rose-500 font-bold ml-1">{errors.firstName.message}</p>}
              </div>
              <div className="space-y-2">
-                <Label className="font-bold ml-1">Nom</Label>
+                <Label htmlFor="lastName" className="font-bold ml-1">Nom</Label>
                 <Input 
+                  id="lastName"
                   {...register('lastName')} 
                   className={`h-12 rounded-xl focus:ring-primary/20 ${errors.lastName ? 'border-rose-500' : ''}`}
                   placeholder="Dupont"
@@ -161,8 +163,9 @@ export function ConfirmStep({
           </div>
 
           <div className="space-y-2">
-             <Label className="font-bold ml-1">Courriel</Label>
+             <Label htmlFor="email" className="font-bold ml-1">Courriel</Label>
              <Input 
+               id="email"
                {...register('email')} 
                type="email"
                className={`h-12 rounded-xl focus:ring-primary/20 ${errors.email ? 'border-rose-500' : ''}`}
@@ -172,8 +175,9 @@ export function ConfirmStep({
           </div>
 
           <div className="space-y-2">
-             <Label className="font-bold ml-1">Téléphone</Label>
+             <Label htmlFor="phone" className="font-bold ml-1">Téléphone</Label>
              <Input 
+               id="phone"
                {...register('phone')} 
                type="tel"
                className={`h-12 rounded-xl focus:ring-primary/20 ${errors.phone ? 'border-rose-500' : ''}`}
@@ -183,8 +187,9 @@ export function ConfirmStep({
           </div>
 
           <div className="space-y-2">
-             <Label className="font-bold ml-1 text-slate-400 font-medium">Notes ou précisions (optionnel)</Label>
+             <Label htmlFor="notes" className="font-bold ml-1 text-slate-400 font-medium">Notes ou précisions (optionnel)</Label>
              <Textarea 
+               id="notes"
                {...register('notes')} 
                className="rounded-xl focus:ring-primary/20 min-h-[80px]"
                placeholder="Allergies, peur du dentiste, etc."

@@ -5,7 +5,12 @@ import { cn } from "@/lib/utils";
 import { PwaRegistration } from "@/components/pwa/PwaRegistration";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { ConsentBanner } from "@/components/public/consent-banner";
+import dynamic from "next/dynamic";
+
+const ConsentBanner = dynamic(() => import("@/components/public/consent-banner").then(mod => mod.ConsentBanner), {
+  ssr: false // Only client-side since it uses localStorage
+});
+
 import { Analytics } from "@vercel/analytics/next";
 import { getLocaleServer } from "@/lib/i18n";
 
@@ -15,8 +20,6 @@ export const viewport: Viewport = {
   themeColor: "#0f172a",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
 };
 
 export const metadata: Metadata = {

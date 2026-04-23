@@ -12,7 +12,12 @@ import {
 } from 'lucide-react'
 import { getLocaleServer, useTranslations } from '@/lib/i18n'
 import { I18nLink } from '@/components/I18nLink'
-import { Testimonials } from '@/components/marketing/Testimonials'
+import dynamic from 'next/dynamic'
+
+const Testimonials = dynamic(() => import('@/components/marketing/Testimonials').then(mod => mod.Testimonials), {
+  ssr: true,
+  loading: () => <div className="py-32 bg-slate-50/50 animate-pulse h-[600px]" />
+})
 
 /**
  * Page d'accueil marketing simplifiée et enrichie
@@ -59,7 +64,7 @@ export default async function MarketingPage() {
              <div className="relative w-full max-w-5xl rounded-[2.5rem] overflow-hidden glass-card p-4 border-2 border-white/40 shadow-2xl animate-float">
                 <img 
                   src="/marketing/hero.png" 
-                  alt="Oros Healthcare Platform" 
+                  alt="Interface de la plateforme Oros montrant le tableau de bord de gestion dentaire et le calendrier" 
                   className="w-full h-full rounded-[2rem] object-cover shadow-inner"
                 />
              </div>
@@ -72,7 +77,7 @@ export default async function MarketingPage() {
         <div className="container mx-auto px-4 relative">
           <div className="text-center mb-24 space-y-4">
             <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight">{t.features.title}</h2>
-            <p className="text-xl text-slate-500 max-w-2xl mx-auto font-medium">{t.features.subtitle}</p>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto font-medium">{t.features.subtitle}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -97,7 +102,7 @@ export default async function MarketingPage() {
                     </Badge>
                   )}
                 </div>
-                <p className="text-slate-500 leading-relaxed font-medium">
+                <p className="text-slate-600 leading-relaxed font-medium">
                   {item.desc}
                 </p>
               </div>

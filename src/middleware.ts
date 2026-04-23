@@ -122,6 +122,6 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico, icon.png, logo.png (static assets)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|icon.png|logo.png|manifest.webmanifest|manifest.json|sw.js|offline).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|icon.png|logo.png|demo|marketing|manifest.webmanifest|manifest.json|sw.js|offline).*)",
   ],
 };

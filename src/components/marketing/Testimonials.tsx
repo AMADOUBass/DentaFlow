@@ -30,7 +30,7 @@ export function Testimonials({ title, subtitle, items }: TestimonialsProps) {
           <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight">
             {title}
           </h2>
-          <p className="text-xl text-slate-500 font-medium">
+          <p className="text-xl text-slate-600 font-medium">
             {subtitle}
           </p>
         </div>
@@ -60,7 +60,7 @@ export function Testimonials({ title, subtitle, items }: TestimonialsProps) {
                    {item.name.charAt(0)}
                 </div>
                 <div>
-                  <h4 className="font-black text-slate-900 leading-tight">{item.name}</h4>
+                  <p className="font-black text-slate-900 leading-tight">{item.name}</p>
                   <p className="text-xs text-primary font-bold uppercase tracking-widest mt-1">{item.role}</p>
                   <p className="text-[10px] text-slate-400 font-bold mt-0.5">{item.clinic}</p>
                 </div>
