@@ -51,6 +51,11 @@ export async function getAvailableSlots({
     }
   })
 
+  console.log(`Found ${practitioners.length} practitioners for service ${serviceId} on weekday ${weekday}`)
+  if (practitioners.length > 0) {
+    console.log(`Practitioner 1: ${practitioners[0].lastName}, Schedules: ${practitioners[0].schedules.length}`)
+  }
+
   let allSlots: string[] = []
 
   for (const practitioner of practitioners) {

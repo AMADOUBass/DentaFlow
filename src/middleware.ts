@@ -1,114 +1,83 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-
-// Simple in-memory rate limiting for demo/small scale
-// In production, use Upstash Redis or similar
-const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
-const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const MAX_REQUESTS = 100; // 100 requests per minute
+import { updateSession } from "./lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
-  // Rate limiting logic
-  const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || '127.0.0.1';
-  const now = Date.now();
-  const rateLimit = rateLimitMap.get(ip) || { count: 0, lastReset: now };
-
-  if (now - rateLimit.lastReset > RATE_LIMIT_WINDOW) {
-    rateLimitMap.set(ip, { count: 1, lastReset: now });
-  } else {
-    rateLimit.count++;
-    if (rateLimit.count > MAX_REQUESTS) {
-      return new NextResponse("Too Many Requests", { status: 429 });
-    }
-    rateLimitMap.set(ip, rateLimit);
-  }
+  // 1. Refresh Supabase session and get the initial response
+  let response = await updateSession(request);
 
   const url = request.nextUrl.clone();
   const host = request.headers.get("host") || "";
   const { pathname } = url;
 
-  // 1. Détection du sous-domaine (Tenant)
-  // On ignore localhost et www
-  const searchParams = url.searchParams.toString();
-  const path = `${pathname}${searchParams.length > 0 ? `?${searchParams}` : ""}`;
-
+  // 2. Détection du sous-domaine (Tenant)
   const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
-  
   let subdomain = "";
   let isCustomDomain = false;
 
-  // Détection du tenant (sous-domaine ou domaine personnalisé)
   if (host === rootDomain || host === `www.${rootDomain}`) {
-    // Cas : Site Principal (marketing)
     subdomain = "";
   } else if (host.endsWith(`.${rootDomain}`)) {
-    // Cas : Sous-domaine (ex: demo.oros.homes)
     subdomain = host.replace(`.${rootDomain}`, "");
   } else if (host !== "localhost:3000" && !host.includes(".localhost:3000")) {
-    // Cas : Domaine personnalisé (ex: clinique.oros.ca)
     isCustomDomain = true;
   } else if (host.includes(".localhost:3000")) {
-    // Cas : Localhost avec sous-domaine
     subdomain = host.split(".localhost:3000")[0];
   }
 
-  // 2. Détection de la Locale (fr/en)
+  // 3. Détection de la Locale
   const locales = ["fr", "en"];
   const firstSegment = pathname.split("/")[1];
   const locale = locales.includes(firstSegment) ? firstSegment : "fr";
-
-  // On nettoie le chemin de la locale pour le routage interne si elle est présente
   const pathWithoutLocale = locales.includes(firstSegment)
     ? pathname.replace(`/${firstSegment}`, "") || "/"
     : pathname;
 
-  // 3. Préparer la réponse
+  // 4. Protection des routes Admin/Superadmin
+  // Note: On laisse getAdminUser() faire le check de rôle fin, mais on bloque les non-connectés ici.
+  // Cependant, pour ne pas casser le flow de login, on ignore /login et /register.
+  if (pathWithoutLocale.startsWith("/admin-area") || pathWithoutLocale.startsWith("/admin") || pathWithoutLocale.startsWith("/superadmin")) {
+     // Si updateSession n'a pas trouvé d'user (on pourrait repasser par supabase.auth.getUser() ici si besoin)
+     // Mais pour simplifier et éviter de re-fetcher, on se fie à getAdminUser dans les pages.
+     // Si on veut vraiment bloquer ici, il faut que updateSession retourne l'user.
+  }
+
+  // 5. Routage interne
   let targetPath = pathWithoutLocale;
 
-  // LOGIQUE DE ROUTAGE GLOBALE :
-  if (
-    pathWithoutLocale === "/admin" ||
-    pathWithoutLocale.startsWith("/admin/")
-  ) {
-    // Alias /admin -> /admin-area/admin
+  if (pathWithoutLocale === "/admin" || pathWithoutLocale.startsWith("/admin/")) {
     targetPath = pathWithoutLocale.replace(/^\/admin/, "/admin-area/admin");
-  } else if (
-    pathWithoutLocale === "/superadmin" ||
-    pathWithoutLocale.startsWith("/superadmin/")
-  ) {
-    // Alias /superadmin -> /admin-area/superadmin
-    targetPath = pathWithoutLocale.replace(
-      /^\/superadmin/,
-      "/admin-area/superadmin",
-    );
+  } else if (pathWithoutLocale === "/superadmin" || pathWithoutLocale.startsWith("/superadmin/")) {
+    targetPath = pathWithoutLocale.replace(/^\/superadmin/, "/admin-area/superadmin");
   } else if (pathWithoutLocale.startsWith("/admin-area")) {
-    // Chemin physique direct
     targetPath = pathWithoutLocale;
   } else if ((subdomain && subdomain !== "www") || isCustomDomain) {
-    // Cas : Clinique (demo.localhost ou domaine.ca) -> public-site/[tenant]
     const tenantIdentifier = isCustomDomain ? host : subdomain;
     const cleanPath = pathWithoutLocale === "/" ? "" : pathWithoutLocale;
     targetPath = `/public-site/${tenantIdentifier}${cleanPath}`;
   } else if (pathWithoutLocale === "/offline") {
     targetPath = pathname;
   } else {
-    // Cas : Site Marketing -> marketing-site
     const cleanPath = pathWithoutLocale === "/" ? "" : pathWithoutLocale;
     targetPath = `/marketing-site${cleanPath}`;
   }
 
-  // 4. Exécuter la réécriture interne (Invisible pour l'utilisateur)
-  // Utilisation d'un chemin relatif pour éviter les problèmes de résolution de domaine
-  const finalTargetPath = targetPath.startsWith("/")
-    ? targetPath
-    : `/${targetPath}`;
-  const finalResponse = NextResponse.rewrite(
-    new URL(finalTargetPath, request.url),
-  );
+  const finalTargetPath = targetPath.startsWith("/") ? targetPath : `/${targetPath}`;
+  
+  // 6. Créer la réponse réécrite en conservant les cookies de updateSession
+  const finalResponse = NextResponse.rewrite(new URL(finalTargetPath, request.url));
+  
+  // Copier les headers et cookies de la réponse de updateSession
+  response.headers.forEach((value, key) => {
+    finalResponse.headers.set(key, value);
+  });
 
-  // Injection des headers pour le code applicatif
+  // Injection des headers métier
   finalResponse.headers.set("x-locale", locale);
-  if (subdomain) finalResponse.headers.set("x-tenant-slug", subdomain);
+  const tenantSlug = isCustomDomain ? host : subdomain;
+  if (tenantSlug) {
+    finalResponse.headers.set("x-tenant-slug", tenantSlug);
+  }
 
   return finalResponse;
 }

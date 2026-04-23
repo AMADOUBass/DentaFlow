@@ -21,6 +21,8 @@ export async function getAdminUser() {
     include: { tenant: true }
   })
 
+  console.log(`Auth check for ${user.email}: Role=${prismaUser?.role}, Tenant=${prismaUser?.tenantId}`)
+
   // AUTO-SYNC LOGIC: If user exists in Supabase but not in Prisma, try to heal
   if (!prismaUser) {
      console.log(`Auto-syncing user ${user.email} in getAdminUser...`)
@@ -78,6 +80,7 @@ export async function getAdminUser() {
   ]
   
   if (!allowedRoles.includes(prismaUser.role)) {
+    console.error(`Access denied: User ${user.email} has role ${prismaUser.role} which is not allowed in admin area.`)
     redirect('/login?error=unauthorized')
   }
 
