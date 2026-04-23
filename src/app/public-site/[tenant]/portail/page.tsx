@@ -19,7 +19,7 @@ import Link from 'next/link'
 import { PrivacyActions } from './privacy-actions'
 import { getLocaleServer, useTranslations } from '@/lib/i18n'
 import { CancelButton } from './cancel-button'
-import { getTenantPath } from '@/lib/tenant'
+import { getTenantPath, getTenant } from '@/lib/tenant'
 
 interface PortalPageProps {
   params: Promise<{ tenant: string }>
@@ -38,7 +38,7 @@ export default async function PatientPortalPage({ params }: PortalPageProps) {
   if (!user?.email) redirect(await getTenantPath('/login/patient'))
 
   // 2. Get Tenant
-  const tenant = await prisma.tenant.findUnique({ where: { slug: tenantSlug } })
+  const tenant = await getTenant()
   if (!tenant) redirect('/')
 
   // 3. Get Patient and Appointments

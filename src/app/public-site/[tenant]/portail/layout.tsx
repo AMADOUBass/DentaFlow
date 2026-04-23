@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import { 
   User as UserIcon, 
@@ -14,7 +15,8 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { logout } from '@/server/auth'
-import { getTenantPath } from '@/lib/tenant'
+import { getTenantPath, getTenant } from '@/lib/tenant'
+import { getTranslations } from '@/lib/i18n'
 import { PortalMobileNav } from './mobile-nav'
 
 interface PatientLayoutProps {
@@ -33,7 +35,10 @@ export default async function PatientPortalLayout({ children, params }: PatientL
   }
 
   // 2. Fetch tenant and patient
-  const tenant = await prisma.tenant.findUnique({ where: { slug: tenantSlug } })
+  const tenant = await getTenant()
+  const locale = (await (await headers()).get('x-locale')) as any || 'fr'
+  const t = getTranslations(locale)
+  
   if (!tenant) redirect('/')
 
   const patient = await prisma.patient.findUnique({
@@ -105,11 +110,15 @@ export default async function PatientPortalLayout({ children, params }: PatientL
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex items-center gap-3 mb-10 overflow-hidden">
            <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border flex items-center justify-center text-xl font-black text-slate-700">
-             {patient.firstName[0]}{patient.lastName[0]}
+             {patient.firstName?.[0] || '?'}{patient.lastName?.[0] || '?'}
            </div>
            <div>
-              <p className="text-2xl font-black text-slate-900 tracking-tight">Bonjour, {patient.firstName} !</p>
-              <p className="text-sm text-slate-500 font-medium">Heureux de vous revoir chez {tenant.name}.</p>
+              <p className="text-2xl font-black text-slate-900 tracking-tight">
+                {locale === 'fr' ? 'Bonjour' : 'Hello'}, {patient.firstName} !
+              </p>
+              <p className="text-sm text-slate-500 font-medium">
+                {locale === 'fr' ? 'Heureux de vous revoir chez' : 'Happy to see you back at'} {tenant.name}.
+              </p>
            </div>
         </div>
         
