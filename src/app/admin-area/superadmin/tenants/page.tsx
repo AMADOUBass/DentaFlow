@@ -25,7 +25,7 @@ import { REQVerifier } from '@/components/superadmin/REQVerifier'
 
 export const metadata: Metadata = {
   title: 'Gestion des Cliniques | SuperAdmin',
-  description: 'Validation et monitoring des tenants DentaFlow.',
+  description: 'Validation et monitoring des tenants Oros.',
 }
 
 export default async function SuperAdminTenants() {
@@ -36,7 +36,7 @@ export default async function SuperAdminTenants() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="space-y-1">
           <h1 className="text-4xl font-black text-slate-900 tracking-tight">Gestion des <span className="text-primary italic">Cliniques</span></h1>
-          <p className="text-slate-500 font-medium tracking-tight">Périmètre : {tenants.length} centres dentaires enregistrés.</p>
+          <p className="text-slate-500 font-medium tracking-tight">Périmètre : {tenants.length} centres dentaires enregistrés sous Oros.</p>
         </div>
       </div>
 

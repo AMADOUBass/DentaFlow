@@ -16,7 +16,7 @@ export default function PrivacyPolicyPage() {
           </div>
           <p className="text-slate-600 leading-relaxed">
             Conformément à la Loi sur la protection des renseignements personnels dans le secteur privé (Loi 25), 
-            <strong> DentaFlow Systems Inc.</strong> s'engage à protéger l'intégrité et la confidentialité des données 
+            <strong> Oros Systems Inc.</strong> s'engage à protéger l'intégrité et la confidentialité des données 
             dentaires et personnelles traitées sur sa plateforme.
           </p>
         </section>
@@ -60,7 +60,7 @@ export default function PrivacyPolicyPage() {
       </div>
 
       <div className="pt-10 border-t border-slate-100 text-center">
-        <p className="text-sm text-slate-400 font-bold uppercase tracking-widest">Responsable de la protection des données : privacy@dentaflow.ca</p>
+        <p className="text-sm text-slate-400 font-bold uppercase tracking-widest">Responsable de la protection des données : privacy@Oros.ca</p>
       </div>
     </div>
   )

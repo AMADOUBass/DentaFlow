@@ -16,7 +16,7 @@ import {
 
 export const metadata: Metadata = {
   title: 'Paramètres Globaux | SuperAdmin',
-  description: 'Configuration du système DentaFlow.',
+  description: 'Configuration du système Oros.',
 }
 
 export default async function SuperAdminSettings() {
@@ -24,7 +24,7 @@ export default async function SuperAdminSettings() {
     <div className="space-y-10">
       <div className="space-y-1">
         <h1 className="text-4xl font-black text-slate-900 tracking-tight">Paramètres <span className="text-primary italic">Globaux</span></h1>
-        <p className="text-slate-500 font-medium">Contrôle centralisé de l'infrastructure DentaFlow.</p>
+        <p className="text-slate-500 font-medium">Contrôle centralisé de l'infrastructure Oros.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -46,11 +46,11 @@ export default async function SuperAdminSettings() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="rootDomain" className="text-[10px] font-black uppercase tracking-widest text-slate-400">Domaine Principal</Label>
-                  <Input id="rootDomain" defaultValue="dentaflow.ca" className="rounded-xl h-12 border-slate-200" />
+                  <Input id="rootDomain" defaultValue="oros.ca" className="rounded-xl h-12 border-slate-200" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="supportEmail" className="text-[10px] font-black uppercase tracking-widest text-slate-400">Email Support</Label>
-                  <Input id="supportEmail" defaultValue="support@dentaflow.ca" className="rounded-xl h-12 border-slate-200" />
+                  <Input id="supportEmail" defaultValue="support@oros.ca" className="rounded-xl h-12 border-slate-200" />
                 </div>
               </div>
 
@@ -113,7 +113,7 @@ export default async function SuperAdminSettings() {
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-black tracking-tight">Zone de Danger</h3>
-                <p className="text-sm text-slate-400 font-medium">Ces réglages affectent l'ensemble du réseau DentaFlow. Manipulez avec précaution.</p>
+                <p className="text-sm text-slate-400 font-medium">Ces réglages affectent l'ensemble du réseau Oros. Manipulez avec précaution.</p>
               </div>
               <Button className="w-full h-14 rounded-2xl bg-white hover:bg-slate-100 text-slate-900 font-black text-lg gap-2 shadow-xl">
                 <Save className="h-5 w-5" /> Sauvegarder tout

@@ -40,7 +40,7 @@ export default async function TermsPage() {
             Conditions <span className="text-primary italic">d'Utilisation</span>
           </h1>
           <p className="text-lg text-slate-500 font-medium max-w-2xl mx-auto">
-            Veuillez lire attentivement ces termes avant d'utiliser la plateforme DentaFlow.
+            Veuillez lire attentivement ces termes avant d'utiliser la plateforme Oros.
           </p>
         </div>
 
@@ -77,7 +77,7 @@ export default async function TermsPage() {
         </div>
 
         <p className="text-center mt-12 text-slate-400 text-xs font-medium italic">
-          Oros est une marque déposée de DentaFlow Solutions Inc. © 2026.
+          Oros est une marque déposée de Oros Solutions Inc. © 2026.
         </p>
       </div>
     </div>

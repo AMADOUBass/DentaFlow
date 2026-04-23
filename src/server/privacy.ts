@@ -107,7 +107,7 @@ export async function deletePatientRecord(tenantId: string) {
   await prisma.patient.update({
     where: { id: patient.id },
     data: {
-      email: `deleted_${patient.id}@dentaflow.ca`,
+      email: `deleted_${patient.id}@Oros.ca`,
       phone: '000-000-0000',
       ramqNumber: null,
       address: 'SUPPRIMÉ',

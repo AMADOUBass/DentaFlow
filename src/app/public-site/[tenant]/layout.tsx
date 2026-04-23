@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const tenant = await getTenant()
   if (!tenant) return { title: 'Oros' }
   
-  const ogUrl = new URL('/api/og', process.env.NEXT_PUBLIC_APP_URL || 'https://dentaflow.ca')
+  const ogUrl = new URL('/api/og', process.env.NEXT_PUBLIC_APP_URL || 'https://oros.ca')
   ogUrl.searchParams.set('tenantSlug', tenant.slug)
 
   return {

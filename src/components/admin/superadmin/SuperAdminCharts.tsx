@@ -81,7 +81,7 @@ export function SuperAdminCharts({ growthData }: SuperAdminChartsProps) {
                <CardTitle className="text-xl font-black text-slate-900 flex items-center gap-2">
                   <Building2 className="h-5 w-5 text-emerald-600" /> Nouvelles Cliniques
                </CardTitle>
-               <p className="text-sm font-medium text-slate-400 mt-1">Expansion du réseau DentaFlow</p>
+               <p className="text-sm font-medium text-slate-400 mt-1">Expansion du réseau Oros</p>
             </div>
          </CardHeader>
          <CardContent className="px-0 h-[300px]">

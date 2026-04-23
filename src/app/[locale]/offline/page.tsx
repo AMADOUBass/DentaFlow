@@ -52,7 +52,7 @@ export default function OfflinePage() {
          </p>
          <div className="flex items-center justify-center gap-3 text-primary">
             <Phone className="h-5 w-5" />
-            <span className="text-lg font-black tracking-tighter">Oros | DentaFlow</span>
+            <span className="text-lg font-black tracking-tighter">Oros | Platform</span>
          </div>
       </div>
     </div>

@@ -15,8 +15,8 @@ export default function TermsOfServicePage() {
             <h2 className="text-2xl font-black m-0">1. Acceptation des termes</h2>
           </div>
           <p className="text-slate-600 leading-relaxed">
-            En utilisant la plateforme DentaFlow, vous acceptez d'être lié par les présentes conditions. 
-            DentaFlow est un logiciel de gestion clinique destiné aux professionnels de la santé dentaire.
+            En utilisant la plateforme Oros, vous acceptez d'être lié par les présentes conditions. 
+            Oros est un logiciel de gestion clinique destiné aux professionnels de la santé dentaire.
           </p>
         </section>
 
@@ -24,7 +24,7 @@ export default function TermsOfServicePage() {
           <h3 className="text-xl font-bold text-slate-900">2. Responsabilité Clinique</h3>
           <p className="text-slate-600">
             La clinique utilisatrice (le "Tenant") est seule responsable de l'exactitude des données saisies et de 
-            la validation des soins prodigués. DentaFlow agit en tant que fournisseur technologique et ne peut être 
+            la validation des soins prodigués. Oros agit en tant que fournisseur technologique et ne peut être 
             tenu responsable des décisions cliniques.
           </p>
         </section>

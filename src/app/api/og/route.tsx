@@ -111,7 +111,7 @@ export async function GET(request: Request) {
                 fontWeight: 500,
               }}
             >
-              DentaFlow — Oros
+              Oros — Oros
             </div>
           </div>
 

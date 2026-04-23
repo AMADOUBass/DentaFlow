@@ -1,5 +1,5 @@
 /**
- * DentaFlow Premium Email Templates
+ * Oros Premium Email Templates
  * Responsive HTML with Inline CSS
  */
 
@@ -37,7 +37,7 @@ export function getAppointmentConfirmationHtml(data: {
               <!-- Header -->
               <tr>
                 <td style="background-color: ${primaryColor}; padding: 40px; text-align: center;">
-                  <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 900; letter-spacing: -0.025em;">DentaFlow</h1>
+                  <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 900; letter-spacing: -0.025em;">Oros</h1>
                   <p style="color: rgba(255,255,255,0.8); margin-top: 8px; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em;">${theme.name}</p>
                 </td>
               </tr>
@@ -89,7 +89,7 @@ export function getAppointmentConfirmationHtml(data: {
               <tr>
                 <td style="background-color: #f8fafc; padding: 30px; text-align: center; border-top: 1px solid #e2e8f0;">
                   <p style="margin: 0; font-size: 12px; color: #94a3b8; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em;">
-                    Propulsé par DentaFlow — Logiciel Clinique Québécois
+                    Propulsé par Oros — Logiciel Clinique Québécois
                   </p>
                 </td>
               </tr>

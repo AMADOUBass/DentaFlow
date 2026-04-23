@@ -22,8 +22,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'SuperAdmin | DentaFlow Platform',
-  description: 'Gestion globale de la plateforme DentaFlow.',
+  title: 'SuperAdmin | Oros Platform',
+  description: 'Gestion globale de la plateforme Oros.',
 }
 
 export default async function SuperAdminDashboard() {
@@ -62,7 +62,7 @@ export default async function SuperAdminDashboard() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1">
           <h1 className="text-4xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-            DentaFlow <span className="text-slate-400">/</span> SuperAdmin
+            Oros <span className="text-slate-400">/</span> SuperAdmin
           </h1>
           <p className="text-slate-500 font-medium">Contrôle global et intelligence d'affaires (BI).</p>
         </div>
@@ -150,7 +150,7 @@ export default async function SuperAdminDashboard() {
             </div>
             <h3 className="text-xl font-black text-white tracking-tight">Journal d'Audit Global</h3>
             <p className="text-sm text-slate-400 font-medium leading-relaxed">
-              Consultez tous les accès aux données sensibles pour la conformité Loi 25 à travers tout le réseau DentaFlow.
+              Consultez tous les accès aux données sensibles pour la conformité Loi 25 à travers tout le réseau Oros.
             </p>
           </div>
 

@@ -66,7 +66,7 @@ export default async function PatientLoginPage({
         </Card>
 
         <p className="text-center text-[10px] uppercase tracking-widest font-black text-slate-400">
-          Propulsé par <span className="text-primary italic">DentaFlow</span>
+          Propulsé par <span className="text-primary italic">Oros</span>
         </p>
       </div>
     </div>

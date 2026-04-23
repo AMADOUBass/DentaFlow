@@ -42,7 +42,7 @@ export async function middleware(request: NextRequest) {
     // Cas : Site Principal (marketing)
     subdomain = "";
   } else if (host.endsWith(`.${rootDomain}`)) {
-    // Cas : Sous-domaine (ex: demo.dentaflow.ca)
+    // Cas : Sous-domaine (ex: demo.oros.ca)
     subdomain = host.replace(`.${rootDomain}`, "");
   } else if (host !== "localhost:3000" && !host.includes(".localhost:3000")) {
     // Cas : Domaine personnalisé (ex: clinique.oros.ca)

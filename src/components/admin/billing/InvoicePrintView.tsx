@@ -155,7 +155,7 @@ export function InvoicePrintView({ invoice }: InvoicePrintProps) {
         {/* Footer */}
         <div className="mt-20 pt-10 border-t border-slate-100 text-center space-y-2">
            <p className="text-sm font-bold text-slate-900">Merci de votre confiance !</p>
-           <p className="text-[10px] text-slate-400 font-medium uppercase tracking-[0.2em]">DentaFlow System — Document Officiel</p>
+           <p className="text-[10px] text-slate-400 font-medium uppercase tracking-[0.2em]">Oros System — Document Officiel</p>
         </div>
       </div>
     </div>

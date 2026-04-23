@@ -16,7 +16,7 @@ export default function PrivacyPolicyPageEn() {
           </div>
           <p className="text-slate-600 leading-relaxed">
             In accordance with the Act respecting the protection of personal information in the private sector (Law 25), 
-            <strong> DentaFlow Systems Inc.</strong> is committed to protecting the integrity and confidentiality of 
+            <strong> Oros Systems Inc.</strong> is committed to protecting the integrity and confidentiality of 
             dental and personal data processed on its platform.
           </p>
         </section>

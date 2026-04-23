@@ -19,34 +19,34 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "DentaFlow | Plateforme dentaire québécoise",
-    template: "%s | DentaFlow"
+    default: "Oros | Plateforme dentaire québécoise",
+    template: "%s | Oros"
   },
   description: "Solution complète de gestion clinique, portail patient et conformité Loi 25 pour les centres dentaires du Québec.",
   openGraph: {
     type: "website",
     locale: "fr_CA",
-    url: "https://dentaflow.ca",
-    siteName: "DentaFlow",
+    url: "https://oros.ca",
+    siteName: "Oros",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "DentaFlow - Le futur de la gestion dentaire"
+        alt: "Oros - Le futur de la gestion dentaire"
       }
     ]
   },
   twitter: {
     card: "summary_large_image",
-    title: "DentaFlow | Gestion Dentaire Premium",
+    title: "Oros | Gestion Dentaire Premium",
     description: "Simplifiez votre clinique avec notre plateforme conforme à la Loi 25.",
     images: ["/og-image.png"]
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "DentaFlow",
+    title: "Oros",
   },
   icons: {
     icon: "/icon.png",

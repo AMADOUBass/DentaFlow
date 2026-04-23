@@ -145,7 +145,7 @@ export const InvoicePDF = ({ invoice, clinic, patient }: any) => {
         {/* Footer */}
         <View style={styles.footer}>
           <Text>Merci de votre confiance. Les paiements sont dus à réception, sauf entente contraire.</Text>
-          <Text>DentaFlow - Propulsé par Oros</Text>
+          <Text>Oros - Propulsé par Oros</Text>
         </View>
       </Page>
     </Document>

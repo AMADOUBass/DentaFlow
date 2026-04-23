@@ -242,7 +242,7 @@ export default function LoginPage() {
          </Card>
 
          <div className="absolute bottom-8 text-[10px] text-slate-400 uppercase font-black tracking-widest hidden lg:block">
-            SÉCURISÉ PAR DENTAFLOW SYSTEMS INC. © 2026
+            SÉCURISÉ PAR Oros SYSTEMS INC. © 2026
          </div>
       </div>
     </div>

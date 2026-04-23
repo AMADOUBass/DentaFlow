@@ -27,7 +27,7 @@ export default async function SuperAdminLayout({
               <ShieldCheck className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <p className="text-sm font-black text-slate-900 leading-none">DentaFlow</p>
+              <p className="text-sm font-black text-slate-900 leading-none">Oros</p>
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Platform Console</p>
             </div>
           </Link>
@@ -70,7 +70,7 @@ export default async function SuperAdminLayout({
 
       <footer className="p-12 text-center">
         <p className="text-xs font-bold text-slate-300 uppercase tracking-[0.2em]">
-          DentaFlow Engine — Global Administration Matrix
+          Oros Engine — Global Administration Matrix
         </p>
       </footer>
     </div>

@@ -17,16 +17,16 @@ export async function generateMetadata(): Promise<Metadata> {
   const user = await getAdminUser()
   
   if (user.role === 'SUPERADMIN') {
-    return { title: 'Admin - Platform | DentaFlow' }
+    return { title: 'Admin - Platform | Oros' }
   }
 
   const tenant = user.tenant
   if (!tenant) {
-    return { title: 'Admin - DentaFlow' }
+    return { title: 'Admin - Oros' }
   }
 
   return {
-    title: `Admin - ${tenant.name} | DentaFlow`,
+    title: `Admin - ${tenant.name} | Oros`,
     description: `Plateforme de gestion pour ${tenant.name}`
   }
 }
@@ -95,7 +95,7 @@ export default async function AdminLayout({
 
         <footer className="p-8 text-center border-t bg-white">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-            DentaFlow Platform — Système d'Exploitation Clinique Sécurisé
+            Oros Platform — Système d'Exploitation Clinique Sécurisé
           </p>
         </footer>
 

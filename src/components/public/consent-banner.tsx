@@ -10,7 +10,7 @@ export function ConsentBanner() {
   const [show, setShow] = useState(false)
 
   useEffect(() => {
-    const consent = localStorage.getItem('dentaflow_consent')
+    const consent = localStorage.getItem('oros_consent')
     if (!consent) {
       const timer = setTimeout(() => setShow(true), 1500)
       return () => clearTimeout(timer)
@@ -18,7 +18,7 @@ export function ConsentBanner() {
   }, [])
 
   const handleAccept = () => {
-    localStorage.setItem('dentaflow_consent', 'true')
+    localStorage.setItem('oros_consent', 'true')
     setShow(false)
   }
 

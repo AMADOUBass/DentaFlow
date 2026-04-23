@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Oros | DentaFlow',
+    name: 'Oros | Oros',
     short_name: 'Oros',
     description: 'Gestion de centres dentaires au Québec - Portail Patient & Admin',
     start_url: '/',

@@ -10,8 +10,8 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const prisma = new PrismaClient()
 
 async function main() {
-  const email = process.argv[2] || 'admin@dentaflow.ca'
-  const password = process.argv[3] || 'DentaFlow2026!'
+  const email = process.argv[2] || 'admin@oros.ca'
+  const password = process.argv[3] || 'Oros2026!'
 
   if (!supabaseUrl || !supabaseServiceKey) {
     console.error("Missing Supabase credentials in .env")

@@ -59,7 +59,7 @@ export default function Error({
 
         <div className="pt-12">
             <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">
-               DENTAFLOW SYSTEMS INC. — ÉTAT DU RÉSEAU : ACTIF
+               Oros SYSTEMS INC. — ÉTAT DU RÉSEAU : ACTIF
             </p>
         </div>
       </div>
