@@ -48,7 +48,10 @@ export function ServiceForm({ service, open, onOpenChange }: ServiceFormProps) {
       priceCents: service.priceCents || 0,
       category: service.category,
       active: service.active,
-      order: service.order
+      order: service.order,
+      requiresDeposit: service.requiresDeposit ?? false,
+      depositAmountCents: service.depositAmountCents || null,
+      requiresQuestionnaire: service.requiresQuestionnaire ?? false,
     } : {
       name: '',
       nameEn: '',
@@ -57,11 +60,16 @@ export function ServiceForm({ service, open, onOpenChange }: ServiceFormProps) {
       priceCents: 0,
       category: ServiceCategory.OTHER,
       active: true,
-      order: 0
+      order: 0,
+      requiresDeposit: false,
+      depositAmountCents: null,
+      requiresQuestionnaire: false,
     }
   })
 
   const selectedCategory = watch('category')
+  const requiresDeposit = watch('requiresDeposit')
+  const requiresQuestionnaire = watch('requiresQuestionnaire')
 
   const onSubmit = async (data: ServiceInput) => {
     setIsLoading(true)
@@ -144,6 +152,41 @@ export function ServiceForm({ service, open, onOpenChange }: ServiceFormProps) {
           <div className="space-y-2">
             <Label className="font-bold">Description courte</Label>
             <Textarea {...register('description')} rows={2} className="rounded-xl resize-none" />
+          </div>
+
+          <div className="space-y-3 pt-2 border-t border-slate-100">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                {...register('requiresDeposit')}
+                className="w-4 h-4 rounded accent-primary"
+              />
+              <span className="font-bold text-sm">Exiger un dépôt de réservation (acompte Stripe)</span>
+            </label>
+
+            {requiresDeposit && (
+              <div className="space-y-2 pl-7">
+                <Label className="font-bold flex items-center gap-2"><DollarSign className="h-3.5 w-3.5" /> Montant de l'acompte ($)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  onChange={(e) => setValue('depositAmountCents', Math.round(parseFloat(e.target.value) * 100))}
+                  defaultValue={service?.depositAmountCents ? service.depositAmountCents / 100 : ''}
+                  placeholder="Ex: 50.00"
+                  className="rounded-xl h-11"
+                />
+              </div>
+            )}
+
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                {...register('requiresQuestionnaire')}
+                className="w-4 h-4 rounded accent-primary"
+              />
+              <span className="font-bold text-sm">Exiger un bilan médical avant le RDV</span>
+            </label>
           </div>
 
           <DialogFooter className="pt-4">

@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { PublicMobileNav } from '@/components/public/mobile-nav'
 import { ConsentBanner } from '@/components/public/consent-banner'
-import { Toaster } from 'sonner'
+
 import { notFound } from 'next/navigation'
 import { getLocaleServer, useTranslations } from '@/lib/i18n'
 import { I18nLink } from '@/components/I18nLink'
@@ -143,7 +143,6 @@ export default async function TenantLayout({
       </footer>
       
       <ConsentBanner />
-      <Toaster position="top-right" />
     </div>
   )
 }

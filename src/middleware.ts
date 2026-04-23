@@ -82,7 +82,8 @@ export async function middleware(request: NextRequest) {
 
   // 4. Construire la réponse finale (rewrite)
   // On la construit avant updateSession pour que les cookies Supabase atterrissent directement dessus.
-  const finalResponse = NextResponse.rewrite(new URL(finalTargetPath, request.url));
+  url.pathname = finalTargetPath;
+  const finalResponse = NextResponse.rewrite(url);
 
   // 5. Rafraîchir la session Supabase — les cookies sont injectés dans finalResponse
   const user = await updateSession(request, finalResponse);
