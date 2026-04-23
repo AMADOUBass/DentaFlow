@@ -15,6 +15,8 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog'
 
+import { useRouter } from 'next/navigation'
+
 interface CancelAppointmentButtonProps {
   appointmentId: string
 }
@@ -22,6 +24,7 @@ interface CancelAppointmentButtonProps {
 export function CancelAppointmentButton({ appointmentId }: CancelAppointmentButtonProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [open, setOpen] = useState(false)
+  const router = useRouter()
 
   const handleCancel = async () => {
     setIsLoading(true)
@@ -30,6 +33,7 @@ export function CancelAppointmentButton({ appointmentId }: CancelAppointmentButt
       if (result.success) {
         toast.success('Rendez-vous annulé')
         setOpen(false)
+        router.refresh()
       }
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Une erreur est survenue'

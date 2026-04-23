@@ -209,7 +209,7 @@ export default async function PatientPortalPage({ params }: PortalPageProps) {
               </CardContent>
            </Card>
 
-           <PrivacyActions tenantId={tenant.id} locale={locale} />
+           <PrivacyActions tenantId={tenant.id} tenantSlug={tenantSlug} locale={locale} />
 
            <Card className="border-none shadow-sm rounded-[2rem]">
               <CardHeader>

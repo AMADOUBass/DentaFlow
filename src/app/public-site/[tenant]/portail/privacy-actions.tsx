@@ -10,10 +10,11 @@ import { getTranslations, type Locale } from '@/lib/i18n'
 
 interface PrivacyActionsProps {
   tenantId: string
+  tenantSlug: string
   locale: Locale
 }
 
-export function PrivacyActions({ tenantId, locale }: PrivacyActionsProps) {
+export function PrivacyActions({ tenantId, tenantSlug, locale }: PrivacyActionsProps) {
   const [isExporting, setIsExporting] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   
@@ -47,7 +48,9 @@ export function PrivacyActions({ tenantId, locale }: PrivacyActionsProps) {
     try {
       await deletePatientRecord(tenantId)
       toast.success(tp.delete_success)
-      setTimeout(() => window.location.href = `/${locale}`, 2000)
+      // On subdomains, /locale is the home. On root domain, /tenant/locale is the home.
+      // But middleware handles /tenant as well, so we can just use /tenant/locale for safety.
+      setTimeout(() => window.location.href = `/${tenantSlug}/${locale}`, 2000)
     } catch (error) {
       toast.error(tp.delete_error)
       setIsDeleting(false)

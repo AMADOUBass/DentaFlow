@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { logout } from '@/server/auth'
 import { getTenantPath } from '@/lib/tenant'
+import { PortalMobileNav } from './mobile-nav'
 
 interface PatientLayoutProps {
   children: React.ReactNode
@@ -93,11 +94,9 @@ export default async function PatientPortalLayout({ children, params }: PatientL
              </form>
           </div>
 
-          {/* Mobile menu (Simple) */}
+          {/* Mobile menu */}
           <div className="md:hidden">
-             <Button variant="ghost" size="icon" className="rounded-xl">
-                <Menu className="h-6 w-6 text-slate-600" />
-             </Button>
+             <PortalMobileNav navItems={navItems} tenantName={tenant.name} />
           </div>
         </div>
       </header>
