@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { 
   Bell,
-  Search,
 } from 'lucide-react'
 import { getAdminUser } from '@/lib/auth-utils'
 import { MobileNav } from '@/components/admin/mobile-nav'
@@ -11,6 +10,7 @@ import { BugReportButton } from '@/components/admin/BugReportButton'
 import { NotificationBell } from '@/components/admin/NotificationBell'
 import { SessionTimeout } from '@/components/auth/SessionTimeout'
 import { Breadcrumbs } from '@/components/admin/breadcrumbs'
+import { GlobalSearch } from '@/components/admin/GlobalSearch'
 import { Metadata } from 'next'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -46,14 +46,7 @@ export default async function AdminLayout({
               userRole={user.role}
               logoUrl={tenant.logoUrl}
             />
-            <div className="hidden sm:flex items-center flex-1 max-w-sm relative">
-               <Search className="absolute left-4 h-4 w-4 text-slate-400" />
-               <input 
-                 type="text" 
-                 placeholder="Rechercher un patient ou un soin..." 
-                 className="w-full bg-slate-100 border-none rounded-2xl pl-12 h-11 text-sm focus:ring-2 ring-primary/20 font-medium placeholder:text-slate-400"
-               />
-            </div>
+            <GlobalSearch />
           </div>
           
           <div className="flex items-center gap-6">
