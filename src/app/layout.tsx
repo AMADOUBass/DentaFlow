@@ -4,7 +4,9 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { PwaRegistration } from "@/components/pwa/PwaRegistration";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-
+import { Toaster } from "@/components/ui/sonner";
+import { ConsentBanner } from "@/components/public/consent-banner";
+import { Analytics } from "@vercel/analytics/next";
 import { getLocaleServer } from "@/lib/i18n";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -70,8 +72,13 @@ export default async function RootLayout({
         )}
         suppressHydrationWarning={true}
       >
-        <PwaRegistration />
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="light">
+          <PwaRegistration />
+          {children}
+          <Analytics />
+          <Toaster />
+          <ConsentBanner />
+        </ThemeProvider>
       </body>
     </html>
   );
