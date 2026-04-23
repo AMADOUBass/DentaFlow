@@ -20,8 +20,23 @@ import {
 import Link from 'next/link'
 import { logout } from '@/server/auth'
 
+type NavIconKey = 'shield' | 'calendar' | 'credit-card' | 'user'
+
+const NAV_ICONS: Record<NavIconKey, React.ComponentType<{ className?: string }>> = {
+  shield: ShieldCheck,
+  calendar: Calendar,
+  'credit-card': CreditCard,
+  user: UserIcon,
+}
+
+interface NavItem {
+  label: string
+  href: string
+  icon: NavIconKey
+}
+
 interface PortalMobileNavProps {
-  navItems: any[]
+  navItems: NavItem[]
   tenantName: string
 }
 
@@ -45,21 +60,24 @@ export function PortalMobileNav({ navItems, tenantName }: PortalMobileNavProps) 
         
         <div className="flex flex-col h-full py-6">
           <nav className="flex-1 px-4 space-y-2">
-            {navItems.map((item) => (
-              <Link 
-                key={item.href} 
-                href={item.href}
-                onClick={() => setOpen(false)}
-              >
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start h-14 rounded-2xl font-bold text-slate-600 hover:text-primary hover:bg-primary/5 gap-4"
+            {navItems.map((item) => {
+              const Icon = NAV_ICONS[item.icon]
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
                 >
-                  <item.icon className="h-5 w-5" />
-                  {item.label}
-                </Button>
-              </Link>
-            ))}
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start h-14 rounded-2xl font-bold text-slate-600 hover:text-primary hover:bg-primary/5 gap-4"
+                  >
+                    <Icon className="h-5 w-5" />
+                    {item.label}
+                  </Button>
+                </Link>
+              )
+            })}
           </nav>
           
           <div className="px-6 py-8 border-t">

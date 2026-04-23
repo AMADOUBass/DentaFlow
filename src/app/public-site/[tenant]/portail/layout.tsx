@@ -61,12 +61,16 @@ export default async function PatientPortalLayout({ children, params }: PatientL
     redirect(await getTenantPath('/login/patient'))
   }
 
+  // Only serializable data — no React components as props to Client Components
   const navItems = [
-    { label: 'Accueil', href: await getTenantPath('/portail'), icon: ShieldCheck },
-    { label: 'Mes Rendez-vous', href: await getTenantPath('/portail/rendez-vous'), icon: CalendarIcon },
-    { label: 'Factures', href: await getTenantPath('/portail/factures'), icon: CreditCard },
-    { label: 'Mon Profil', href: await getTenantPath('/portail/profil'), icon: UserIcon },
+    { label: 'Accueil', href: await getTenantPath('/portail'), icon: 'shield' as const },
+    { label: 'Mes Rendez-vous', href: await getTenantPath('/portail/rendez-vous'), icon: 'calendar' as const },
+    { label: 'Factures', href: await getTenantPath('/portail/factures'), icon: 'credit-card' as const },
+    { label: 'Mon Profil', href: await getTenantPath('/portail/profil'), icon: 'user' as const },
   ]
+
+  // Desktop nav icons rendered directly in the Server Component
+  const desktopNavIcons = { shield: ShieldCheck, calendar: CalendarIcon, 'credit-card': CreditCard, user: UserIcon }
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
@@ -90,13 +94,16 @@ export default async function PatientPortalLayout({ children, params }: PatientL
           </div>
 
           <div className="hidden md:flex items-center gap-2">
-             {navItems.map((item) => (
-               <Link key={item.href} href={item.href}>
-                  <Button variant="ghost" className="font-bold gap-2 text-slate-600 hover:text-primary rounded-xl px-4">
-                    <item.icon className="h-4 w-4" /> {item.label}
-                  </Button>
-               </Link>
-             ))}
+             {navItems.map((item) => {
+               const Icon = desktopNavIcons[item.icon]
+               return (
+                 <Link key={item.href} href={item.href}>
+                    <Button variant="ghost" className="font-bold gap-2 text-slate-600 hover:text-primary rounded-xl px-4">
+                      <Icon className="h-4 w-4" /> {item.label}
+                    </Button>
+                 </Link>
+               )
+             })}
              <div className="w-px h-6 bg-slate-100 mx-4" />
              <form action={logout}>
                 <Button variant="ghost" size="icon" className="text-slate-400 hover:text-rose-600 rounded-xl">
