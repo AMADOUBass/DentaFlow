@@ -47,7 +47,7 @@ export function QuestionnaireForm({ tenantId, initialData }: QuestionnaireFormPr
   const [isSaving, setIsSaving] = useState(false)
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<QuestionnaireInput>({
-    resolver: zodResolver(questionnaireSchema),
+    resolver: zodResolver(questionnaireSchema) as any,
     defaultValues: {
       heartIssues: initialData?.heartIssues || false,
       diabetes: initialData?.diabetes || false,
