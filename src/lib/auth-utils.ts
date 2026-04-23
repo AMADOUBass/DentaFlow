@@ -9,16 +9,9 @@ import { redirect } from 'next/navigation'
 export async function getAdminUser() {
   const supabase = await createClient()
   
-  let user = null
-  try {
-    const { data } = await supabase.auth.getUser()
-    user = data.user
-  } catch (err) {
-    console.error("Supabase Auth Network Error:", err)
-    redirect('/login?error=network_error')
-  }
-
-  if (!user) {
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  
+  if (authError || !user) {
     redirect('/login')
   }
 
@@ -54,7 +47,24 @@ export async function getAdminUser() {
        })
      } catch (err) {
        console.error("Auto-sync failed:", err)
+     }
+
+     if (!prismaUser) {
        redirect('/login?error=sync_required')
+     }
+  }
+
+  // Force role repair if email matches master email but role is wrong
+  if (user.email === process.env.NEXT_PUBLIC_SUPERADMIN_EMAIL && prismaUser.role !== 'SUPERADMIN') {
+     console.log(`Repairing role for ${user.email} to SUPERADMIN...`)
+     try {
+       prismaUser = await prisma.user.update({
+         where: { id: prismaUser.id },
+         data: { role: 'SUPERADMIN' as any },
+         include: { tenant: true }
+       })
+     } catch (err) {
+       console.error("Role repair failed:", err)
      }
   }
 

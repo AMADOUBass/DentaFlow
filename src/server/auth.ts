@@ -55,6 +55,16 @@ export async function login(formData: FormData) {
     })
   }
 
+  // Force SUPERADMIN role update if email matches master email
+  if (user.email === process.env.NEXT_PUBLIC_SUPERADMIN_EMAIL && dbUser.role !== UserRole.SUPERADMIN) {
+    console.log(`Upgrading user ${user.email} to SUPERADMIN...`)
+    dbUser = await prisma.user.update({
+      where: { id: dbUser.id },
+      data: { role: UserRole.SUPERADMIN },
+      include: { tenant: true }
+    })
+  }
+
   revalidatePath('/', 'layout')
 
   if (dbUser.role === UserRole.SUPERADMIN) {
