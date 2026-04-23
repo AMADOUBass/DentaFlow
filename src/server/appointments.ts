@@ -10,7 +10,6 @@ import { parse, format, isBefore, addDays } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { sendEmail } from '@/lib/email'
 import { sendSMS } from '@/lib/sms'
-import { logAudit } from '@/lib/audit'
 
 /**
  * Action to fetch available slots for a given date/practitioner/service
@@ -234,14 +233,6 @@ export async function cancelAppointmentAction(appointmentId: string) {
     }
   })
 
-  await logAudit({
-    tenantId: appointment.tenantId,
-    userId: user.id,
-    patientId: appointment.patientId,
-    action: 'DELETE',
-    category: 'PATIENT_DATA',
-    description: `Annulation d'un rendez-vous par le patient via le portail.`
-  })
 
   revalidatePath('/[tenant]/portail', 'layout')
   return { success: true }
@@ -265,14 +256,6 @@ export async function saveMedicalQuestionnaireAction(tenantId: string, patientId
       }
     })
 
-    await logAudit({
-      tenantId,
-      userId: patientId,
-      patientId,
-      action: 'UPDATE',
-      category: 'MEDICAL_RECORDS',
-      description: `Mise à jour du questionnaire médical antécédent.`
-    })
 
     return { success: true, id: questionnaire.id }
   } catch (error) {
