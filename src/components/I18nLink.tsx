@@ -27,10 +27,22 @@ export function I18nLink({ href, children, ...props }: I18nLinkProps) {
   const hasLocale = href.startsWith('/fr') || href.startsWith('/en')
   let finalHref = hasLocale ? href : `/${locale}${href === '/' ? '' : href}`
 
-  // Si on est sur le domaine principal (identifié par la présence du segment tenant dans l'URL actuelle)
-  // On doit préfixer par le tenant slug pour ne pas perdre le contexte
-  if (tenant && !finalHref.includes(`/${tenant}`)) {
-    finalHref = `/${tenant}${finalHref}`
+  // On ne rajoute le tenant slug que sur le domaine racine (oros.homes/demo/...).
+  // Sur un sous-domaine (demo.oros.homes), le tenant est identifié par le host — pas le path.
+  if (typeof window !== 'undefined' && tenant) {
+    const isOnTenantSubdomain = window.location.hostname.startsWith(`${tenant}.`)
+
+    if (!isOnTenantSubdomain) {
+      const pathname = window.location.pathname
+      const pathSegments = pathname.split('/').filter(Boolean)
+      const isUsingSlugInPath = pathSegments[0] === tenant
+
+      if (isUsingSlugInPath) {
+        if (!finalHref.startsWith(`/${tenant}/`) && finalHref !== `/${tenant}`) {
+          finalHref = `/${tenant}${finalHref}`
+        }
+      }
+    }
   }
 
   return (
