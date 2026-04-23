@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import Stripe from 'stripe'
 import { prisma } from '@/lib/prisma'
 import { PlanTier } from '@prisma/client'
+import { confirmAndNotifyAppointment } from '@/server/appointments'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-01-27' as any,
@@ -37,22 +38,32 @@ export async function POST(req: Request) {
 
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session
-      const tenantId = session.metadata?.tenantId
-      const subscriptionId = session.subscription as string
-      const customerId = session.customer as string
-      const tier = session.metadata?.tier as PlanTier
+      const type = session.metadata?.type
 
-      if (tenantId) {
-        await prisma.tenant.update({
-          where: { id: tenantId },
-          data: {
-            stripeCustomer: customerId,
-            stripeSubId: subscriptionId,
-            planTier: tier || PlanTier.ESSENTIEL,
-            isActive: true, // Activation automatique après paiement
-          }
-        })
-        console.log(`[STRIPE] Abonnement activé pour le tenant: ${tenantId}`)
+      if (type === 'DEPOSIT') {
+        // Dépôt de réservation — confirmer le RDV et envoyer SMS/email
+        const appointmentId = session.metadata?.appointmentId
+        if (appointmentId) {
+          await confirmAndNotifyAppointment(appointmentId)
+        }
+      } else {
+        // Abonnement clinique — activer le tenant
+        const tenantId = session.metadata?.tenantId
+        const subscriptionId = session.subscription as string
+        const customerId = session.customer as string
+        const tier = session.metadata?.tier as PlanTier
+
+        if (tenantId) {
+          await prisma.tenant.update({
+            where: { id: tenantId },
+            data: {
+              stripeCustomer: customerId,
+              stripeSubId: subscriptionId,
+              planTier: tier || PlanTier.ESSENTIEL,
+              isActive: true,
+            },
+          })
+        }
       }
     }
 

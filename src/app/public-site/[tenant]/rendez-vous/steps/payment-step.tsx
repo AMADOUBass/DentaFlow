@@ -4,23 +4,31 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { ShieldCheck, CreditCard, Lock, ArrowRight, Loader2 } from 'lucide-react'
 import { useState } from 'react'
+import { createDepositCheckoutSession } from '@/server/actions/stripe-clinical'
 
 interface PaymentStepProps {
   amount: number
+  appointmentId: string
+  tenantSlug: string
   onBack: () => void
-  onPay: () => void
 }
 
-export function PaymentStep({ amount, onBack, onPay }: PaymentStepProps) {
+export function PaymentStep({ amount, appointmentId, tenantSlug, onBack }: PaymentStepProps) {
   const [isProcessing, setIsProcessing] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handlePay = () => {
+  const handlePay = async () => {
     setIsProcessing(true)
-    // Simulate Stripe payment
-    setTimeout(() => {
+    setError(null)
+    try {
+      const result = await createDepositCheckoutSession(appointmentId, tenantSlug)
+      if (result.url) {
+        window.location.href = result.url
+      }
+    } catch (err) {
+      setError("Erreur lors de l'initialisation du paiement. Veuillez réessayer.")
       setIsProcessing(false)
-      onPay()
-    }, 2000)
+    }
   }
 
   return (
@@ -34,7 +42,7 @@ export function PaymentStep({ amount, onBack, onPay }: PaymentStepProps) {
          <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12">
             <CreditCard className="h-40 w-40" />
          </div>
-         
+
          <div className="relative z-10 text-center space-y-8">
             <div className="space-y-2">
                <p className="text-xs font-black text-primary uppercase tracking-[0.2em]">Montant de l'acompte</p>
@@ -65,16 +73,22 @@ export function PaymentStep({ amount, onBack, onPay }: PaymentStepProps) {
          </div>
       </Card>
 
+      {error && (
+        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 text-sm font-bold text-center">
+          {error}
+        </div>
+      )}
+
       <div className="flex flex-col gap-4">
-         <Button 
-            onClick={handlePay} 
+         <Button
+            onClick={handlePay}
             disabled={isProcessing}
             className="w-full h-16 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black text-xl shadow-xl shadow-primary/20 transition-all active:scale-[0.98]"
          >
             {isProcessing ? (
                <div className="flex items-center gap-3">
                   <Loader2 className="h-6 w-6 animate-spin" />
-                  <span>Traitement sécurisé...</span>
+                  <span>Redirection vers Stripe...</span>
                </div>
             ) : (
                <div className="flex items-center gap-3">
@@ -84,7 +98,7 @@ export function PaymentStep({ amount, onBack, onPay }: PaymentStepProps) {
             )}
          </Button>
          <Button variant="ghost" onClick={onBack} disabled={isProcessing} className="font-bold text-slate-400 hover:text-slate-600">
-            Retour aux informations médicales
+            Retour
          </Button>
       </div>
 

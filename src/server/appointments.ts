@@ -144,56 +144,64 @@ export async function createAppointment(tenantId: string, data: AppointmentInput
     }
   })
 
-  // 4. Notifications (Real Email with Resend)
-  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } })
-  const practitioner = await prisma.practitioner.findUnique({ 
-    where: { id: finalPractitionerId, tenantId } 
-  })
-  
-  if (tenant && practitioner) {
-    const formattedDate = format(startTime, 'eeee d MMMM yyyy', { locale: fr })
-    const formattedTime = format(startTime, 'HH:mm')
-    
-    await sendEmail({
-      to: email,
-      subject: `Confirmation de votre rendez-vous - ${tenant.name}`,
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #334155;">
-          <h1 style="color: #0f172a; font-size: 24px; font-weight: 800;">Rendez-vous confirmé !</h1>
-          <p>Bonjour ${firstName},</p>
-          <p>Votre rendez-vous chez ${tenant.name} a été enregistré avec succès.</p>
-          
-          <div style="background-color: #f8fafc; padding: 20px; border-radius: 12px; margin: 20px 0;">
-            <p style="margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Soin</p>
-            <p style="margin: 0 0 10px 0; font-weight: bold; font-size: 18px;">${service.name}</p>
-            
-            <p style="margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Praticien</p>
-            <p style="margin: 0 0 10px 0; font-weight: bold;">${practitioner.title} ${practitioner.lastName}</p>
-            
-            <p style="margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Date & Heure</p>
-            <p style="margin: 0; font-weight: bold;">${formattedDate} à ${formattedTime}</p>
-          </div>
-          
-          <p>Adresse: ${tenant.address || 'Voir site web'}</p>
-          <p>Téléphone: ${tenant.phone || ''}</p>
-          
-          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;" />
-          <p style="font-size: 12px; color: #94a3b8;">
-            Ce courriel a été envoyé automatiquement par Oros pour ${tenant.name}.
-          </p>
-        </div>
-      `
-    })
-
-    // 4.1 SMS Confirmation
-    const smsMessage = `Bonjour ${firstName}, votre RDV chez ${tenant.name} est confirme pour le ${formattedDate} a ${formattedTime}.`
-    await sendSMS({ to: phone, message: smsMessage })
-  }
-
-
   revalidatePath('/admin-area/admin/dashboard')
-  
   return { success: true, id: appointment.id, patientId: patient.id }
+}
+
+/**
+ * Confirms a PENDING appointment and sends SMS + email notifications.
+ * Called after deposit payment (via Stripe webhook) or directly for free services.
+ */
+export async function confirmAndNotifyAppointment(appointmentId: string) {
+  const appointment = await prisma.appointment.findUnique({
+    where: { id: appointmentId },
+    include: {
+      patient: true,
+      service: true,
+      practitioner: true,
+      tenant: true,
+    },
+  })
+
+  if (!appointment) throw new Error('Rendez-vous introuvable')
+
+  await prisma.appointment.update({
+    where: { id: appointmentId },
+    data: { status: AppointmentStatus.CONFIRMED },
+  })
+
+  const { patient, service, practitioner, tenant } = appointment
+  const formattedDate = format(appointment.startsAt, 'eeee d MMMM yyyy', { locale: fr })
+  const formattedTime = format(appointment.startsAt, 'HH:mm')
+
+  await sendEmail({
+    to: patient.email,
+    subject: `Confirmation de votre rendez-vous - ${tenant.name}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #334155;">
+        <h1 style="color: #0f172a; font-size: 24px; font-weight: 800;">Rendez-vous confirmé !</h1>
+        <p>Bonjour ${patient.firstName},</p>
+        <p>Votre rendez-vous chez ${tenant.name} a été enregistré avec succès.</p>
+        <div style="background-color: #f8fafc; padding: 20px; border-radius: 12px; margin: 20px 0;">
+          <p style="margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Soin</p>
+          <p style="margin: 0 0 10px 0; font-weight: bold; font-size: 18px;">${service.name}</p>
+          <p style="margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Praticien</p>
+          <p style="margin: 0 0 10px 0; font-weight: bold;">${practitioner.title} ${practitioner.lastName}</p>
+          <p style="margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Date & Heure</p>
+          <p style="margin: 0; font-weight: bold;">${formattedDate} à ${formattedTime}</p>
+        </div>
+        <p>Adresse: ${tenant.address || 'Voir site web'}</p>
+        <p>Téléphone: ${tenant.phone || ''}</p>
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;" />
+        <p style="font-size: 12px; color: #94a3b8;">Ce courriel a été envoyé automatiquement par Oros pour ${tenant.name}.</p>
+      </div>
+    `,
+  })
+
+  await sendSMS({
+    to: patient.phone,
+    message: `Bonjour ${patient.firstName}, votre RDV chez ${tenant.name} est confirme pour le ${formattedDate} a ${formattedTime}.`,
+  })
 }
 
 export async function cancelAppointmentAction(appointmentId: string) {

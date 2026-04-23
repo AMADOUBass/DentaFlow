@@ -14,18 +14,19 @@ import { format } from 'date-fns'
 import { CheckCircle2, Home, Calendar as CalendarIcon, ShieldCheck as ShieldIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { saveMedicalQuestionnaireAction } from '@/server/appointments'
+import { saveMedicalQuestionnaireAction, confirmAndNotifyAppointment } from '@/server/appointments'
 import { toast } from 'sonner'
 
 interface AppointmentWizardProps {
   tenantId: string
+  tenantSlug: string
   services: Service[]
   practitioners: Practitioner[]
 }
 
 type Step = 'service' | 'practitioner' | 'date' | 'slot' | 'patient' | 'questionnaire' | 'payment' | 'success'
 
-export function AppointmentWizard({ tenantId, services, practitioners }: AppointmentWizardProps) {
+export function AppointmentWizard({ tenantId, tenantSlug, services, practitioners }: AppointmentWizardProps) {
   const [currentStep, setCurrentStep] = useState<Step>('service')
   const [serviceId, setServiceId] = useState<string | null>(null)
   const [practitionerId, setPractitionerId] = useState<string | null>(null)
@@ -72,18 +73,15 @@ export function AppointmentWizard({ tenantId, services, practitioners }: Appoint
         toast.error("Erreur lors de la sauvegarde du bilan médical")
         return
       }
-      toast.success("Bilan médical enregistré")
     }
 
     if (selectedService?.requiresDeposit && selectedService?.depositAmountCents) {
       setCurrentStep('payment')
     } else {
+      // Pas de dépôt — confirmer directement et notifier
+      if (appointmentId) await confirmAndNotifyAppointment(appointmentId)
       setCurrentStep('success')
     }
-  }
-
-  const handlePaymentComplete = () => {
-    setCurrentStep('success')
   }
 
   if (currentStep === 'success') {
@@ -195,14 +193,16 @@ export function AppointmentWizard({ tenantId, services, practitioners }: Appoint
               slot: selectedSlot!
             }}
             onBack={() => setCurrentStep('slot')}
-            onComplete={(id, pId) => {
+            onComplete={async (id, pId) => {
               setAppointmentId(id)
               setPatientId(pId || null)
               if (selectedService?.requiresQuestionnaire) {
                 setCurrentStep('questionnaire')
-              } else if (selectedService?.requiresDeposit) {
+              } else if (selectedService?.requiresDeposit && selectedService?.depositAmountCents) {
                 setCurrentStep('payment')
               } else {
+                // Pas de questionnaire ni dépôt — confirmer directement
+                await confirmAndNotifyAppointment(id)
                 setCurrentStep('success')
               }
             }}
@@ -216,11 +216,12 @@ export function AppointmentWizard({ tenantId, services, practitioners }: Appoint
            />
         )}
 
-        {currentStep === 'payment' && (
-           <PaymentStep 
+        {currentStep === 'payment' && appointmentId && (
+           <PaymentStep
              amount={selectedService?.depositAmountCents || 5000}
+             appointmentId={appointmentId}
+             tenantSlug={tenantSlug}
              onBack={() => selectedService?.requiresQuestionnaire ? setCurrentStep('questionnaire') : setCurrentStep('patient')}
-             onPay={handlePaymentComplete}
            />
         )}
       </div>
