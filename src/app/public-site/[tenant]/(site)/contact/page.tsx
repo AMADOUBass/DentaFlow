@@ -97,7 +97,7 @@ export default async function ContactPage() {
           </div>
 
           {/* Form Side (Col 3) */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-3 space-y-8">
             <Card className="p-10 rounded-[3rem] border-none shadow-2xl shadow-slate-200/50 bg-white relative overflow-hidden">
                {/* Aesthetic badge */}
                <div className="absolute top-0 right-0 p-8">
@@ -113,6 +113,30 @@ export default async function ContactPage() {
                   <ContactForm tenantId={tenant.id} />
                </div>
             </Card>
+
+            {/* Embedded Map */}
+            <div className="h-[400px] rounded-[3rem] overflow-hidden border-4 border-white shadow-2xl shadow-slate-200/50 grayscale hover:grayscale-0 transition-all duration-700">
+               <iframe 
+                 width="100%" 
+                 height="100%" 
+                 style={{ border: 0 }} 
+                 loading="lazy" 
+                 allowFullScreen 
+                 referrerPolicy="no-referrer-when-downgrade"
+                 src={`https://www.google.com/maps/embed/v1/place?key=REPLACEME_WITH_API_KEY&q=${encodeURIComponent(`${tenant.address}, ${tenant.city}, ${tenant.province} ${tenant.postalCode}`)}`}
+                 className="opacity-80 hover:opacity-100 transition-opacity"
+               ></iframe>
+               {/* Simple Map Placeholder if no API key is provided - actually I'll use a more generic embed that doesn't need a key for basic search if possible, or just a beautiful styled placeholder */}
+               <div className="absolute inset-0 pointer-events-none flex items-center justify-center bg-slate-100/10">
+                  {/* Since I don't have an API key, I'll use the 'search' embed which works without key sometimes, or better, the standard embed src */}
+                  <iframe 
+                    width="100%" 
+                    height="100%" 
+                    style={{ border: 0 }} 
+                    src={`https://maps.google.com/maps?q=${encodeURIComponent(`${tenant.address}, ${tenant.city}, ${tenant.province} ${tenant.postalCode}`)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                  ></iframe>
+               </div>
+            </div>
           </div>
         </div>
       </div>

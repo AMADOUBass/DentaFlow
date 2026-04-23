@@ -197,6 +197,55 @@ export default async function TenantHomePage({
           </div>
         </div>
       </section>
+      {/* MAP SECTION */}
+      <section className="py-24 bg-slate-50 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
+        <div className="container mx-auto px-4 relative">
+          <div className="max-w-4xl mx-auto text-center mb-16 space-y-4">
+             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-black uppercase tracking-widest">
+                <MapPin className="h-3 w-3" /> {t.clinic_home.location}
+             </div>
+             <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight">Venez nous <span className="text-primary italic">voir</span></h2>
+             <p className="text-xl text-slate-500 font-medium">Située au cœur de Montréal, notre clinique est facilement accessible.</p>
+          </div>
+
+          <div className="relative group">
+             <div className="h-[500px] rounded-[3.5rem] overflow-hidden border-8 border-white shadow-2xl relative">
+                <iframe 
+                  width="100%" 
+                  height="100%" 
+                  style={{ border: 0 }} 
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(`${tenantData.address}, ${tenantData.city}, ${tenantData.province} ${tenantData.postalCode}`)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                  className="grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000"
+                ></iframe>
+                
+                {/* Overlay Info Card */}
+                <div className="absolute bottom-10 left-10 right-10 md:right-auto md:w-[350px] p-8 glass-card rounded-[2.5rem] border-white/60 shadow-2xl space-y-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700 delay-100">
+                   <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center">
+                         <MapPin className="h-5 w-5" />
+                      </div>
+                      <h3 className="text-xl font-black text-slate-900 tracking-tight">{clinicName}</h3>
+                   </div>
+                   <p className="text-slate-600 font-bold leading-relaxed text-sm">
+                      {tenantData.address}<br />
+                      {tenantData.city}, {tenantData.province} {tenantData.postalCode}
+                   </p>
+                   <div className="pt-2">
+                      <a 
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${tenantData.address}, ${tenantData.city}, ${tenantData.province} ${tenantData.postalCode}`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-primary font-black text-xs uppercase tracking-widest hover:translate-x-1 transition-transform"
+                      >
+                         Ouvrir dans Google Maps <ArrowRight className="h-3 w-3" />
+                      </a>
+                   </div>
+                </div>
+             </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
