@@ -12,7 +12,16 @@
       "Bash(git add *)",
       "Bash(git push *)",
       "Bash(git commit -m ' *)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(git -C c:/Dev/DentaFlow status)",
+      "Bash(git -C c:/Dev/DentaFlow diff)",
+      "Bash(git -C c:/Dev/DentaFlow log --oneline -3)",
+      "Bash(git -C c:/Dev/DentaFlow add src/app/api/auth/callback/route.ts \"src/app/public-site/[tenant]/portail/error.tsx\")",
+      "Bash(git -C c:/Dev/DentaFlow commit -m ' *)",
+      "Bash(git -C c:/Dev/DentaFlow push origin main)",
+      "Bash(git -C c:/Dev/DentaFlow add \"src/app/public-site/[tenant]/error.tsx\" \"src/app/public-site/[tenant]/layout.tsx\" \"src/app/public-site/[tenant]/portail/layout.tsx\")",
+      "Bash(git -C c:/Dev/DentaFlow add src/server/auth.ts)",
+      "Bash(git -C c:/Dev/DentaFlow add \"src/app/public-site/[tenant]/portail/layout.tsx\" \"src/app/public-site/[tenant]/portail/mobile-nav.tsx\")"
     ]
   }
 }

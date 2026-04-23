@@ -61,12 +61,14 @@ export default async function MarketingPage() {
           </div>
 
           {/* Floating Visual Elements */}
-          <div className="mt-20 relative flex justify-center animate-in zoom-in fade-in duration-1000">
-             <div className="relative w-full max-w-5xl rounded-[2.5rem] overflow-hidden glass-card p-4 border-2 border-white/40 shadow-2xl animate-float">
+          {/* PLATFORM PREVIEW */}
+          <div className="mt-20 relative animate-in fade-in zoom-in duration-1000 delay-300">
+             <div className="absolute inset-0 bg-primary/20 blur-[120px] rounded-full scale-90 opacity-50"></div>
+             <div className="relative glass-card p-2 md:p-4 rounded-[2.5rem] border-2 border-white/60 shadow-2xl overflow-hidden max-w-5xl mx-auto">
                 <img 
-                  src="/marketing/hero.png" 
-                  alt="Interface de la plateforme Oros montrant le tableau de bord de gestion dentaire et le calendrier" 
-                  className="w-full h-full rounded-[2rem] object-cover shadow-inner"
+                  src="/assets/images/dashboard-preview.png" 
+                  alt="Oros Systems Dashboard Preview" 
+                  className="w-full h-auto rounded-[1.5rem] shadow-inner"
                 />
              </div>
           </div>

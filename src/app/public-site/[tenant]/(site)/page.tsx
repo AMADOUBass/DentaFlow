@@ -77,7 +77,7 @@ export default async function TenantHomePage({
             <div className="relative animate-in fade-in slide-in-from-right-8 duration-1000">
               <div className="aspect-[4/3] rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white relative group">
                 <img 
-                  src="/demo/clinic-hero.png" 
+                  src="/assets/images/patient-trust.png" 
                   alt={`Intérieur moderne et accueillant de la clinique ${clinicName} à Montréal`} 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />

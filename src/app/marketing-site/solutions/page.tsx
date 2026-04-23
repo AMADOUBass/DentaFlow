@@ -53,21 +53,23 @@ export default async function SolutionsPage() {
                 ))}
               </ul>
             </div>
-            <div className="glass-card p-4 rounded-[3rem] border-2 border-white/60 shadow-2xl order-1 lg:order-2">
-               <div className="aspect-video bg-slate-900 rounded-[2.5rem] flex items-center justify-center overflow-hidden relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-transparent"></div>
-                  <Database className="h-24 w-24 text-emerald-500 opacity-20" />
-               </div>
+            <div className="glass-card p-2 rounded-[3rem] border-2 border-white/60 shadow-2xl order-1 lg:order-2 overflow-hidden">
+                <img 
+                  src="/assets/images/clinic-interior.png" 
+                  alt="Modern Dental Clinic Interior" 
+                  className="w-full h-auto rounded-[2.5rem] object-cover"
+                />
             </div>
           </div>
 
           {/* BOOKING */}
           <div className="grid lg:grid-cols-2 gap-16 items-center animate-in fade-in slide-in-from-right-8 duration-700">
-             <div className="glass-card p-4 rounded-[3rem] border-2 border-white/60 shadow-2xl">
-               <div className="aspect-video bg-slate-900 rounded-[2.5rem] flex items-center justify-center overflow-hidden relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent"></div>
-                  <MousePointer2 className="h-24 w-24 text-primary opacity-20" />
-               </div>
+             <div className="glass-card p-2 rounded-[3rem] border-2 border-white/60 shadow-2xl overflow-hidden">
+                <img 
+                  src="/assets/images/dashboard-preview.png" 
+                  alt="AI Booking Engine Preview" 
+                  className="w-full h-auto rounded-[2.5rem] object-cover"
+                />
             </div>
             <div className="space-y-8">
               <div className="flex items-center gap-4">
