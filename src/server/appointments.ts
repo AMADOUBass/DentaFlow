@@ -74,9 +74,14 @@ export async function createAppointment(tenantId: string, data: AppointmentInput
     })
 
     if (activeAppointment) {
-      return { 
-        success: false, 
-        error: "Vous avez déjà un rendez-vous actif dans cette clinique. Veuillez annuler le précédent avant d'en choisir un nouveau." 
+      if (activeAppointment.status === AppointmentStatus.PENDING) {
+        // Supprime l'ancien rendez-vous en attente pour permettre de recommencer
+        await prisma.appointment.delete({ where: { id: activeAppointment.id } })
+      } else {
+        return { 
+          success: false, 
+          error: "Vous avez déjà un rendez-vous actif dans cette clinique. Veuillez annuler le précédent avant d'en choisir un nouveau." 
+        }
       }
     }
   } else {

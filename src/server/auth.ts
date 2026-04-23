@@ -19,8 +19,11 @@ export async function login(formData: FormData) {
   })
 
   if (error || !user) {
+    console.error("Login error for", email, ":", error?.message)
     return { error: "Identifiants invalides." }
   }
+
+  console.log("Login successful for", email, "UID:", user.id)
 
   // Fetch role from Prisma
   let dbUser = await prisma.user.findUnique({

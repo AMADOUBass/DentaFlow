@@ -250,16 +250,6 @@ async function main() {
     }
   })
 
-  // 7. Create Super Admin
-  await prisma.user.create({
-    data: {
-      authId: 'superadmin-auth-id',
-      email: 'superadmin@oros.homes',
-      name: 'Super Admin Oros',
-      role: UserRole.SUPERADMIN,
-    }
-  })
-
   console.log('✅ Oros Premium Seeding completed.')
 }
 
