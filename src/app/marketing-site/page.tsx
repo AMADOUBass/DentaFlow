@@ -56,26 +56,12 @@ export default async function MarketingPage() {
 
           {/* Floating Visual Elements */}
           <div className="mt-20 relative flex justify-center animate-in zoom-in fade-in duration-1000">
-             <div className="relative w-full max-w-5xl aspect-video rounded-[2.5rem] overflow-hidden glass-card p-4 border-2 border-white/40 shadow-2xl animate-float">
-                <div className="w-full h-full rounded-[2rem] bg-slate-800 overflow-hidden relative group">
-                   <div className="absolute inset-0 bg-gradient-to-tr from-primary/40 to-cyan-500/20 mix-blend-overlay"></div>
-                   <div className="p-8 space-y-6 text-white/50 font-mono text-[10px]">
-                      <div className="flex justify-between items-center bg-white/10 p-4 rounded-xl border border-white/20">
-                         <div className="flex gap-4">
-                            <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                            <div className="w-3 h-3 rounded-full bg-amber-400"></div>
-                            <div className="w-3 h-3 rounded-full bg-emerald-400"></div>
-                         </div>
-                         <div className="w-32 h-2 rounded-full bg-white/10"></div>
-                      </div>
-                      <div className="grid grid-cols-3 gap-6">
-                         <div className="h-32 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">Dashboard</div>
-                         <div className="h-32 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">Planning</div>
-                         <div className="h-32 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">Analytics</div>
-                      </div>
-                      <div className="h-48 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-xs">Patient Records (Encrypted Law 25)</div>
-                   </div>
-                </div>
+             <div className="relative w-full max-w-5xl rounded-[2.5rem] overflow-hidden glass-card p-4 border-2 border-white/40 shadow-2xl animate-float">
+                <img 
+                  src="/marketing/hero.png" 
+                  alt="Oros Healthcare Platform" 
+                  className="w-full h-full rounded-[2rem] object-cover shadow-inner"
+                />
              </div>
           </div>
         </div>

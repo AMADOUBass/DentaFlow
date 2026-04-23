@@ -62,11 +62,9 @@ export default async function TenantHomePage({
                 </I18nLink>
                 <div className="flex items-center gap-4 px-6 border-l-2 border-slate-200">
                   <div className="flex -space-x-2">
-                    {[1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className="w-8 h-8 rounded-full border-2 border-white bg-slate-200"></div>
-                    ))}
+                    <img src="/demo/dr-dante.png" alt="Dr Dante" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
+                    <img src="/demo/dre-beatrice.png" alt="Dre Beatrice" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
+                    <div className="w-10 h-10 rounded-full border-2 border-white bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary">+8</div>
                   </div>
                   <p className="text-xs font-bold text-slate-500 uppercase tracking-widest line-clamp-1">
                     {t.clinic_home.patients_count}
@@ -76,18 +74,16 @@ export default async function TenantHomePage({
             </div>
 
             <div className="relative animate-in fade-in slide-in-from-right-8 duration-1000">
-              <div className="aspect-square rounded-[3rem] bg-gradient-to-tr from-primary/20 to-cyan-500/10 overflow-hidden relative group">
-                <div className="absolute inset-0 mesh-gradient opacity-40"></div>
-                <div className="absolute inset-0 flex items-center justify-center p-12">
-                  <div className="w-full h-full glass-card rounded-[2.5rem] border-2 border-white/60 shadow-2xl flex flex-col items-center justify-center space-y-6 text-center animate-float">
-                    <Users className="h-16 w-16 text-primary opacity-50" />
-                    <h3 className="text-2xl font-black text-slate-900">
-                      {t.clinic_home.team_title}
-                    </h3>
-                    <p className="text-sm text-slate-500 px-8">
-                      {t.clinic_home.team_desc}
-                    </p>
-                  </div>
+              <div className="aspect-[4/3] rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white relative group">
+                <img 
+                  src="/demo/clinic-hero.png" 
+                  alt={clinicName} 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
+                <div className="absolute bottom-8 left-8 right-8">
+                  <p className="text-white font-black text-2xl tracking-tight">Oros {clinicName}</p>
+                  <p className="text-white/80 text-sm font-medium">Technologie de pointe & Soins humains</p>
                 </div>
               </div>
 
