@@ -191,15 +191,6 @@ export async function createAppointment(tenantId: string, data: AppointmentInput
     await sendSMS({ to: phone, message: smsMessage })
   }
 
-  // Log Loi 25 — booking public, pas d'utilisateur admin identifié
-  await logAudit({
-    tenantId,
-    userId: tenantId, // Sentinel : action système via portail public (pas un User admin)
-    patientId: patient.id,
-    action: 'CREATE',
-    category: 'PATIENT_DATA',
-    description: `Nouveau rendez-vous créé via le portail public pour ${service.name}.`,
-  })
 
   revalidatePath('/admin-area/admin/dashboard')
   
