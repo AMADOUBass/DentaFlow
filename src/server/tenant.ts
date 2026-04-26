@@ -10,17 +10,22 @@ import { logAudit } from '@/lib/audit'
  * Mise à jour des paramètres de la clinique (Tenant)
  */
 export async function updateTenantAction(data: TenantSettingsInput) {
-  const user = await getAdminUser()
-  const tenantId = user.tenantId
-
-  if (!tenantId) {
-    throw new Error("Non autorisé ou aucun tenant trouvé")
-  }
-
-  // Validation
-  const validated = tenantSettingsSchema.parse(data)
-
   try {
+    const user = await getAdminUser()
+    const tenantId = user.tenantId
+
+    if (!tenantId) {
+      return { success: false, error: "Aucun tenant associé à ce compte." }
+    }
+
+    const parsed = tenantSettingsSchema.safeParse(data)
+    if (!parsed.success) {
+      const first = parsed.error.errors[0]
+      return { success: false, error: first?.message ?? "Données invalides. Vérifiez les champs du formulaire." }
+    }
+
+    const validated = parsed.data
+
     const updatedTenant = await prisma.tenant.update({
       where: { id: tenantId },
       data: {
@@ -36,8 +41,7 @@ export async function updateTenantAction(data: TenantSettingsInput) {
         bilingual: validated.bilingual,
       }
     })
-    
-    // Log l'action dans le journal d'audit
+
     await logAudit({
       tenantId,
       userId: user.authId,
@@ -48,10 +52,10 @@ export async function updateTenantAction(data: TenantSettingsInput) {
 
     revalidatePath('/admin/settings', 'page')
     revalidatePath('/admin/dashboard', 'page')
-    
+
     return { success: true, data: updatedTenant }
   } catch (error) {
     console.error('[UPDATE_TENANT_ERROR]', error)
-    return { success: false, error: "Erreur lors de la mise à jour des paramètres." }
+    return { success: false, error: "Erreur lors de la mise à jour. Veuillez réessayer." }
   }
 }
