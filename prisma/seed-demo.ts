@@ -12,19 +12,24 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🌱 Seeding demo data (non-destructive)...')
 
-  // 1. Upsert tenant demo
+  // 1. Upsert tenant demo — update inclus pour appliquer les vraies infos client
+  const clientInfo = {
+    name: 'Centre Dentaire Sainte-Foy',
+    email: 'info@centredentairestefoy.com',
+    phone: '418-683-3368',
+    address: '2145 chemin Sainte-Foy',
+    city: 'Québec',
+    postalCode: 'G1V 1S1',
+    province: 'QC',
+    primaryColor: '#0F172A',
+  }
+
   const tenant = await prisma.tenant.upsert({
     where: { slug: 'demo' },
-    update: {},
+    update: clientInfo,
     create: {
       slug: 'demo',
-      name: 'Centre Dentaire Oros (Démo)',
-      email: 'contact@oros.homes',
-      phone: '514-555-0123',
-      address: '1230 Rue Sherbrooke Ouest',
-      city: 'Montréal',
-      postalCode: 'H3G 1H6',
-      primaryColor: '#0F172A',
+      ...clientInfo,
       planTier: PlanTier.COMPLET,
       isActive: true,
       isValidated: true,
@@ -32,19 +37,19 @@ async function main() {
     },
   })
 
-  // 2. Heures d'ouverture (skip si déjà présentes)
-  const existingHours = await prisma.businessHours.count({ where: { tenantId: tenant.id } })
-  if (existingHours === 0) {
-    await prisma.businessHours.createMany({
-      data: [
-        { tenantId: tenant.id, weekday: 1, openTime: '08:00', closeTime: '18:00' },
-        { tenantId: tenant.id, weekday: 2, openTime: '08:00', closeTime: '18:00' },
-        { tenantId: tenant.id, weekday: 3, openTime: '08:00', closeTime: '18:00' },
-        { tenantId: tenant.id, weekday: 4, openTime: '08:00', closeTime: '20:00' },
-        { tenantId: tenant.id, weekday: 5, openTime: '08:00', closeTime: '16:00' },
-      ],
-    })
-  }
+  // 2. Heures d'ouverture — toujours remise à jour avec les vraies heures client
+  // Lundi=1, Mardi=2, Mercredi=3, Jeudi=4, Vendredi=5, Samedi=6, Dimanche=0
+  await prisma.businessHours.deleteMany({ where: { tenantId: tenant.id } })
+  await prisma.businessHours.createMany({
+    data: [
+      { tenantId: tenant.id, weekday: 1, openTime: '08:00', closeTime: '17:00' },
+      { tenantId: tenant.id, weekday: 2, openTime: '08:00', closeTime: '20:00' },
+      { tenantId: tenant.id, weekday: 3, openTime: '08:00', closeTime: '16:00' },
+      { tenantId: tenant.id, weekday: 4, openTime: '08:00', closeTime: '16:00' },
+      { tenantId: tenant.id, weekday: 5, openTime: '08:00', closeTime: '14:00' },
+      // Samedi et Dimanche fermés — pas de ligne = fermé
+    ],
+  })
 
   // 3. Praticiens — findOrCreate par nom
   async function findOrCreatePractitioner(data: {

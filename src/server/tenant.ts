@@ -20,7 +20,7 @@ export async function updateTenantAction(data: TenantSettingsInput) {
 
     const parsed = tenantSettingsSchema.safeParse(data)
     if (!parsed.success) {
-      const first = parsed.error.errors[0]
+      const first = parsed.error.issues[0]
       return { success: false, error: first?.message ?? "Données invalides. Vérifiez les champs du formulaire." }
     }
 
