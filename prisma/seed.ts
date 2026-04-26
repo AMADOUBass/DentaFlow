@@ -211,7 +211,7 @@ async function main() {
     }
   }
 
-  // 5. Create Sample Patient
+  // 5. Create Sample Patients
   const patient = await prisma.patient.create({
     data: {
       tenantId: tenant.id,
@@ -220,6 +220,18 @@ async function main() {
       email: 'jean.dupont@exemple.ca',
       phone: '514-555-9988',
       dateOfBirth: new Date('1985-05-15'),
+    }
+  })
+
+  // Test patient for local development (magic link login)
+  await prisma.patient.create({
+    data: {
+      tenantId: tenant.id,
+      firstName: 'Abba',
+      lastName: 'Bassoum',
+      email: 'bassoumamadou0@gmail.com',
+      phone: '514-555-0001',
+      dateOfBirth: new Date('2000-01-01'),
     }
   })
 

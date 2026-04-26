@@ -234,6 +234,8 @@ const translations = {
       success_desc: "Nous venons d'envoyer un lien de connexion magique à votre adresse. Cliquez sur le lien pour accéder à votre portail.",
       retry: "Renvoyer un lien",
       terms: "Conditions d'utilisation",
+      error_not_registered: "Aucun dossier patient trouvé pour cette adresse courriel dans cette clinique. Contactez votre clinique pour vérifier votre inscription.",
+      error_session: "Votre session a expiré ou le lien est invalide. Veuillez réessayer.",
     },
     patient_portal: {
       upcoming: "Prochains rendez-vous",
@@ -517,6 +519,8 @@ const translations = {
       success_desc: "We just sent a magic login link to your address. Click the link to access your portal.",
       retry: "Resend link",
       terms: "Terms of use",
+      error_not_registered: "No patient record found for this email at this clinic. Please contact your clinic to verify your registration.",
+      error_session: "Your session has expired or the link is invalid. Please try again.",
     },
     patient_portal: {
       upcoming: "Upcoming appointments",

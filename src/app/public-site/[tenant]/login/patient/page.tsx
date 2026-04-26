@@ -4,16 +4,19 @@ import { getLocaleServer } from '@/lib/i18n-server'
 import { I18nLink } from '@/components/I18nLink'
 import { PatientLoginForm } from './PatientLoginForm'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Stethoscope } from 'lucide-react'
+import { Stethoscope, AlertCircle } from 'lucide-react'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
 export default async function PatientLoginPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ tenant: string }>;
+  searchParams: Promise<{ error?: string }>;
 }) {
   const { tenant: tenantSlug } = await params
+  const { error } = await searchParams
   const locale = await getLocaleServer()
   const t = useTranslations(locale)
 
@@ -53,6 +56,17 @@ export default async function PatientLoginPage({
             {tenant.name}
           </p>
         </div>
+
+        {error && (
+          <div className="flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 rounded-2xl px-5 py-4 text-sm font-medium">
+            <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+            <span>
+              {error === 'not_registered'
+                ? t.patient_login.error_not_registered
+                : t.patient_login.error_session}
+            </span>
+          </div>
+        )}
 
         <Card className="border-none shadow-2xl rounded-[2rem] overflow-hidden bg-white">
           <CardHeader className="pt-8 px-8">
