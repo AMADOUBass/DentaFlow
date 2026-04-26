@@ -55,7 +55,7 @@ export default async function MarketingLayout({
           <div className="flex items-center gap-2 md:gap-4">
             <LanguageSwitcher />
             <I18nLink href="/login" className="hidden sm:inline-flex">
-              <Button variant="ghost" className="font-semibold rounded-xl px-4 md:px-6">{t.common.login}</Button>
+              <Button variant="ghost" className="font-black text-slate-900 hover:text-primary hover:bg-primary/5 rounded-xl px-4 md:px-6 transition-all uppercase tracking-widest text-[11px]">{t.common.login}</Button>
             </I18nLink>
             <I18nLink href="/login" className="hidden lg:inline-flex">
               <Button className="bg-primary hover:bg-primary/90 text-white font-bold rounded-xl px-6 shadow-xl shadow-primary/20">{t.common.demo}</Button>

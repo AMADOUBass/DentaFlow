@@ -21,7 +21,10 @@
       "Bash(git -C c:/Dev/DentaFlow push origin main)",
       "Bash(git -C c:/Dev/DentaFlow add \"src/app/public-site/[tenant]/error.tsx\" \"src/app/public-site/[tenant]/layout.tsx\" \"src/app/public-site/[tenant]/portail/layout.tsx\")",
       "Bash(git -C c:/Dev/DentaFlow add src/server/auth.ts)",
-      "Bash(git -C c:/Dev/DentaFlow add \"src/app/public-site/[tenant]/portail/layout.tsx\" \"src/app/public-site/[tenant]/portail/mobile-nav.tsx\")"
+      "Bash(git -C c:/Dev/DentaFlow add \"src/app/public-site/[tenant]/portail/layout.tsx\" \"src/app/public-site/[tenant]/portail/mobile-nav.tsx\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('prisma',{}\\), indent=2\\)\\); print\\(json.dumps\\(d.get\\('scripts',{}\\), indent=2\\)\\)\")",
+      "Bash(npm run *)",
+      "Bash(find /c/Dev/DentaFlow/src/app/public-site/[tenant]/portail/rendez-vous -name \"*.tsx\")"
     ]
   }
 }
