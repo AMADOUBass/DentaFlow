@@ -46,8 +46,8 @@ export async function updateTenantAction(data: TenantSettingsInput) {
       description: `Mise à jour des paramètres généraux de la clinique (Nom, Contact, Branding).`
     })
 
-    // Revalider tout l'espace admin et public pour mettre à jour les métadonnées et le branding
-    revalidatePath('/', 'layout')
+    revalidatePath('/admin/settings', 'page')
+    revalidatePath('/admin/dashboard', 'page')
     
     return { success: true, data: updatedTenant }
   } catch (error) {

@@ -5,6 +5,7 @@ import { deletePractitioner } from '@/server/practitioners'
 import { Button } from '@/components/ui/button'
 import { Trash2, Loader2, AlertTriangle } from 'lucide-react'
 import { toast } from 'sonner'
+import { isNextRedirect } from '@/lib/action-utils'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,7 +35,8 @@ export function DeletePractitionerButton({ practitionerId, name }: DeletePractit
         setOpen(false)
       }
     } catch (error) {
-      toast.error("Erreur lors de la suppression.")
+      if (isNextRedirect(error)) throw error
+      toast.error("Impossible de supprimer le praticien. Veuillez réessayer.")
     } finally {
       setIsLoading(false)
     }
@@ -42,9 +44,9 @@ export function DeletePractitionerButton({ practitionerId, name }: DeletePractit
 
   return (
     <>
-      <Button 
-        variant="ghost" 
-        size="icon" 
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={() => setOpen(true)}
         className="h-9 w-9 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
       >

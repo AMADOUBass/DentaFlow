@@ -20,6 +20,7 @@ import {
 import { Loader2, User, Mail, Phone, ShieldCheck } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePathname } from 'next/navigation'
+import { isNextRedirect } from '@/lib/action-utils'
 
 interface PatientFormProps {
   patient?: any
@@ -74,7 +75,8 @@ export function PatientForm({ patient, open, onOpenChange }: PatientFormProps) {
         }, 800)
       }
     } catch (error) {
-      toast.error('Une erreur est survenue')
+      if (isNextRedirect(error)) throw error
+      toast.error('Impossible de sauvegarder le dossier patient. Vérifiez les informations et réessayez.')
     } finally {
       setIsLoading(false)
     }

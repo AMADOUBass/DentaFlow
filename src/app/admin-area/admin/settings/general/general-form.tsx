@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { toast } from 'sonner'
 import { Loader2, Save, Building2, Globe, Mail, Phone, MapPin, Palette } from 'lucide-react'
+import { isNextRedirect } from '@/lib/action-utils'
 
 interface GeneralFormProps {
   initialData: any
@@ -53,7 +54,8 @@ export function GeneralForm({ initialData }: GeneralFormProps) {
         toast.error(result.error || "Une erreur est survenue")
       }
     } catch (error) {
-      toast.error("Erreur de connexion au serveur")
+      if (isNextRedirect(error)) throw error
+      toast.error("Une erreur inattendue est survenue. Vos modifications n'ont peut-être pas été enregistrées.")
     } finally {
       setIsLoading(false)
     }

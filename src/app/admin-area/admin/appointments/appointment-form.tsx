@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select"
 import { Loader2, Calendar as CalendarIcon, User, Stethoscope, Clock } from 'lucide-react'
 import { toast } from 'sonner'
+import { isNextRedirect } from '@/lib/action-utils'
 import { Patient, Practitioner, Service, AppointmentStatus } from '@prisma/client'
 import { format } from 'date-fns'
 
@@ -68,7 +69,8 @@ export function AppointmentForm({ patients, practitioners, services, open, onOpe
         }, 800)
       }
     } catch (error) {
-      toast.error('Erreur lors de la création du rendez-vous')
+      if (isNextRedirect(error)) throw error
+      toast.error('Impossible de créer le rendez-vous. Vérifiez les informations et réessayez.')
     } finally {
       setIsLoading(false)
     }

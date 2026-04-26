@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select"
 import { Loader2, Tag, Clock, DollarSign } from 'lucide-react'
 import { toast } from 'sonner'
+import { isNextRedirect } from '@/lib/action-utils'
 import { Service, ServiceCategory } from '@prisma/client'
 
 interface ServiceFormProps {
@@ -88,7 +89,8 @@ export function ServiceForm({ service, open, onOpenChange }: ServiceFormProps) {
         onOpenChange(false)
       }, 800)
     } catch (error) {
-      toast.error('Une erreur est survenue')
+      if (isNextRedirect(error)) throw error
+      toast.error('Impossible de sauvegarder le service. Vérifiez les informations et réessayez.')
     } finally {
       setIsLoading(false)
     }

@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/dialog'
 import { Loader2, User, Camera } from 'lucide-react'
 import { toast } from 'sonner'
+import { isNextRedirect } from '@/lib/action-utils'
 
 import { Practitioner } from '@prisma/client'
 
@@ -65,8 +66,8 @@ export function PractitionerForm({ practitioner, open, onOpenChange }: Practitio
         onOpenChange(false)
       }, 800)
     } catch (error: unknown) {
-      console.error('Practitioner form error:', error)
-      toast.error('Une erreur est survenue')
+      if (isNextRedirect(error)) throw error
+      toast.error('Impossible de sauvegarder le praticien. Vérifiez les informations et réessayez.')
     } finally {
       setIsLoading(false)
     }
