@@ -31,7 +31,9 @@ export default async function PatientPortalLayout({ children, params }: PatientL
 
   // 1. Check for logged in user
   const { data: { user } } = await supabase.auth.getUser()
+  console.log('[portail] user:', user?.email ?? 'NULL')
   if (!user || !user.email) {
+    console.log('[portail] ❌ No session — redirecting to patient login')
     redirect(await getTenantPath('/login/patient'))
   }
 
@@ -52,12 +54,15 @@ export default async function PatientPortalLayout({ children, params }: PatientL
     patient = await prisma.patient.findUnique({
       where: { tenantId_email: { tenantId: tenant.id, email: user.email! } }
     })
-  } catch {
+    console.log('[portail] patient lookup — tenantId:', tenant.id, 'email:', user.email, '→', patient ? 'FOUND' : 'NOT FOUND')
+  } catch (err) {
+    console.log('[portail] ❌ Prisma error:', err)
     redirect(await getTenantPath('/login/patient'))
   }
 
   // 3. Security: If user is logged in but not a patient of this clinic, block access
   if (!patient) {
+    console.log('[portail] ❌ No patient record — redirecting to patient login')
     redirect(await getTenantPath('/login/patient'))
   }
 
