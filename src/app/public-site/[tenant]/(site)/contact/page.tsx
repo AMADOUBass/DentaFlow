@@ -21,6 +21,12 @@ export default async function ContactPage() {
 
   const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
 
+  // Affiche les 7 jours dans l'ordre Lundi→Dimanche, avec "Fermé" si absent de la DB
+  const allDays = [1, 2, 3, 4, 5, 6, 0].map(weekday => {
+    const bh = tenant.businessHours.find(h => h.weekday === weekday)
+    return { weekday, label: days[weekday], openTime: bh?.openTime, closeTime: bh?.closeTime, closed: !bh || bh.closed }
+  })
+
   return (
     <div className="py-20 bg-slate-50 relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
@@ -82,13 +88,13 @@ export default async function ContactPage() {
                   <h3 className="text-xl font-bold">Heures d'ouverture</h3>
                </div>
                <div className="space-y-3">
-                  {tenant.businessHours.map((bh) => (
-                    <div key={bh.id} className="flex justify-between items-center text-sm">
-                      <span className="font-medium text-slate-400">{days[bh.weekday]}</span>
-                      {bh.closed ? (
+                  {allDays.map(({ weekday, label, openTime, closeTime, closed }) => (
+                    <div key={weekday} className="flex justify-between items-center text-sm">
+                      <span className="font-medium text-slate-400">{label}</span>
+                      {closed ? (
                         <span className="font-black text-rose-500 uppercase text-[10px] tracking-widest">Fermé</span>
                       ) : (
-                        <span className="font-bold text-slate-100">{bh.openTime} — {bh.closeTime}</span>
+                        <span className="font-bold text-slate-100">{openTime} — {closeTime}</span>
                       )}
                     </div>
                   ))}

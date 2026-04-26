@@ -142,9 +142,11 @@ export default async function TenantHomePage({
               {
                 icon: <Clock className="text-primary" />,
                 title: t.clinic_home.hours,
-                info: tenantData.businessHours.find(bh => bh.weekday === new Date().getDay())?.closed 
-                  ? (locale === 'fr' ? 'Fermé aujourd\'hui' : 'Closed today')
-                  : `${tenantData.businessHours.find(bh => bh.weekday === new Date().getDay())?.openTime} - ${tenantData.businessHours.find(bh => bh.weekday === new Date().getDay())?.closeTime}`
+                info: (() => {
+                  const todayBH = tenantData.businessHours.find(bh => bh.weekday === new Date().getDay())
+                  if (!todayBH || todayBH.closed) return locale === 'fr' ? 'Fermé aujourd\'hui' : 'Closed today'
+                  return `${todayBH.openTime} – ${todayBH.closeTime}`
+                })()
               },
               {
                 icon: <Activity className="text-primary" />,
