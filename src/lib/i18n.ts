@@ -119,24 +119,32 @@ const translations = {
       hero_title: "Un investissement dans votre ",
       hero_accent: "croissance",
       hero_subtitle: "Choisissez le plan qui correspond à la taille et aux ambitions de votre centre dentaire.",
+      billing_monthly: "Mensuel",
+      billing_annual: "Annuel",
+      annual_savings: "2 mois gratuits",
+      annual_suffix: "/an",
+      monthly_suffix: "/mois",
       plans: {
         essentiel: {
           name: "Essentiel",
-          price: "199",
-          desc: "Idéal pour les nouvelles cliniques.",
-          features: ["1 Praticien", "Agenda intelligent", "Loi 25 de base", "Portail Patient"]
+          price_monthly: "149",
+          price_annual: "1 490",
+          desc: "Acquisition rapide — lancez-vous dès aujourd'hui.",
+          features: ["1 Praticien", "Agenda intelligent", "Portail Patient", "Conformité Loi 25 de base"]
         },
         complet: {
           name: "Complet",
-          price: "349",
-          desc: "Le choix préféré des cabinets établis.",
-          features: ["Jusqu'à 5 Praticiens", "Module d'Urgences 24/7", "Loi 25 avancée (Audit)", "Support prioritaire"]
+          price_monthly: "399",
+          price_annual: "3 990",
+          desc: "Le choix des cabinets qui veulent performer.",
+          features: ["Jusqu'à 5 Praticiens", "Module d'Urgences 24/7", "Audit Loi 25 complet", "Support prioritaire"]
         },
         premium: {
           name: "Premium",
-          price: "599",
-          desc: "Pour les centres multi-spécialités.",
-          features: ["Praticiens illimités", "Analytics avancés", "Domaine personnalisé", "Intégration API"]
+          price_monthly: "899",
+          price_annual: "8 990",
+          desc: "Pour les centres multi-sites à haute croissance.",
+          features: ["Praticiens illimités", "API & intégrations", "Analytics avancés", "Multi-sites", "Onboarding personnalisé"]
         }
       }
     },
@@ -404,24 +412,32 @@ const translations = {
       hero_title: "An investment in your ",
       hero_accent: "growth",
       hero_subtitle: "Choose the plan that matches the size and ambitions of your dental center.",
+      billing_monthly: "Monthly",
+      billing_annual: "Annual",
+      annual_savings: "2 months free",
+      annual_suffix: "/yr",
+      monthly_suffix: "/mo",
       plans: {
         essentiel: {
           name: "Essential",
-          price: "199",
-          desc: "Ideal for new clinics.",
-          features: ["1 Practitioner", "Smart agenda", "Basic Law 25", "Patient Portal"]
+          price_monthly: "149",
+          price_annual: "1,490",
+          desc: "Fast acquisition — get started today.",
+          features: ["1 Practitioner", "Smart Agenda", "Patient Portal", "Basic Law 25 Compliance"]
         },
         complet: {
           name: "Complete",
-          price: "349",
-          desc: "The preferred choice for established practices.",
-          features: ["Up to 5 Practitioners", "24/7 Emergency Module", "Advanced Law 25 (Audit)", "Priority support"]
+          price_monthly: "399",
+          price_annual: "3,990",
+          desc: "The choice for practices that want to perform.",
+          features: ["Up to 5 Practitioners", "24/7 Emergency Module", "Full Law 25 Audit", "Priority Support"]
         },
         premium: {
           name: "Premium",
-          price: "599",
-          desc: "For multi-specialty centers.",
-          features: ["Unlimited Practitioners", "Advanced Analytics", "Custom Domain", "API Integration"]
+          price_monthly: "899",
+          price_annual: "8,990",
+          desc: "For high-growth multi-site centers.",
+          features: ["Unlimited Practitioners", "API & Integrations", "Advanced Analytics", "Multi-site", "Personalized Onboarding"]
         }
       }
     },

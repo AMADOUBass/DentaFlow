@@ -9,7 +9,12 @@ import {
   Stethoscope, 
   Smartphone,
   Star,
-  ArrowRight
+  ArrowRight,
+  CheckCircle2,
+  Zap,
+  Shield,
+  Crown,
+  Sparkles
 } from 'lucide-react'
 import { useTranslations } from '@/lib/i18n'
 import { getLocaleServer } from '@/lib/i18n-server'
@@ -306,6 +311,121 @@ export default async function MarketingPage() {
         subtitle={t.testimonials.subtitle}
         items={t.testimonials.items}
       />
+
+      {/* PRICING SECTION - HOMEPAGE PREVIEW */}
+      <section id="pricing" className="py-24 bg-white border-y border-slate-100">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mb-16">
+            <Badge className="bg-primary/10 text-primary border-none hover:bg-primary/20 px-3 py-0.5 mb-4 text-[10px] font-black uppercase tracking-widest">Tarifs transparents</Badge>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tighter mb-4 leading-tight">
+              Simple. Prévisible.
+            </h2>
+            <p className="text-lg text-slate-500 font-medium">
+              Trois plans conçus pour chaque étape de croissance de votre clinique.
+            </p>
+            <div className="mt-6 inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-2 rounded-full">
+              <CheckCircle2 className="h-4 w-4" />
+              <span className="text-sm font-black">14 jours d'essai gratuit · Sans carte de crédit</span>
+            </div>
+          </div>
+
+          <div className="grid lg:grid-cols-3 gap-6 max-w-5xl">
+            {/* Essentiel */}
+            <div className="p-8 rounded-[2rem] border border-slate-200 bg-white space-y-6 hover:border-primary/20 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
+                  <Zap className="h-5 w-5 text-slate-600" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.pricing_page.plans.essentiel.name}</p>
+                  <p className="text-xs text-slate-500 font-medium">{t.pricing_page.plans.essentiel.desc}</p>
+                </div>
+              </div>
+              <div className="flex items-baseline gap-1">
+                <span className="text-4xl font-black text-slate-900">${t.pricing_page.plans.essentiel.price_monthly}</span>
+                <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">/mois</span>
+              </div>
+              <p className="text-[11px] text-slate-400 font-bold -mt-4">
+                ou <span className="text-primary font-black">${t.pricing_page.plans.essentiel.price_annual}/an</span> — 2 mois gratuits
+              </p>
+              <ul className="space-y-2.5">
+                {(t.pricing_page.plans.essentiel.features as string[]).map((f: string, i: number) => (
+                  <li key={i} className="flex items-center gap-2 text-xs font-bold text-slate-600">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />{f}
+                  </li>
+                ))}
+              </ul>
+              <I18nLink href="/pricing"><Button variant="outline" className="w-full h-11 rounded-xl border-2 font-black text-sm">Choisir Essentiel</Button></I18nLink>
+            </div>
+
+            {/* Complet - Featured */}
+            <div className="relative group">
+              <div className="absolute inset-0 bg-primary blur-[40px] opacity-10 group-hover:opacity-15 transition-opacity rounded-[2.5rem]" />
+              <div className="relative p-8 rounded-[2rem] border-2 border-primary bg-white space-y-6 shadow-xl shadow-primary/15">
+                <div className="absolute top-0 right-8 -translate-y-1/2 bg-primary text-white text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em]">Populaire</div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                    <Shield className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.pricing_page.plans.complet.name}</p>
+                    <p className="text-xs text-slate-500 font-medium">{t.pricing_page.plans.complet.desc}</p>
+                  </div>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-4xl font-black text-slate-900">${t.pricing_page.plans.complet.price_monthly}</span>
+                  <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">/mois</span>
+                </div>
+                <p className="text-[11px] text-slate-400 font-bold -mt-4">
+                  ou <span className="text-primary font-black">${t.pricing_page.plans.complet.price_annual}/an</span> — 2 mois gratuits
+                </p>
+                <ul className="space-y-2.5">
+                  {(t.pricing_page.plans.complet.features as string[]).map((f: string, i: number) => (
+                    <li key={i} className="flex items-center gap-2 text-xs font-bold text-slate-700">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />{f}
+                    </li>
+                  ))}
+                </ul>
+                <I18nLink href="/register"><Button className="w-full h-11 rounded-xl bg-slate-900 text-white font-black text-sm shadow-lg hover:bg-slate-800 active:scale-95 transition-all">Démarrer l'essai gratuit →</Button></I18nLink>
+              </div>
+            </div>
+
+            {/* Premium */}
+            <div className="p-8 rounded-[2rem] border border-slate-200 bg-white space-y-6 hover:border-amber-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center">
+                  <Crown className="h-5 w-5 text-amber-500" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.pricing_page.plans.premium.name}</p>
+                  <p className="text-xs text-slate-500 font-medium">{t.pricing_page.plans.premium.desc}</p>
+                </div>
+              </div>
+              <div className="flex items-baseline gap-1">
+                <span className="text-4xl font-black text-slate-900">${t.pricing_page.plans.premium.price_monthly}</span>
+                <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">/mois</span>
+              </div>
+              <p className="text-[11px] text-slate-400 font-bold -mt-4">
+                ou <span className="text-amber-600 font-black">${t.pricing_page.plans.premium.price_annual}/an</span> — 2 mois gratuits
+              </p>
+              <ul className="space-y-2.5">
+                {(t.pricing_page.plans.premium.features as string[]).map((f: string, i: number) => (
+                  <li key={i} className="flex items-center gap-2 text-xs font-bold text-slate-600">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />{f}
+                  </li>
+                ))}
+              </ul>
+              <I18nLink href="/pricing"><Button variant="outline" className="w-full h-11 rounded-xl border-2 font-black text-sm hover:border-amber-300 hover:text-amber-600 transition-all">Nous contacter</Button></I18nLink>
+            </div>
+          </div>
+
+          <div className="mt-10 max-w-5xl">
+            <I18nLink href="/pricing" className="inline-flex items-center gap-2 text-sm font-black text-primary hover:gap-3 transition-all">
+              Voir le comparatif détaillé <ArrowRight className="h-4 w-4" />
+            </I18nLink>
+          </div>
+        </div>
+      </section>
 
       {/* TRUST & CTA SECTION - REFINED PROPORTIONS */}
       <section className="py-32 relative overflow-hidden bg-slate-50/50 border-t border-slate-100">
