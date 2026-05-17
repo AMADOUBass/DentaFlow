@@ -26,6 +26,7 @@ export async function createCheckoutSession(tenantId: string, priceId: string, c
       tenantId: tenantId,
     },
     subscription_data: {
+      trial_period_days: 14,
       metadata: {
         tenantId: tenantId,
       },

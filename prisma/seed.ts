@@ -36,6 +36,7 @@ async function main() {
       isActive: true,
       isValidated: true,
       neq: '1234567890',
+      trialEndsAt: addDays(new Date(), 14),
       businessHours: {
         create: [
           { weekday: 1, openTime: '08:00', closeTime: '18:00' },

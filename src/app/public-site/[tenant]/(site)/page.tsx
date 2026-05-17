@@ -54,10 +54,7 @@ export default async function TenantHomePage({
               </h1>
 
               <p className="text-xl text-slate-600 leading-relaxed max-w-lg">
-                {locale === "fr"
-                  ? `Bienvenue au Centre ${clinicName}. `
-                  : `Welcome to the ${clinicName} Center. `}
-                {t.clinic_home.hero_desc}
+                {t.clinic_home.welcome} {clinicName}. {t.clinic_home.hero_desc}
               </p>
 
               <div className="flex flex-col sm:flex-row items-center gap-6">
@@ -82,7 +79,7 @@ export default async function TenantHomePage({
                           )}
                        </div>
                     ))}
-                    <div className="w-10 h-10 rounded-full border-2 border-white bg-primary text-white flex items-center justify-center text-[10px] font-bold shadow-lg" aria-label="Et d'autres membres de l'équipe">
+                    <div className="w-10 h-10 rounded-full border-2 border-white bg-primary text-white flex items-center justify-center text-[10px] font-bold shadow-lg" aria-label={t.clinic_home.and_others}>
                        +{Math.max(0, tenantData.practitioners.length - 3 + 5)}
                     </div>
                   </div>
@@ -144,7 +141,7 @@ export default async function TenantHomePage({
                 title: t.clinic_home.hours,
                 info: (() => {
                   const todayBH = tenantData.businessHours.find(bh => bh.weekday === new Date().getDay())
-                  if (!todayBH || todayBH.closed) return locale === 'fr' ? 'Fermé aujourd\'hui' : 'Closed today'
+                  if (!todayBH || todayBH.closed) return t.clinic_home.closed_today
                   return `${todayBH.openTime} – ${todayBH.closeTime}`
                 })()
               },
@@ -207,8 +204,8 @@ export default async function TenantHomePage({
              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-black uppercase tracking-widest">
                 <MapPin className="h-3 w-3" /> {t.clinic_home.location}
              </div>
-             <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight">Venez nous <span className="text-primary italic">voir</span></h2>
-             <p className="text-xl text-slate-500 font-medium">Située au cœur de Montréal, notre clinique est facilement accessible.</p>
+             <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight">{t.clinic_home.visit_title_part1}<span className="text-primary italic">{t.clinic_home.visit_title_accent}</span></h2>
+             <p className="text-xl text-slate-500 font-medium">{t.clinic_home.visit_desc}</p>
           </div>
 
           <div className="relative group">
@@ -240,7 +237,7 @@ export default async function TenantHomePage({
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 text-primary font-black text-xs uppercase tracking-widest hover:translate-x-1 transition-transform"
                       >
-                         Ouvrir dans Google Maps <ArrowRight className="h-3 w-3" />
+                         {t.clinic_home.open_maps} <ArrowRight className="h-3 w-3" />
                       </a>
                    </div>
                 </div>

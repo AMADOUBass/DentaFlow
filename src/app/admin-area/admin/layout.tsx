@@ -49,6 +49,11 @@ export default async function AdminLayout({
     redirect('/login?error=unauthorized')
   }
 
+  // Vérification de la période d'essai
+  if (!tenant.stripeSubId && tenant.trialEndsAt && new Date() > tenant.trialEndsAt) {
+    redirect('/admin-area/setup/trial-expired')
+  }
+
   return (
     <div className="flex min-h-screen bg-white selection:bg-primary/20">
       {/* Sidebar - Desktop */}

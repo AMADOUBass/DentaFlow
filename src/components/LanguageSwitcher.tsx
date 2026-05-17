@@ -1,23 +1,21 @@
 'use client'
 
-import { usePathname, useRouter, useParams } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Languages } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
 /**
  * Bouton de basculement de langue (FR/EN)
- * Change le préfixe de l'URL tout en gardant le reste du chemin
+ * Design de type "Pill Toggle" pour une meilleure ergonomie
  */
 export function LanguageSwitcher() {
   const pathname = usePathname()
-  const router = useRouter()
+  
   // Détection robuste du premier segment
   const segments = pathname.split('/')
   const currentLocale = (segments[1] === 'en' || segments[1] === 'fr') ? segments[1] : 'fr'
 
-  const toggleLanguage = () => {
-    const newLocale = currentLocale === 'fr' ? 'en' : 'fr'
+  const setLanguage = (newLocale: 'fr' | 'en') => {
+    if (newLocale === currentLocale) return
     
     let newPathname = ''
     if (segments[1] === 'fr' || segments[1] === 'en') {
@@ -37,17 +35,40 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <Button 
-      variant="ghost" 
-      size="sm"
-      onClick={toggleLanguage}
-      className="flex items-center gap-2 font-bold text-xs uppercase tracking-widest text-slate-500 hover:text-primary transition-colors"
-      aria-label={currentLocale === 'fr' ? "Changer la langue vers l'anglais" : "Change language to French"}
-    >
-      <Languages className="h-4 w-4" aria-hidden="true" />
-      <span className={cn(currentLocale === 'fr' ? "text-primary underline" : "")} aria-current={currentLocale === 'fr' ? 'true' : undefined}>FR</span>
-      <span className="text-slate-300" aria-hidden="true">|</span>
-      <span className={cn(currentLocale === 'en' ? "text-primary underline" : "")} aria-current={currentLocale === 'en' ? 'true' : undefined}>EN</span>
-    </Button>
+    <div className="relative inline-flex items-center p-1 bg-slate-100/80 backdrop-blur-sm rounded-full shadow-inner border border-slate-200/60 transition-colors hover:bg-slate-200/50">
+      {/* Sliding Background */}
+      <div 
+        className={cn(
+          "absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-full shadow-[0_2px_4px_rgba(0,0,0,0.05)] border border-slate-100 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
+          currentLocale === 'en' ? "translate-x-full ml-1" : "translate-x-0"
+        )}
+      />
+      
+      {/* FR Button */}
+      <button
+        onClick={() => setLanguage('fr')}
+        className={cn(
+          "relative w-12 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-full transition-colors z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20",
+          currentLocale === 'fr' ? "text-primary" : "text-slate-500 hover:text-slate-700"
+        )}
+        aria-label="Changer la langue vers le français"
+        aria-current={currentLocale === 'fr' ? 'true' : undefined}
+      >
+        FR
+      </button>
+      
+      {/* EN Button */}
+      <button
+        onClick={() => setLanguage('en')}
+        className={cn(
+          "relative w-12 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-full transition-colors z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20",
+          currentLocale === 'en' ? "text-primary" : "text-slate-500 hover:text-slate-700"
+        )}
+        aria-label="Change language to English"
+        aria-current={currentLocale === 'en' ? 'true' : undefined}
+      >
+        EN
+      </button>
+    </div>
   )
 }

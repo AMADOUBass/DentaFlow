@@ -19,6 +19,7 @@ const translations = {
       start: "Démarrer maintenant",
       see_demo: "Voir la démo",
       soon: "Bientôt disponible",
+      new: "Nouveau",
     },
     nav: {
       features: "Fonctionnalités",
@@ -34,10 +35,16 @@ const translations = {
       stats_save_time: "Temps gagné",
       stats_per_week: "par semaine",
       stats_satisfaction: "Satisfaction Patients",
+      badge_ai_booking: "Découvrez le moteur de réservation IA",
+      powered_by: "Propulsé par la technologie de pointe",
     },
     features: {
       title: "Tout ce dont vous avez besoin.",
       subtitle: "Une suite d'outils puissants intégrés pour propulser votre clinique.",
+      integrated_badge: "Plateforme Intégrée",
+      dashboard_today: "Aujourd'hui",
+      dashboard_capacity: "Capacité",
+      law25_cta: "Découvrir la conformité",
       items: {
         booking: {
           title: "Réservation IA",
@@ -115,6 +122,46 @@ const translations = {
       section_patient_title: "L'Expérience Patient Réinventée",
       section_patient_desc: "Offrez à vos patients un portail moderne et intuitif. Prise de RDV, demandes d'urgence et gestion de profil, le tout accessible sur mobile sans installation.",
     },
+    solutions_preview: {
+      badge: "Expérience Praticien",
+      title_part1: "Une interface conçue par et pour les ",
+      title_accent: "experts.",
+      desc: "Oros réduit la charge cognitive de vos équipes grâce à une interface épurée et des processus automatisés qui s'adaptent à votre flux de travail.",
+      stats_errors: "Moins d'erreurs",
+      stats_saved: "Gagnées par jour",
+      signed: "Signé: Dr. Simard",
+      save: "Enregistrer",
+      card_status: "Statut",
+      card_confirmed: "Confirmé",
+      card_care: "Soin",
+      card_cleaning: "Nettoyage",
+      card_notes: "Notes Cliniques",
+      card_notes_text: "Suivi post-opératoire requis pour la dent #14. Sensibilité légère rapportée.",
+    },
+    pricing_preview: {
+      badge: "Tarifs transparents",
+      title: "Simple. Prévisible.",
+      desc: "Trois plans conçus pour chaque étape de croissance de votre clinique.",
+      trial_badge: "14 jours d'essai gratuit · Sans carte de crédit",
+      popular: "Populaire",
+      compare: "Voir le comparatif détaillé",
+    },
+    pricing_faq: {
+      title: "Questions fréquentes",
+      badge: "Transparence totale",
+      q1: "Puis-je changer de plan ?",
+      a1: "Oui, vous pouvez passer à un plan supérieur ou inférieur à tout moment depuis votre dashboard.",
+      q2: "Qu'est-ce que la conformité Loi 25 ?",
+      a2: "C'est l'assurance que les données de vos patients sont stockées et gérées selon les normes de sécurité du Québec.",
+      q3: "Y a-t-il des frais d'installation ?",
+      a3: "Non, l'installation et la configuration initiale sont incluses dans tous nos plans.",
+      q4: "Comment fonctionne l'essai gratuit ?",
+      a4: "Dès votre inscription, vous bénéficiez de 14 jours complets pour explorer toutes les fonctionnalités — sans carte de crédit requise. À la fin de la période, vous choisissez votre plan ou votre compte est simplement désactivé.",
+      q5: "La facturation annuelle, comment ça marche ?",
+      a5: "Vous payez une fois par an et économisez l'équivalent de 2 mois. La facture est émise immédiatement et renouvelable chaque année.",
+      q6: "Hébergement au Canada ?",
+      a6: "Oui, 100% des données sont hébergées au Canada, conformément à la Loi 25 du Québec.",
+    },
     pricing_page: {
       hero_title: "Un investissement dans votre ",
       hero_accent: "croissance",
@@ -122,6 +169,7 @@ const translations = {
       billing_monthly: "Mensuel",
       billing_annual: "Annuel",
       annual_savings: "2 mois gratuits",
+      annual_promo: "Passer à la facturation annuelle et économiser 2 mois complets →",
       annual_suffix: "/an",
       monthly_suffix: "/mois",
       plans: {
@@ -130,6 +178,7 @@ const translations = {
           price_monthly: "149",
           price_annual: "1 490",
           desc: "Acquisition rapide — lancez-vous dès aujourd'hui.",
+          cta: "Choisir Essentiel",
           features: ["1 Praticien", "Agenda intelligent", "Portail Patient", "Conformité Loi 25 de base"]
         },
         complet: {
@@ -137,6 +186,7 @@ const translations = {
           price_monthly: "399",
           price_annual: "3 990",
           desc: "Le choix des cabinets qui veulent performer.",
+          cta: "Démarrer l'essai gratuit →",
           features: ["Jusqu'à 5 Praticiens", "Module d'Urgences 24/7", "Audit Loi 25 complet", "Support prioritaire"]
         },
         premium: {
@@ -144,6 +194,7 @@ const translations = {
           price_monthly: "899",
           price_annual: "8 990",
           desc: "Pour les centres multi-sites à haute croissance.",
+          cta: "Nous contacter",
           features: ["Praticiens illimités", "API & intégrations", "Analytics avancés", "Multi-sites", "Onboarding personnalisé"]
         }
       }
@@ -203,6 +254,13 @@ const translations = {
       cta_title_accent: "votre santé dentaire",
       cta_title_part2: " ?",
       manage_emergency: "Gérer une urgence",
+      welcome: "Bienvenue au Centre",
+      closed_today: "Fermé aujourd'hui",
+      visit_title_part1: "Venez nous ",
+      visit_title_accent: "voir",
+      visit_desc: "Située au cœur de Montréal, notre clinique est facilement accessible.",
+      open_maps: "Ouvrir dans Google Maps",
+      and_others: "Et d'autres membres de l'équipe",
     },
     footer_ext: {
       product: "Produit",
@@ -312,6 +370,7 @@ const translations = {
       start: "Get Started",
       see_demo: "See Live Demo",
       soon: "Coming Soon",
+      new: "New",
     },
     nav: {
       features: "Features",
@@ -327,10 +386,16 @@ const translations = {
       stats_save_time: "Time Saved",
       stats_per_week: "per week",
       stats_satisfaction: "Patient Satisfaction",
+      badge_ai_booking: "Discover the AI booking engine",
+      powered_by: "Powered by cutting-edge technology",
     },
     features: {
       title: "Everything you need.",
       subtitle: "A suite of powerful integrated tools to propel your clinic.",
+      integrated_badge: "Integrated Platform",
+      dashboard_today: "Today",
+      dashboard_capacity: "Capacity",
+      law25_cta: "Discover compliance",
       items: {
         booking: {
           title: "AI Booking Engine",
@@ -408,6 +473,46 @@ const translations = {
       section_patient_title: "The Patient Experience Reimagined",
       section_patient_desc: "Offer your patients a modern and intuitive portal. Booking, emergency requests, and profile management, all accessible on mobile without installation.",
     },
+    solutions_preview: {
+      badge: "Practitioner Experience",
+      title_part1: "An interface designed by and for ",
+      title_accent: "experts.",
+      desc: "Oros reduces the cognitive load of your teams through a clean interface and automated processes that adapt to your workflow.",
+      stats_errors: "Fewer errors",
+      stats_saved: "Saved per day",
+      signed: "Signed: Dr. Simard",
+      save: "Save",
+      card_status: "Status",
+      card_confirmed: "Confirmed",
+      card_care: "Care",
+      card_cleaning: "Cleaning",
+      card_notes: "Clinical Notes",
+      card_notes_text: "Post-operative follow-up required for tooth #14. Mild sensitivity reported.",
+    },
+    pricing_preview: {
+      badge: "Transparent pricing",
+      title: "Simple. Predictable.",
+      desc: "Three plans designed for every stage of your clinic's growth.",
+      trial_badge: "14-day free trial · No credit card required",
+      popular: "Popular",
+      compare: "See detailed comparison",
+    },
+    pricing_faq: {
+      title: "Frequently Asked Questions",
+      badge: "Total transparency",
+      q1: "Can I change my plan?",
+      a1: "Yes, you can upgrade or downgrade at any time from your dashboard.",
+      q2: "What is Law 25 compliance?",
+      a2: "It's the assurance that your patients' data is stored and managed according to Quebec's security standards.",
+      q3: "Are there setup fees?",
+      a3: "No, setup and initial configuration are included in all our plans.",
+      q4: "How does the free trial work?",
+      a4: "Upon signup, you get 14 full days to explore all features — no credit card required. At the end of the period, choose your plan or your account will simply be deactivated.",
+      q5: "How does annual billing work?",
+      a5: "You pay once a year and save the equivalent of 2 months. The invoice is issued immediately and renews annually.",
+      q6: "Hosted in Canada?",
+      a6: "Yes, 100% of the data is hosted in Canada, in compliance with Quebec's Law 25.",
+    },
     pricing_page: {
       hero_title: "An investment in your ",
       hero_accent: "growth",
@@ -415,6 +520,7 @@ const translations = {
       billing_monthly: "Monthly",
       billing_annual: "Annual",
       annual_savings: "2 months free",
+      annual_promo: "Switch to annual billing and save 2 full months →",
       annual_suffix: "/yr",
       monthly_suffix: "/mo",
       plans: {
@@ -423,6 +529,7 @@ const translations = {
           price_monthly: "149",
           price_annual: "1,490",
           desc: "Fast acquisition — get started today.",
+          cta: "Choose Essential",
           features: ["1 Practitioner", "Smart Agenda", "Patient Portal", "Basic Law 25 Compliance"]
         },
         complet: {
@@ -430,6 +537,7 @@ const translations = {
           price_monthly: "399",
           price_annual: "3,990",
           desc: "The choice for practices that want to perform.",
+          cta: "Start free trial →",
           features: ["Up to 5 Practitioners", "24/7 Emergency Module", "Full Law 25 Audit", "Priority Support"]
         },
         premium: {
@@ -437,6 +545,7 @@ const translations = {
           price_monthly: "899",
           price_annual: "8,990",
           desc: "For high-growth multi-site centers.",
+          cta: "Contact us",
           features: ["Unlimited Practitioners", "API & Integrations", "Advanced Analytics", "Multi-site", "Personalized Onboarding"]
         }
       }
@@ -496,6 +605,13 @@ const translations = {
       cta_title_accent: "your dental health",
       cta_title_part2: " ?",
       manage_emergency: "Manage an emergency",
+      welcome: "Welcome to",
+      closed_today: "Closed today",
+      visit_title_part1: "Come and ",
+      visit_title_accent: "see us",
+      visit_desc: "Located in the heart of Montreal, our clinic is easily accessible.",
+      open_maps: "Open in Google Maps",
+      and_others: "And other team members",
     },
     footer_ext: {
       product: "Product",
