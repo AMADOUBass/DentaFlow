@@ -10,6 +10,9 @@ import { parse, format, isBefore, addDays } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { sendEmail } from '@/lib/email'
 import { sendSMS } from '@/lib/sms'
+import { triggerWebhook } from '@/lib/webhooks'
+import { emailConfirmation } from '@/lib/email-templates'
+import { createNotification } from '@/server/notifications'
 
 /**
  * Action to fetch available slots for a given date/practitioner/service
@@ -144,6 +147,25 @@ export async function createAppointment(tenantId: string, data: AppointmentInput
     }
   })
 
+  // Notification interne pour l'admin
+  createNotification({
+    tenantId,
+    title: 'Nouveau rendez-vous',
+    message: `${patient.firstName} ${patient.lastName} — ${format(appointment.startsAt, "d MMM à HH:mm", { locale: fr })}`,
+    type: 'INFO',
+    link: '/admin-area/admin/appointments'
+  }).catch(() => {})
+
+  triggerWebhook(tenantId, 'appointment.created', {
+    id: appointment.id,
+    startsAt: appointment.startsAt,
+    endsAt: appointment.endsAt,
+    status: appointment.status,
+    patientId: patient.id,
+    practitionerId: appointment.practitionerId,
+    serviceId: appointment.serviceId
+  })
+
   revalidatePath('/admin-area/admin/dashboard')
   return { success: true, id: appointment.id, patientId: patient.id }
 }
@@ -176,26 +198,19 @@ export async function confirmAndNotifyAppointment(appointmentId: string) {
 
   await sendEmail({
     to: patient.email,
-    subject: `Confirmation de votre rendez-vous - ${tenant.name}`,
-    html: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #334155;">
-        <h1 style="color: #0f172a; font-size: 24px; font-weight: 800;">Rendez-vous confirmé !</h1>
-        <p>Bonjour ${patient.firstName},</p>
-        <p>Votre rendez-vous chez ${tenant.name} a été enregistré avec succès.</p>
-        <div style="background-color: #f8fafc; padding: 20px; border-radius: 12px; margin: 20px 0;">
-          <p style="margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Soin</p>
-          <p style="margin: 0 0 10px 0; font-weight: bold; font-size: 18px;">${service.name}</p>
-          <p style="margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Praticien</p>
-          <p style="margin: 0 0 10px 0; font-weight: bold;">${practitioner.title} ${practitioner.lastName}</p>
-          <p style="margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Date & Heure</p>
-          <p style="margin: 0; font-weight: bold;">${formattedDate} à ${formattedTime}</p>
-        </div>
-        <p>Adresse: ${tenant.address || 'Voir site web'}</p>
-        <p>Téléphone: ${tenant.phone || ''}</p>
-        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;" />
-        <p style="font-size: 12px; color: #94a3b8;">Ce courriel a été envoyé automatiquement par Oros pour ${tenant.name}.</p>
-      </div>
-    `,
+    subject: `Rendez-vous confirmé — ${tenant.name}`,
+    html: emailConfirmation({
+      patientFirstName: patient.firstName,
+      clinicName: tenant.name,
+      clinicPhone: tenant.phone,
+      clinicAddress: tenant.address ?? undefined,
+      practitionerTitle: practitioner.title,
+      practitionerLastName: practitioner.lastName,
+      serviceName: service.name,
+      dateFormatted: formattedDate,
+      timeFormatted: formattedTime,
+      clinicColor: tenant.primaryColor,
+    }),
   })
 
   await sendSMS({

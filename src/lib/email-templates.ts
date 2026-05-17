@@ -1,7 +1,131 @@
-/**
- * Oros Premium Email Templates
- * Responsive HTML with Inline CSS
- */
+const _styles = {
+  wrapper: `font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;margin:0;padding:0;`,
+  container: `max-width:600px;margin:0 auto;background:#ffffff;border-radius:24px;overflow:hidden;`,
+  body: `padding:40px 48px;`,
+  footer: `background:#f1f5f9;padding:24px 48px;text-align:center;`,
+  label: `font-size:11px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 4px;`,
+  value: `font-size:16px;color:#0f172a;font-weight:700;margin:0 0 20px;`,
+  divider: `border:none;border-top:1px solid #e2e8f0;margin:28px 0;`,
+  btn: (color: string) =>
+    `display:inline-block;background:${color};color:#ffffff;font-weight:800;font-size:14px;padding:14px 32px;border-radius:12px;text-decoration:none;letter-spacing:0.5px;`,
+}
+
+export interface AppointmentEmailData {
+  patientFirstName: string
+  clinicName: string
+  clinicPhone: string
+  clinicAddress?: string
+  practitionerTitle: string
+  practitionerLastName: string
+  serviceName: string
+  dateFormatted: string
+  timeFormatted: string
+  clinicColor?: string
+  portalUrl?: string
+}
+
+export function emailConfirmation(data: AppointmentEmailData): string {
+  const color = data.clinicColor ?? '#0f766e'
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="${_styles.wrapper}">
+  <div style="padding:32px 16px;">
+    <div style="${_styles.container}">
+      <div style="background:${color};padding:40px 48px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+          <div style="width:40px;height:40px;background:rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;">${data.clinicName.charAt(0)}</div>
+          <span style="color:rgba(255,255,255,0.85);font-size:14px;font-weight:700;">${data.clinicName}</span>
+        </div>
+        <h1 style="color:#ffffff;font-size:28px;font-weight:900;margin:0;letter-spacing:-0.5px;">Rendez-vous confirmé ✓</h1>
+        <p style="color:rgba(255,255,255,0.75);margin:8px 0 0;font-size:15px;">Bonjour ${data.patientFirstName}, votre rendez-vous est bien enregistré.</p>
+      </div>
+      <div style="${_styles.body}">
+        <div style="background:#f8fafc;border-radius:16px;padding:24px;margin-bottom:28px;">
+          <p style="${_styles.label}">Soin</p>
+          <p style="${_styles.value}">${data.serviceName}</p>
+          <p style="${_styles.label}">Praticien</p>
+          <p style="${_styles.value}">${data.practitionerTitle} ${data.practitionerLastName}</p>
+          <p style="${_styles.label}">Date &amp; Heure</p>
+          <p style="font-size:20px;color:#0f172a;font-weight:900;margin:0;">${data.dateFormatted} à ${data.timeFormatted}</p>
+        </div>
+        <hr style="${_styles.divider}">
+        ${data.clinicAddress ? `<p style="${_styles.label}">Adresse</p><p style="${_styles.value}">${data.clinicAddress}</p>` : ''}
+        <p style="${_styles.label}">Téléphone</p>
+        <p style="${_styles.value}">${data.clinicPhone}</p>
+        ${data.portalUrl ? `<div style="text-align:center;margin-top:32px;"><a href="${data.portalUrl}" style="${_styles.btn(color)}">Voir mes rendez-vous</a></div>` : ''}
+      </div>
+      <div style="${_styles.footer}">
+        <p style="font-size:12px;color:#94a3b8;margin:0;">Envoyé automatiquement par <strong>Oros</strong> pour ${data.clinicName} · ${data.clinicPhone}</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`
+}
+
+export function emailReminder24h(data: AppointmentEmailData): string {
+  const color = data.clinicColor ?? '#0f766e'
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="${_styles.wrapper}">
+  <div style="padding:32px 16px;">
+    <div style="${_styles.container}">
+      <div style="background:#0f172a;padding:40px 48px;">
+        <div style="margin-bottom:20px;"><span style="background:${color};color:#fff;font-size:11px;font-weight:800;padding:6px 14px;border-radius:6px;letter-spacing:1px;text-transform:uppercase;">Rappel · 24h</span></div>
+        <h1 style="color:#ffffff;font-size:26px;font-weight:900;margin:0;letter-spacing:-0.5px;">Votre rendez-vous est demain</h1>
+        <p style="color:#94a3b8;margin:8px 0 0;font-size:15px;">Bonjour ${data.patientFirstName}, un petit rappel.</p>
+      </div>
+      <div style="${_styles.body}">
+        <div style="background:#f8fafc;border-radius:16px;padding:24px;margin-bottom:28px;border-left:4px solid ${color};">
+          <p style="${_styles.label}">Clinique</p>
+          <p style="${_styles.value}">${data.clinicName}</p>
+          <p style="${_styles.label}">Soin · Praticien</p>
+          <p style="${_styles.value}">${data.serviceName} — ${data.practitionerTitle} ${data.practitionerLastName}</p>
+          <p style="${_styles.label}">Date &amp; Heure</p>
+          <p style="font-size:20px;color:#0f172a;font-weight:900;margin:0;">${data.dateFormatted} à ${data.timeFormatted}</p>
+        </div>
+        ${data.clinicAddress ? `<p style="font-size:13px;color:#64748b;text-align:center;margin-bottom:16px;">📍 ${data.clinicAddress}</p>` : ''}
+        ${data.portalUrl ? `<div style="text-align:center;margin-top:16px;"><a href="${data.portalUrl}" style="${_styles.btn(color)}">Gérer mon rendez-vous</a></div>` : ''}
+      </div>
+      <div style="${_styles.footer}">
+        <p style="font-size:12px;color:#94a3b8;margin:0;">Oros pour ${data.clinicName} · ${data.clinicPhone}</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`
+}
+
+export function emailCancellation(data: AppointmentEmailData & { reason?: string }): string {
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="${_styles.wrapper}">
+  <div style="padding:32px 16px;">
+    <div style="${_styles.container}">
+      <div style="background:#ef4444;padding:40px 48px;">
+        <h1 style="color:#ffffff;font-size:26px;font-weight:900;margin:0;">Rendez-vous annulé</h1>
+        <p style="color:rgba(255,255,255,0.8);margin:8px 0 0;font-size:15px;">Bonjour ${data.patientFirstName}, votre rendez-vous a été annulé.</p>
+      </div>
+      <div style="${_styles.body}">
+        <div style="background:#fef2f2;border-radius:16px;padding:24px;margin-bottom:28px;border:1px solid #fecaca;">
+          <p style="${_styles.label}">Rendez-vous annulé</p>
+          <p style="${_styles.value}">${data.serviceName} — ${data.dateFormatted} à ${data.timeFormatted}</p>
+          ${data.reason ? `<p style="font-size:14px;color:#64748b;margin:4px 0 0;"><strong>Raison :</strong> ${data.reason}</p>` : ''}
+        </div>
+        <p style="font-size:15px;color:#475569;text-align:center;margin-bottom:28px;">Contactez-nous au <strong>${data.clinicPhone}</strong> pour prendre un nouveau rendez-vous.</p>
+        ${data.portalUrl ? `<div style="text-align:center;"><a href="${data.portalUrl}" style="${_styles.btn('#0f766e')}">Prendre un nouveau rendez-vous</a></div>` : ''}
+      </div>
+      <div style="${_styles.footer}">
+        <p style="font-size:12px;color:#94a3b8;margin:0;">Oros pour ${data.clinicName} · ${data.clinicPhone}</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`
+}
 
 interface EmailTheme {
   primary: string

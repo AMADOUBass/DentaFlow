@@ -10,6 +10,7 @@ import dynamic from "next/dynamic";
 const ConsentBanner = dynamic(() => import("@/components/public/consent-banner").then(mod => mod.ConsentBanner));
 
 import { Analytics } from "@vercel/analytics/next";
+import { Analytics as OrosAnalytics } from "@/components/Analytics";
 import { useTranslations } from '@/lib/i18n'
 import { getLocaleServer } from "@/lib/i18n-server";
 
@@ -78,6 +79,7 @@ export default async function RootLayout({
           <PwaRegistration />
           {children}
           <Analytics />
+          <OrosAnalytics />
           <Toaster />
           <ConsentBanner />
         </ThemeProvider>

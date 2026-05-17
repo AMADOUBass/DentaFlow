@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { sendSMS } from '@/lib/sms'
-import { addHours, subHours, format } from 'date-fns'
+import { sendEmail } from '@/lib/email'
+import { emailReminder24h } from '@/lib/email-templates'
+import { sendPushNotification } from '@/lib/push'
+import { addHours, format } from 'date-fns'
+import { fr } from 'date-fns/locale'
 
 /**
  * CRON JOB - Envoyer les rappels SMS automatisés
@@ -15,9 +19,68 @@ export async function GET(request: Request) {
   }
 
   const now = new Date()
-  const stats = { sent48h: 0, sent2h: 0, errors: 0 }
+  const stats = { sent48h: 0, sent2h: 0, sentEmail24h: 0, sentPush24h: 0, errors: 0 }
 
   try {
+    // --- RAPPEL EMAIL + PUSH 24 HEURES ---
+    const target24hMin = addHours(now, 23)
+    const target24hMax = addHours(now, 25)
+
+    const appointments24h = await prisma.appointment.findMany({
+      where: {
+        startsAt: { gte: target24hMin, lte: target24hMax },
+        status: { in: ['PENDING', 'CONFIRMED'] },
+      },
+      include: {
+        patient: true,
+        tenant: true,
+        service: true,
+        practitioner: true,
+      }
+    })
+
+    for (const apt of appointments24h) {
+      const dateFormatted = format(apt.startsAt, 'eeee d MMMM yyyy', { locale: fr })
+      const timeFormatted = format(apt.startsAt, 'HH:mm')
+
+      // Email rappel 24h
+      const emailResult = await sendEmail({
+        to: apt.patient.email,
+        subject: `Rappel — Votre rendez-vous demain chez ${apt.tenant.name}`,
+        html: emailReminder24h({
+          patientFirstName: apt.patient.firstName,
+          clinicName: apt.tenant.name,
+          clinicPhone: apt.tenant.phone,
+          clinicAddress: apt.tenant.address ?? undefined,
+          practitionerTitle: apt.practitioner.title,
+          practitionerLastName: apt.practitioner.lastName,
+          serviceName: apt.service.name,
+          dateFormatted,
+          timeFormatted,
+          clinicColor: apt.tenant.primaryColor,
+        })
+      })
+      if (emailResult.success) stats.sentEmail24h++
+
+      // Push PWA 24h
+      const pushSubs = await prisma.pushSubscription.findMany({
+        where: { tenantId: apt.tenantId }
+      })
+      for (const sub of pushSubs) {
+        const ok = await sendPushNotification(sub, {
+          title: `Rappel RDV — ${apt.tenant.name}`,
+          body: `${apt.service.name} demain à ${timeFormatted}`,
+          icon: '/icon.png',
+          url: '/portail/rendez-vous'
+        })
+        if (ok) stats.sentPush24h++
+        else {
+          // Supprimer abonnement expiré
+          await prisma.pushSubscription.delete({ where: { id: sub.id } }).catch(() => {})
+        }
+      }
+    }
+
     // --- RAPPEL 48 HEURES ---
     const target48hMin = addHours(now, 47)
     const target48hMax = addHours(now, 49)

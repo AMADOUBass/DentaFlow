@@ -26,6 +26,34 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(clients.claim());
 });
 
+// Push notification handler
+self.addEventListener('push', (event) => {
+  if (!event.data) return;
+  const data = event.data.json();
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'Oros', {
+      body: data.body || '',
+      icon: data.icon || '/icon.png',
+      badge: '/icon.png',
+      data: { url: data.url || '/' },
+      vibrate: [200, 100, 200],
+    })
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const url = event.notification.data?.url || '/';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url === url && 'focus' in client) return client.focus();
+      }
+      if (clients.openWindow) return clients.openWindow(url);
+    })
+  );
+});
+
 // Basic fetch handler (network first, fallback to offline page)
 self.addEventListener('fetch', (event) => {
   if (event.request.mode === 'navigate') {

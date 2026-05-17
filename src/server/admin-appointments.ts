@@ -5,7 +5,11 @@ import { getAdminUser } from '@/lib/auth-utils'
 import { adminAppointmentSchema, type AdminAppointmentInput } from '@/schemas/admin-appointment'
 import { revalidatePath } from 'next/cache'
 import { logAudit } from '@/lib/audit'
-import { addMinutes } from 'date-fns'
+import { addMinutes, format } from 'date-fns'
+import { fr } from 'date-fns/locale'
+import { sendEmail } from '@/lib/email'
+import { emailCancellation } from '@/lib/email-templates'
+import { createNotification } from '@/server/notifications'
 
 export async function createAppointmentAdmin(data: AdminAppointmentInput) {
   const user = await getAdminUser()
@@ -48,14 +52,62 @@ export async function createAppointmentAdmin(data: AdminAppointmentInput) {
   return { success: true, appointment }
 }
 
-export async function updateAppointmentStatusAction(id: string, status: any) {
+export async function updateAppointmentStatusAction(id: string, status: any, cancelReason?: string) {
   const user = await getAdminUser()
   const tenantId = user.tenantId!
 
-  await prisma.appointment.update({
+  const appointment = await prisma.appointment.findFirst({
     where: { id, tenantId },
-    data: { status }
+    include: {
+      patient: true,
+      service: true,
+      practitioner: true,
+      tenant: true,
+    }
   })
+
+  if (!appointment) throw new Error('Rendez-vous introuvable')
+
+  await prisma.appointment.update({
+    where: { id },
+    data: {
+      status,
+      ...(status === 'CANCELLED' ? { cancelledAt: new Date(), cancelReason: cancelReason ?? 'Annulé par la clinique' } : {})
+    }
+  })
+
+  // Notifier le patient par email si annulation
+  if (status === 'CANCELLED') {
+    const dateFormatted = format(appointment.startsAt, 'eeee d MMMM yyyy', { locale: fr })
+    const timeFormatted = format(appointment.startsAt, 'HH:mm')
+
+    sendEmail({
+      to: appointment.patient.email,
+      subject: `Rendez-vous annulé — ${appointment.tenant.name}`,
+      html: emailCancellation({
+        patientFirstName: appointment.patient.firstName,
+        clinicName: appointment.tenant.name,
+        clinicPhone: appointment.tenant.phone,
+        clinicAddress: appointment.tenant.address ?? undefined,
+        practitionerTitle: appointment.practitioner.title,
+        practitionerLastName: appointment.practitioner.lastName,
+        serviceName: appointment.service.name,
+        dateFormatted,
+        timeFormatted,
+        clinicColor: appointment.tenant.primaryColor,
+        reason: cancelReason
+      })
+    }).catch(() => {})
+
+    // Notification interne
+    createNotification({
+      tenantId,
+      title: 'RDV annulé',
+      message: `${appointment.patient.firstName} ${appointment.patient.lastName} — ${dateFormatted} à ${timeFormatted}`,
+      type: 'WARNING',
+      link: '/admin-area/admin/appointments'
+    }).catch(() => {})
+  }
 
   revalidatePath('/admin-area/admin/appointments')
   return { success: true }

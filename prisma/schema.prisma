@@ -4,8 +4,6 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 model Tenant {
@@ -27,6 +25,7 @@ model Tenant {
   planTier        PlanTier            @default(ESSENTIEL)
   stripeCustomer  String?             @unique
   stripeSubId     String?             @unique
+  trialEndsAt     DateTime?
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
   isActive        Boolean             @default(true)
@@ -49,6 +48,10 @@ model Tenant {
   toothConditions ToothCondition[]
   users           User[]
   medicalQuestionnaires MedicalQuestionnaire[]
+  apiKeys          ApiKey[]
+  webhookEndpoints WebhookEndpoint[]
+  integrations     Integration[]
+  pushSubscriptions PushSubscription[]
 }
 
 model User {
@@ -500,4 +503,61 @@ model MedicalQuestionnaire {
   tenant           Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  tenantId  String
+  patientId String?
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  tenantId    String
+  name        String    // Ex: "Logiciel de facturation", "Application Mobile Custom"
+  keyHash     String    @unique // Version hachée (SHA-256) de la clé
+  last4       String    // Les 4 derniers caractères pour identification visuelle
+  createdAt   DateTime  @default(now())
+  lastUsedAt  DateTime?
+  revokedAt   DateTime? // Si non null, la clé est révoquée
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+model WebhookEndpoint {
+  id          String    @id @default(cuid())
+  tenantId    String
+  url         String    // URL de destination (doit être HTTPS en prod)
+  secret      String    // Clé secrète générée pour signer les payloads (HMAC)
+  events      Json      // Tableau des événements écoutés, ex: ["appointment.created", "patient.updated"]
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+model Integration {
+  id             String    @id @default(cuid())
+  tenantId       String
+  provider       String    // Ex: "GOOGLE_CALENDAR"
+  accessToken    String
+  refreshToken   String?
+  expiresAt      DateTime?
+  externalId     String?   // Ex: ID du calendrier Google
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, provider])
 }

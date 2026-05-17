@@ -7,17 +7,28 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { MarketingMobileNav } from '@/components/marketing/MarketingMobileNav'
 import { Metadata } from 'next'
 
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://oros.ca'
+
 export const metadata: Metadata = {
-  title: 'Oros | Gestion Dentaire Nouvelle Génération au Québec',
+  title: {
+    default: 'Oros | Gestion Dentaire Nouvelle Génération au Québec',
+    template: '%s | Oros'
+  },
   description: 'La plateforme de gestion dentaire la plus efficace et conforme à la Loi 25. Optimisez votre clinique avec notre solution multi-tenant innovante.',
+  metadataBase: new URL(BASE_URL),
   openGraph: {
     title: 'Oros - Redéfinissez la gestion dentaire',
     description: 'La solution québécoise pour les cliniques dentaires modernes.',
-    url: 'https://oros.ca',
+    url: BASE_URL,
     siteName: 'Oros',
     locale: 'fr_CA',
     type: 'website',
+    images: [`${BASE_URL}/api/og/marketing?title=Oros%20%E2%80%94%20Gestion%20Dentaire&subtitle=La%20plateforme%20conforme%20Loi%2025%20pour%20cliniques%20du%20Qu%C3%A9bec`],
   },
+  twitter: {
+    card: 'summary_large_image',
+    images: [`${BASE_URL}/api/og/marketing?title=Oros%20%E2%80%94%20Gestion%20Dentaire&subtitle=La%20plateforme%20conforme%20Loi%2025%20pour%20cliniques%20du%20Qu%C3%A9bec`],
+  }
 }
 
 export default async function MarketingLayout({

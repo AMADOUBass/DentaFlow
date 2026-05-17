@@ -1,5 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card'
-import { Settings, Lock, CreditCard, ChevronRight, Bell, Smartphone } from 'lucide-react'
+import { Settings, Lock, CreditCard, ChevronRight, Bell, Smartphone, Code2 } from 'lucide-react'
 import Link from 'next/link'
 
 export default function SettingsRootPage() {
@@ -43,6 +43,14 @@ export default function SettingsRootPage() {
       icon: Smartphone,
       color: "text-sky-600",
       bg: "bg-sky-50"
+    },
+    {
+      title: "API & Intégrations",
+      desc: "Clés API, webhooks et connexions tierces (Premium).",
+      href: "/admin-area/admin/settings/integrations",
+      icon: Code2,
+      color: "text-violet-600",
+      bg: "bg-violet-50"
     }
   ]
 
