@@ -46,7 +46,13 @@ export function WebhooksSection({ initialEndpoints }: Props) {
     startTransition(async () => {
       try {
         const result = await createWebhookEndpoint({ url, events: selectedEvents })
-        setEndpoints(prev => [result, ...prev])
+        setEndpoints(prev => [{
+          id: result.id,
+          url: result.url,
+          events: result.events as string[],
+          isActive: result.isActive,
+          createdAt: new Date(result.createdAt).toISOString()
+        }, ...prev])
         setUrl('')
         setSelectedEvents([])
       } catch (e: any) {
