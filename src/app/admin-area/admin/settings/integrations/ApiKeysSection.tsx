@@ -36,7 +36,7 @@ export function ApiKeysSection({ initialKeys }: Props) {
       try {
         const result = await generateApiKey(newKeyName.trim())
         setRevealedKey(result.rawKey)
-        setKeys(prev => [{ id: result.id, name: result.name, last4: result.last4, createdAt: result.createdAt, lastUsedAt: null }, ...prev])
+        setKeys(prev => [{ id: result.id, name: result.name, last4: result.last4, createdAt: new Date(result.createdAt).toISOString(), lastUsedAt: null }, ...prev])
         setNewKeyName('')
       } catch (e: any) {
         setError(e.message)
